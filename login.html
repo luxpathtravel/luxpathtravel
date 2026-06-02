@@ -1,0 +1,155 @@
+﻿<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#0A2540">
+  <title>Admin Login — Luxpath Travel</title>
+
+  <!-- Content Security Policy
+       frame-ancestors requires a response header to be enforced by browsers;
+       set X-Frame-Options: DENY and frame-ancestors 'none' at the hosting layer too. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co; img-src 'self' data: https://*.supabase.co; frame-ancestors 'none'">
+
+  <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-title" content="Luxpath" />
+  <link rel="manifest" href="/site.webmanifest" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="assets/css/login.css">
+</head>
+
+<body>
+
+  <!-- ── CHECKING STATE (shown while verifying existing session) ── -->
+  <div class="auth-checking" id="authChecking" aria-live="polite" aria-label="Checking authentication">
+    <div class="auth-checking__spinner" aria-hidden="true"></div>
+    <p class="auth-checking__label">Checking session…</p>
+  </div>
+
+  <!-- ── LOGIN FORM (shown only when not authenticated) ─────────── -->
+  <main class="auth-screen" id="authScreen" hidden>
+    <div class="auth-card">
+
+      <!-- Brand -->
+      <div class="auth-card__brand">
+        <img src="luxpath-logo.webp" alt="Luxpath Travel" class="auth-logo" data-logo-fallback
+             width="150" height="44">
+        <span class="auth-logo-fallback" style="display:none">Luxpath</span>
+      </div>
+
+      <!-- Header -->
+      <div class="auth-card__header">
+        <div class="auth-card__lock" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round">
+            <rect x="3" y="11" width="18" height="11" rx="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+        </div>
+        <h1 class="auth-card__title">Admin Portal</h1>
+        <p class="auth-card__subtitle">Sign in with your admin account</p>
+      </div>
+
+      <!-- Error banner (shown on bad credentials or unauthorised) -->
+      <div class="auth-error" id="loginError" role="alert" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span id="loginErrorMsg">An error occurred.</span>
+      </div>
+
+      <!-- Form -->
+      <form class="auth-form" id="loginForm" novalidate>
+
+        <div class="form-group">
+          <label class="form-label" for="emailInput">Email address</label>
+          <input class="form-input" type="email" id="emailInput"
+                 name="email" placeholder="admin@luxpathtravel.com"
+                 autocomplete="username email"
+                 inputmode="email" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="passwordInput">Password</label>
+          <div class="password-wrap">
+            <input class="form-input" type="password" id="passwordInput"
+                   name="password" placeholder="••••••••"
+                   autocomplete="current-password" required>
+            <button class="password-toggle" id="passwordToggle" type="button"
+                    aria-label="Show password" aria-pressed="false">
+              <svg class="eye-show" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                   fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+              <svg class="eye-hide" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                   fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="display:none">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button class="btn btn--primary btn--full" type="submit" id="loginBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+            <polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/>
+          </svg>
+          Sign In
+        </button>
+
+      </form>
+
+      <!-- Footer -->
+      <div class="auth-card__footer">
+        <a href="/" class="auth-back-link">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+          Back to website
+        </a>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ── NOT CONFIGURED STATE ────────────────────────────────────── -->
+  <main class="auth-screen" id="notConfiguredScreen" hidden>
+    <div class="auth-card auth-card--warn">
+      <div class="auth-card__brand">
+        <img src="luxpath-logo.webp" alt="Luxpath Travel" data-logo-fallback width="150" height="44">
+      </div>
+      <div class="not-configured">
+        <div class="not-configured__icon" aria-hidden="true">⚙️</div>
+        <h1 class="not-configured__title">Supabase Not Configured</h1>
+        <p class="not-configured__body">
+          Add your Supabase project URL and anon key to
+          <code>assets/js/login.js</code> and
+          <code>assets/js/dashboard.js</code> to enable authentication.
+        </p>
+        <a href="/" class="btn btn--ghost">Back to Website</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.46.1/dist/umd/supabase.min.js"
+          integrity="sha384-f0hTybREi6MIGk1gXyD3UFZAL6sgul9hUVIQHUrByVE26aj5oryZvWtlcda66csi"
+          crossorigin="anonymous"></script>
+  <script src="assets/js/login.js" defer></script>
+
+</body>
+</html>

@@ -1,0 +1,1008 @@
+﻿/* ============================================================
+   LUXPATH TRAVEL — MAIN APPLICATION
+   Modular vanilla JS · Supabase backend · Bilingual AR/EN
+   ============================================================
+   MODULES
+   1.  Config
+   2.  Translations
+   3.  DB (Supabase queries)
+   4.  I18n (language system)
+   5.  WA (WhatsApp helper)
+   6.  Navbar
+   7.  ScrollReveal
+   8.  Stats (animated counters)
+   9.  FloatingWA
+   10. Packages
+   11. Destinations
+   12. Testimonials
+   13. FAQ
+   14. App (init)
+   ============================================================ */
+
+'use strict';
+
+/* ============================================================
+   1. CONFIG
+   ============================================================ */
+const Config = Object.freeze({
+  SUPABASE_URL:      'YOUR_SUPABASE_URL',        // ← replace
+  SUPABASE_ANON_KEY: 'YOUR_SUPABASE_ANON_KEY',   // ← replace
+  get STORAGE_URL()  { return this.SUPABASE_URL + '/storage/v1/object/public/luxpath-media/'; },
+  WHATSAPP_NUMBER:   '+6281111826527',
+  LANG_KEY:          'luxpath_lang',
+  DEFAULT_LANG:      'ar',
+  PLACEHOLDER_IMG:   'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23F0EDE8" width="400" height="300"/%3E%3C/svg%3E',
+});
+
+
+/* ============================================================
+   2. TRANSLATIONS
+   ============================================================ */
+const T = {
+  ar: {
+    // Accessibility
+    'a11y.skip': 'تخطَّ إلى المحتوى',
+
+    // Nav
+    'nav.home':         'الرئيسية',
+    'nav.destinations': 'الوجهات',
+    'nav.packages':     'الباقات',
+    'nav.about':        'عن لوكس باث',
+    'nav.contact':      'تواصل معنا',
+    'nav.whatsapp':     'واتساب',
+
+    // Hero
+    'hero.badge':        'وجهة أكثر من 2,000 عائلة سعودية',
+    'hero.title':        'اكتشف سحر إندونيسيا',
+    'hero.subtitle':     'رحلات فاخرة مصممة لك من المملكة العربية السعودية',
+    'hero.cta.whatsapp': 'احجز عبر واتساب الآن',
+    'hero.cta.packages': 'تصفح باقاتنا',
+
+    // Stats
+    'stats.trips':        'رحلة ناجحة',
+    'stats.families':     'عائلة سعودية',
+    'stats.destinations': 'وجهات',
+    'stats.years':        'سنوات خبرة',
+
+    // Packages
+    'packages.eyebrow':  'الأكثر طلباً',
+    'packages.title':    'باقاتنا المميزة',
+    'packages.subtitle': 'اختر من أفضل باقاتنا السياحية إلى إندونيسيا',
+    'packages.viewAll':  'عرض جميع الباقات',
+    'packages.bookNow':  'احجز الآن',
+    'packages.from':     'يبدأ من',
+    'packages.nights':   'ليالٍ',
+    'packages.days':     'أيام',
+    'packages.empty':    'لا توجد باقات متاحة حالياً. تواصل معنا مباشرة.',
+
+    // Category labels
+    'category.honeymoon': 'شهر العسل',
+    'category.family':    'عائلي',
+    'category.luxury':    'فاخر',
+    'category.adventure': 'مغامرة',
+
+    // Price types
+    'price.exact':        '',
+    'price.starting_from':'يبدأ من',
+    'price.approximate':  'يقارب',
+
+    // Currency
+    'currency.SAR': 'ريال',
+    'currency.USD': 'دولار',
+    'currency.EUR': 'يورو',
+
+    // Why
+    'why.eyebrow':   'ميزتنا',
+    'why.title':     'لماذا تختار لوكس باث؟',
+    'why.subtitle':  'نحن لسنا مجرد وكالة سياحية أخرى',
+    'why.1.title':   'تخصص كامل في إندونيسيا',
+    'why.1.body':    'نحن متخصصون في وجهة واحدة فقط لنقدم لك أعمق خبرة وأفضل تجربة ممكنة',
+    'why.2.title':   'خدمة واتساب 24/7',
+    'why.2.body':    'فريقنا متاح على واتساب قبل رحلتك وأثناءها وبعدها. أنت لست وحدك أبداً',
+    'why.3.title':   'أسعار شاملة وشفافة',
+    'why.3.body':    'لا رسوم مخفية. كل شيء واضح ومحدد من اليوم الأول قبل أن تدفع أي ريال',
+    'why.4.title':   'مرشدون يتحدثون العربية',
+    'why.4.body':    'جميع مرشدينا السياحيين في إندونيسيا يتحدثون العربية بطلاقة. رحلتك بلغتك',
+
+    // Destinations
+    'destinations.eyebrow':  'وجهاتنا',
+    'destinations.title':    'وجهاتنا في إندونيسيا',
+    'destinations.subtitle': 'استكشف أجمل المناطق السياحية معنا',
+    'destinations.explore':  'اكتشف',
+    'dest.bali':    'بالي',
+    'dest.jakarta': 'جاكرتا',
+    'dest.bandung': 'باندونغ',
+    'dest.lombok':  'لومبوك',
+
+    // Testimonials
+    'testimonials.eyebrow':  'آراء العملاء',
+    'testimonials.title':    'ماذا يقول عملاؤنا؟',
+    'testimonials.subtitle': 'تجارب حقيقية من مسافرين سعوديين',
+    'testimonials.empty':    'سيتم إضافة تجارب عملائنا قريباً.',
+
+    // FAQ
+    'faq.eyebrow':  'مساعدة',
+    'faq.title':    'الأسئلة الشائعة',
+    'faq.subtitle': 'إجابات على أكثر الأسئلة التي نتلقاها',
+    'faq.more':     'عندك سؤال آخر؟ اسألنا على واتساب',
+    'faq.cta':      'تواصل معنا الآن',
+    'faq.q1': 'كيف أحجز رحلتي مع لوكس باث؟',
+    'faq.a1': 'تواصل معنا عبر واتساب وأخبرنا بوجهتك وعدد المسافرين وتاريخ الرحلة المفضل. سنرسل لك عرضاً مخصصاً خلال ساعات قليلة.',
+    'faq.q2': 'ما الذي تشمله الباقة؟',
+    'faq.a2': 'تشمل باقاتنا عادةً تذاكر الطيران ذهاباً وإياباً، الإقامة في فنادق 4 و5 نجوم، الجولات السياحية اليومية، والمرشد السياحي المتحدث بالعربية.',
+    'faq.q3': 'هل الأسعار شاملة للضرائب والرسوم؟',
+    'faq.a3': 'نعم، الأسعار المعروضة شاملة لجميع الضرائب والرسوم. لا توجد أي رسوم مخفية أو مفاجآت.',
+    'faq.q4': 'هل يتحدث مرشدوكم اللغة العربية؟',
+    'faq.a4': 'نعم، جميع مرشدينا السياحيين في إندونيسيا يتحدثون العربية بطلاقة. رحلتك ستكون بلغتك الأم بالكامل.',
+    'faq.q5': 'ماذا لو احتجت مساعدة أثناء الرحلة؟',
+    'faq.a5': 'فريقنا متاح على واتساب على مدار الساعة طوال أيام رحلتك. ستجد دائماً شخصاً يرد عليك في دقائق.',
+    'faq.q6': 'ما هي سياسة الإلغاء؟',
+    'faq.a6': 'سياسة الإلغاء تختلف حسب الباقة وتواريخ الرحلة. تواصل معنا عبر واتساب للحصول على التفاصيل الكاملة لباقتك.',
+
+    // Contact CTA
+    'cta.title':    'جاهز لتخطيط رحلتك الفاخرة؟',
+    'cta.subtitle': 'تواصل معنا الآن وسنصمم لك رحلة الأحلام خلال 24 ساعة',
+    'cta.whatsapp': 'تحدث معنا على واتساب',
+    'cta.phone':    'أو اتصل بنا:',
+
+    // Footer
+    'footer.tagline':      'وكالتك المتخصصة لرحلات إندونيسيا من المملكة العربية السعودية',
+    'footer.links':        'روابط سريعة',
+    'footer.destinations': 'وجهاتنا',
+    'footer.contact':      'تواصل معنا',
+    'footer.copyright':    `© ${new Date().getFullYear()} لوكس باث للسياحة. جميع الحقوق محفوظة.`,
+    'footer.privacy':      'سياسة الخصوصية',
+
+    // WhatsApp pre-fill messages
+    'wa.general':  'مرحباً، أود الاستفسار عن باقاتكم السياحية إلى إندونيسيا',
+    'wa.package':  'مرحباً، أود الاستفسار عن باقة "{title}" إلى {destination}',
+    'wa.dest':     'مرحباً، أود الاستفسار عن رحلات {destination}',
+  },
+
+  en: {
+    'a11y.skip': 'Skip to content',
+    'nav.home':         'Home',
+    'nav.destinations': 'Destinations',
+    'nav.packages':     'Packages',
+    'nav.about':        'About Us',
+    'nav.contact':      'Contact',
+    'nav.whatsapp':     'WhatsApp',
+    'hero.badge':        'Trusted by 2,000+ Saudi families',
+    'hero.title':        'Discover the Magic of Indonesia',
+    'hero.subtitle':     'Luxury travel packages crafted for Saudi travelers',
+    'hero.cta.whatsapp': 'Book Now via WhatsApp',
+    'hero.cta.packages': 'Browse Our Packages',
+    'stats.trips':        'Successful Trips',
+    'stats.families':     'Saudi Families',
+    'stats.destinations': 'Destinations',
+    'stats.years':        'Years Experience',
+    'packages.eyebrow':  'Most Popular',
+    'packages.title':    'Featured Packages',
+    'packages.subtitle': 'Explore our most popular Indonesia travel packages',
+    'packages.viewAll':  'View All Packages',
+    'packages.bookNow':  'Book Now',
+    'packages.from':     'From',
+    'packages.nights':   'Nights',
+    'packages.days':     'Days',
+    'packages.empty':    'No packages available right now. Contact us directly.',
+    'category.honeymoon': 'Honeymoon',
+    'category.family':    'Family',
+    'category.luxury':    'Luxury',
+    'category.adventure': 'Adventure',
+    'price.exact':        '',
+    'price.starting_from':'From',
+    'price.approximate':  'Approx.',
+    'currency.SAR': 'SAR',
+    'currency.USD': 'USD',
+    'currency.EUR': 'EUR',
+    'why.eyebrow':   'Our Advantage',
+    'why.title':     'Why Choose Luxpath?',
+    'why.subtitle':  'We are not just another travel agency',
+    'why.1.title':   'Indonesia Specialists',
+    'why.1.body':    'We focus exclusively on Indonesia so you get expert-level planning and insider knowledge',
+    'why.2.title':   '24/7 WhatsApp Support',
+    'why.2.body':    'Our team is with you before, during, and after your trip — always one message away',
+    'why.3.title':   'Fully Inclusive Pricing',
+    'why.3.body':    'No hidden fees. Everything is clear and confirmed before you pay a single riyal',
+    'why.4.title':   'Arabic-Speaking Guides',
+    'why.4.body':    'All our guides in Indonesia speak fluent Arabic. Your trip, in your language',
+    'destinations.eyebrow':  'Our Destinations',
+    'destinations.title':    'Our Indonesia Destinations',
+    'destinations.subtitle': 'Explore the most beautiful regions with us',
+    'destinations.explore':  'Explore',
+    'dest.bali':    'Bali',
+    'dest.jakarta': 'Jakarta',
+    'dest.bandung': 'Bandung',
+    'dest.lombok':  'Lombok',
+    'testimonials.eyebrow':  'Client Reviews',
+    'testimonials.title':    'What Our Clients Say',
+    'testimonials.subtitle': 'Real experiences from Saudi travelers',
+    'testimonials.empty':    'Client testimonials coming soon.',
+    'faq.eyebrow':  'Help',
+    'faq.title':    'Frequently Asked Questions',
+    'faq.subtitle': 'Answers to the questions we hear most',
+    'faq.more':     'Have another question? Ask us on WhatsApp',
+    'faq.cta':      'Contact Us Now',
+    'faq.q1': 'How do I book a trip with Luxpath?',
+    'faq.a1': 'Contact us on WhatsApp with your destination, number of travelers, and preferred dates. We\'ll send you a custom quote within a few hours.',
+    'faq.q2': 'What does the package include?',
+    'faq.a2': 'Our packages typically include round-trip flights, 4/5-star accommodation, daily guided tours, and an Arabic-speaking guide.',
+    'faq.q3': 'Are prices inclusive of all taxes and fees?',
+    'faq.a3': 'Yes. All displayed prices include taxes and fees. No hidden charges, no surprises.',
+    'faq.q4': 'Do your guides speak Arabic?',
+    'faq.a4': 'Yes. All our Indonesian guides speak fluent Arabic. Your entire trip will be in your native language.',
+    'faq.q5': 'What if I need help during the trip?',
+    'faq.a5': 'Our team is available on WhatsApp 24/7 for the entire duration of your trip. Someone will always reply within minutes.',
+    'faq.q6': 'What is the cancellation policy?',
+    'faq.a6': 'Cancellation policies vary by package and travel dates. Contact us on WhatsApp for the full details of your specific package.',
+    'cta.title':    'Ready to Plan Your Luxury Trip?',
+    'cta.subtitle': 'Contact us now and we\'ll design your dream trip within 24 hours',
+    'cta.whatsapp': 'Chat with Us on WhatsApp',
+    'cta.phone':    'Or call us:',
+    'footer.tagline':      'Your specialist agency for Indonesia travel from Saudi Arabia',
+    'footer.links':        'Quick Links',
+    'footer.destinations': 'Destinations',
+    'footer.contact':      'Contact Us',
+    'footer.copyright':    `© ${new Date().getFullYear()} Luxpath Travel. All rights reserved.`,
+    'footer.privacy':      'Privacy Policy',
+    'wa.general': 'Hello, I\'d like to inquire about your Indonesia travel packages',
+    'wa.package': 'Hello, I\'m interested in the "{title}" package to {destination}',
+    'wa.dest':    'Hello, I\'d like to inquire about trips to {destination}',
+  },
+};
+
+
+/* ============================================================
+   3. DB — Supabase query helpers
+   ============================================================ */
+const DB = (() => {
+  // Guard: skip if placeholder credentials
+  const isConfigured = () =>
+    Config.SUPABASE_URL !== 'YOUR_SUPABASE_URL' &&
+    Config.SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY';
+
+  let _client = null;
+
+  const client = () => {
+    if (!_client) {
+      if (!isConfigured()) return null;
+      _client = supabase.createClient(Config.SUPABASE_URL, Config.SUPABASE_ANON_KEY);
+    }
+    return _client;
+  };
+
+  // Wrap every query with try/catch; return null on error
+  const q = async (fn) => {
+    const db = client();
+    if (!db) return null;
+    try {
+      const { data, error } = await fn(db);
+      if (error) { console.warn('[Luxpath DB]', error.message); return null; }
+      return data;
+    } catch (err) {
+      console.warn('[Luxpath DB]', err.message);
+      return null;
+    }
+  };
+
+  return {
+    isConfigured,
+
+    getFeaturedPackages: () => q(db =>
+      db.from('packages')
+        .select(`
+          id, slug_en, slug_ar, title_ar, title_en,
+          short_description_ar, short_description_en,
+          category, price_type, price_value, original_price_value, currency,
+          duration_nights, duration_days, hero_image_url,
+          package_destinations (
+            is_primary,
+            destinations ( slug, name_ar, name_en )
+          )
+        `)
+        .eq('is_active', true)
+        .eq('is_featured', true)
+        .order('display_order', { ascending: true })
+        .limit(6)
+    ),
+
+    getDestinations: () => q(db =>
+      db.from('destinations')
+        .select('id, slug, name_ar, name_en, tagline_ar, tagline_en, card_image_url')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true })
+    ),
+
+    getTestimonials: () => q(db =>
+      db.from('testimonials')
+        .select(`
+          reviewer_name_display, reviewer_city, reviewer_flag, rating,
+          review_ar, review_en, trip_month, trip_year, trip_category,
+          destinations ( name_ar, name_en )
+        `)
+        .eq('is_approved', true)
+        .eq('is_featured', true)
+        .order('display_order', { ascending: true })
+        .limit(3)
+    ),
+
+    getSettings: () => q(async db => {
+      const { data, error } = await db
+        .from('site_settings')
+        .select('key, value, value_ar, value_en');
+      if (error) return { data: null, error };
+      // Convert array to key-value object for easy access
+      const obj = {};
+      (data || []).forEach(row => { obj[row.key] = row; });
+      return { data: obj, error: null };
+    }),
+  };
+})();
+
+
+/* ============================================================
+   4. I18n — language detection, switching, DOM update
+   ============================================================ */
+const I18n = (() => {
+  let lang = Config.DEFAULT_LANG;
+
+  const detect = () => {
+    // 1. Honour an explicit user preference saved in localStorage
+    const stored = localStorage.getItem(Config.LANG_KEY);
+    if (stored === 'ar' || stored === 'en') return stored;
+    // 2. English sub-directory → English
+    if (window.location.pathname.startsWith('/en/')) return 'en';
+    // 3. Default: always Arabic (Saudi-market primary language)
+    return 'ar';
+  };
+
+  // Update every [data-i18n] element in the DOM
+  const applyDOM = () => {
+    const html = document.documentElement;
+    html.lang = lang;
+    html.dir  = lang === 'ar' ? 'rtl' : 'ltr';
+
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key  = el.dataset.i18n;
+      const text = T[lang][key];
+      if (text !== undefined) el.textContent = text;
+    });
+
+    // Update lang toggle buttons
+    document.querySelectorAll('.btn-lang').forEach(btn => {
+      btn.textContent   = lang === 'ar' ? 'EN' : 'ع';
+      btn.setAttribute('aria-label', lang === 'ar' ? 'Switch to English' : 'التبديل إلى العربية');
+    });
+  };
+
+  return {
+    init() {
+      lang = detect();
+      // Freeze the mobile menu transform during direction init so it
+      // snaps to position rather than sliding visibly across the screen.
+      const _menu = document.getElementById('mobileMenu');
+      if (_menu) _menu.style.transition = 'none';
+      applyDOM();
+      // Restore after two paint frames — browser has committed the
+      // correct initial position by then, so restoring is invisible.
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        if (_menu) _menu.style.transition = '';
+      }));
+    },
+
+    toggle() {
+      const b = document.body;
+      b.classList.add('lang-switching');
+      setTimeout(() => {
+        lang = lang === 'ar' ? 'en' : 'ar';
+        localStorage.setItem(Config.LANG_KEY, lang);
+        applyDOM();
+        WA.updateAll();
+        // Re-render dynamic sections if data already loaded
+        if (App.cachedPackages)     Packages.render(App.cachedPackages);
+        if (App.cachedDestinations) Destinations.render(App.cachedDestinations);
+        if (App.cachedTestimonials) Testimonials.render(App.cachedTestimonials);
+        b.classList.remove('lang-switching');
+        b.classList.add('lang-entering');
+        setTimeout(() => b.classList.remove('lang-entering'), 350);
+      }, 200);
+    },
+
+    get: () => lang,
+
+    // Translate a key, substituting {var} placeholders
+    t(key, vars = {}) {
+      let text = T[lang][key] ?? T[Config.DEFAULT_LANG][key] ?? key;
+      Object.entries(vars).forEach(([k, v]) => {
+        text = text.replace(`{${k}}`, v);
+      });
+      return text;
+    },
+  };
+})();
+
+
+/* ============================================================
+   5. WA — WhatsApp URL builder
+   ============================================================ */
+const WA = {
+  get phone() { return Config.WHATSAPP_NUMBER; },
+  set phone(v) { Config = { ...Config, WHATSAPP_NUMBER: v }; }, // won't work with Object.freeze — managed via App
+
+  url(message) {
+    const num = App.whatsappNumber.replace(/\D/g, '');
+    return `https://wa.me/${num}?text=${encodeURIComponent(message)}`;
+  },
+
+  generalUrl() {
+    return this.url(I18n.t('wa.general'));
+  },
+
+  packageUrl(titleAr, titleEn, destNameAr, destNameEn) {
+    const title = I18n.get() === 'ar' ? titleAr : titleEn;
+    const dest  = I18n.get() === 'ar' ? destNameAr : destNameEn;
+    return this.url(I18n.t('wa.package', { title, destination: dest }));
+  },
+
+  destUrl(nameAr, nameEn) {
+    const dest = I18n.get() === 'ar' ? nameAr : nameEn;
+    return this.url(I18n.t('wa.dest', { destination: dest }));
+  },
+
+  // Update all [data-wa="general"] links in the DOM
+  updateAll() {
+    const url = this.generalUrl();
+    document.querySelectorAll('[data-wa="general"]').forEach(el => { el.href = url; });
+  },
+};
+
+
+/* ============================================================
+   6. NAVBAR
+   ============================================================ */
+const Navbar = {
+  init() {
+    const navbar   = document.getElementById('navbar');
+    const menuBtn  = document.getElementById('menuToggle');
+    const closeBtn = document.getElementById('mobileMenuClose');
+    const backdrop = document.getElementById('mobileMenuBackdrop');
+    const menu     = document.getElementById('mobileMenu');
+
+    if (!navbar) return;
+
+    // Sticky: transparent → white on scroll
+    const onScroll = () => {
+      navbar.classList.toggle('navbar--scrolled', window.scrollY > 60);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll(); // Run on init in case page is pre-scrolled
+
+    // Mobile menu
+    menuBtn?.addEventListener('click', () => this.openMenu());
+    closeBtn?.addEventListener('click', () => this.closeMenu());
+    backdrop?.addEventListener('click', () => this.closeMenu());
+
+    // Close on internal links
+    menu?.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => this.closeMenu());
+    });
+
+    // Close on ESC
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') this.closeMenu();
+    });
+
+    // Language toggles (navbar + mobile menu)
+    document.querySelectorAll('.btn-lang').forEach(btn => {
+      btn.addEventListener('click', () => I18n.toggle());
+    });
+  },
+
+  openMenu() {
+    const menu     = document.getElementById('mobileMenu');
+    const backdrop = document.getElementById('mobileMenuBackdrop');
+    const btn      = document.getElementById('menuToggle');
+    menu?.classList.add('is-open');
+    backdrop?.classList.add('is-open');
+    btn?.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+    // Focus first link for accessibility
+    menu?.querySelector('a')?.focus();
+  },
+
+  closeMenu() {
+    const menu     = document.getElementById('mobileMenu');
+    const backdrop = document.getElementById('mobileMenuBackdrop');
+    const btn      = document.getElementById('menuToggle');
+    menu?.classList.remove('is-open');
+    backdrop?.classList.remove('is-open');
+    btn?.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  },
+};
+
+
+/* ============================================================
+   7. SCROLL REVEAL
+   ============================================================ */
+const ScrollReveal = {
+  init() {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-revealed');
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  },
+
+  // Call after dynamically added content to observe new .reveal elements
+  observe(container) {
+    if (!container) return;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-revealed');
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.08 });
+    container.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  },
+};
+
+
+/* ============================================================
+   8. STATS — animated number counters
+   ============================================================ */
+const Stats = {
+  animateEl(el) {
+    if (el.dataset.animated) return;
+    el.dataset.animated = '1';
+
+    const target   = parseInt(el.dataset.target, 10);
+    const suffix   = el.dataset.suffix ?? '';
+    const duration = 1400;
+    const step     = 16;
+    const steps    = duration / step;
+    const increment = target / steps;
+    let current = 0;
+
+    const tick = () => {
+      current = Math.min(current + increment, target);
+      // Format number with locale-appropriate separator
+      el.textContent = new Intl.NumberFormat('en-US').format(Math.floor(current)) + suffix;
+      if (current < target) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  },
+
+  init() {
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        if (prefersReduced) {
+          // Just set the final value
+          const el = entry.target;
+          el.textContent = new Intl.NumberFormat('en-US').format(parseInt(el.dataset.target, 10)) + (el.dataset.suffix ?? '');
+        } else {
+          this.animateEl(entry.target);
+        }
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('[data-counter]').forEach(el => observer.observe(el));
+  },
+};
+
+
+/* ============================================================
+   9. FLOATING WHATSAPP
+   ============================================================ */
+const FloatingWA = {
+  btn: null,
+
+  init() {
+    this.btn = document.getElementById('waFloat');
+    if (!this.btn) return;
+
+    this.btn.href = WA.generalUrl();
+
+    // Show button once hero scrolls out of view
+    const hero = document.getElementById('hero');
+    if (!hero) {
+      this.btn.classList.add('is-visible');
+      return;
+    }
+
+    const observer = new IntersectionObserver(([entry]) => {
+      this.btn.classList.toggle('is-visible', !entry.isIntersecting);
+    }, { threshold: 0 });
+
+    observer.observe(hero);
+  },
+
+  updateHref() {
+    if (this.btn) this.btn.href = WA.generalUrl();
+  },
+};
+
+
+/* ============================================================
+   10. PACKAGES
+   ============================================================ */
+const Packages = {
+  grid: null,
+
+  init() {
+    this.grid = document.getElementById('packagesGrid');
+    if (this.grid) this.grid.setAttribute('aria-busy', 'true');
+  },
+
+  render(packages) {
+    const grid = document.getElementById('packagesGrid');
+    if (!grid) return;
+
+    grid.setAttribute('aria-busy', 'false');
+
+    if (!packages?.length) {
+      grid.innerHTML = `
+        <div class="packages-empty">
+          <p data-i18n="packages.empty">${I18n.t('packages.empty')}</p>
+        </div>`;
+      return;
+    }
+
+    grid.innerHTML = packages.map(pkg => this.cardHTML(pkg)).join('');
+    this.bindWALinks(grid, packages);
+    this.lazyLoadImages(grid);
+  },
+
+  // Get the primary destination from nested package_destinations
+  getPrimaryDest(pkg) {
+    const dests = pkg.package_destinations ?? [];
+    const primary = dests.find(d => d.is_primary) ?? dests[0];
+    return primary?.destinations ?? null;
+  },
+
+  cardHTML(pkg) {
+    const lang    = I18n.get();
+    const title   = lang === 'ar' ? pkg.title_ar    : pkg.title_en;
+    const dest    = this.getPrimaryDest(pkg);
+    const destName = dest ? (lang === 'ar' ? dest.name_ar : dest.name_en) : '';
+    const cat     = pkg.category ?? 'luxury';
+    const catLabel = I18n.t(`category.${cat}`);
+    const nights  = pkg.duration_nights ?? 0;
+    const days    = pkg.duration_days ?? 1;
+    const priceType = pkg.price_type ?? 'starting_from';
+    const priceLabel = I18n.t(`price.${priceType}`);
+    const currLabel  = I18n.t(`currency.${pkg.currency ?? 'SAR'}`);
+    const price   = new Intl.NumberFormat('en-US').format(pkg.price_value ?? 0);
+    const imgSrc  = pkg.hero_image_url
+      ? `${Config.STORAGE_URL}${pkg.hero_image_url}`
+      : Config.PLACEHOLDER_IMG;
+    const slugKey = lang === 'ar' ? pkg.slug_ar : pkg.slug_en;
+    const detailUrl = `بكج-سياحي-اندونيسيا.html?slug=${pkg.slug_en}`;
+
+    const origHTML = pkg.original_price_value
+      ? `<span class="pkg-card__price-original">${new Intl.NumberFormat('en-US').format(pkg.original_price_value)}</span>`
+      : '';
+
+    return `
+      <article class="pkg-card" data-package-id="${pkg.id}" role="listitem">
+        <a href="${detailUrl}" class="pkg-card__img" aria-label="${title}">
+          <img
+            data-src="${imgSrc}"
+            src="${Config.PLACEHOLDER_IMG}"
+            alt="${title} — ${destName}"
+            width="400" height="300"
+            loading="lazy">
+          <div class="pkg-card__badge">
+            <span class="badge badge--${cat}">${catLabel}</span>
+          </div>
+        </a>
+        <div class="pkg-card__body">
+          <p class="pkg-card__destination">${destName}</p>
+          <h3 class="pkg-card__title">
+            <a href="${detailUrl}">${title}</a>
+          </h3>
+          <p class="pkg-card__duration">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            ${nights} ${I18n.t('packages.nights')} / ${days} ${I18n.t('packages.days')}
+          </p>
+          <div class="pkg-card__price">
+            ${priceLabel ? `<span class="pkg-card__price-label">${priceLabel}</span>` : ''}
+            <div>
+              <span class="pkg-card__price-value">${price}</span>
+              <span class="pkg-card__price-currency">${currLabel}</span>
+              ${origHTML}
+            </div>
+          </div>
+          <a href="#"
+             class="btn btn--whatsapp btn--full"
+             data-pkg-wa="${pkg.id}"
+             aria-label="${I18n.t('packages.bookNow')} — ${title}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.890-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            ${I18n.t('packages.bookNow')}
+          </a>
+        </div>
+      </article>`;
+  },
+
+  bindWALinks(grid, packages) {
+    grid.querySelectorAll('[data-pkg-wa]').forEach(btn => {
+      const id  = btn.dataset.pkgWa;
+      const pkg = packages.find(p => p.id === id);
+      if (!pkg) return;
+      const dest = this.getPrimaryDest(pkg);
+      btn.href = WA.packageUrl(
+        pkg.title_ar, pkg.title_en,
+        dest?.name_ar ?? '', dest?.name_en ?? ''
+      );
+    });
+  },
+
+  lazyLoadImages(container) {
+    const imgs = container.querySelectorAll('img[data-src]');
+    if (!imgs.length) return;
+
+    if ('IntersectionObserver' in window) {
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          const img = entry.target;
+          img.src = img.dataset.src;
+          img.removeAttribute('data-src');
+          obs.unobserve(img);
+        });
+      }, { rootMargin: '200px' });
+      imgs.forEach(img => obs.observe(img));
+    } else {
+      imgs.forEach(img => { img.src = img.dataset.src; });
+    }
+  },
+};
+
+
+/* ============================================================
+   11. DESTINATIONS
+   ============================================================ */
+const Destinations = {
+  render(destinations) {
+    const grid = document.getElementById('destGrid');
+    if (!grid) return;
+
+    if (!destinations?.length) {
+      grid.innerHTML = '';
+      return;
+    }
+
+    const lang = I18n.get();
+    grid.innerHTML = destinations.map(d => this.cardHTML(d, lang)).join('');
+    this.lazyLoadImages(grid);
+    ScrollReveal.observe(grid);
+  },
+
+  cardHTML(d, lang) {
+    const name    = lang === 'ar' ? d.name_ar    : d.name_en;
+    const tagline = lang === 'ar' ? d.tagline_ar : d.tagline_en;
+    const imgSrc  = d.card_image_url
+      ? `${Config.STORAGE_URL}${d.card_image_url}`
+      : Config.PLACEHOLDER_IMG;
+    const href = `وجهة-سياحية-اندونيسيا.html?slug=${d.slug}`;
+
+    return `
+      <a href="${href}" class="dest-card reveal" role="listitem" aria-label="${name}">
+        <img
+          class="dest-card__image"
+          data-src="${imgSrc}"
+          src="${Config.PLACEHOLDER_IMG}"
+          alt="${name} — ${tagline ?? ''}"
+          width="400" height="500"
+          loading="lazy">
+        <div class="dest-card__overlay" aria-hidden="true"></div>
+        <div class="dest-card__content">
+          <span class="dest-card__name">${name}</span>
+          ${tagline ? `<span class="dest-card__tagline">${tagline}</span>` : ''}
+          <span class="dest-card__cta">
+            ${I18n.t('destinations.explore')}
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              ${lang === 'ar'
+                ? '<polyline points="15 18 9 12 15 6"/>'
+                : '<polyline points="9 18 15 12 9 6"/>'}
+            </svg>
+          </span>
+        </div>
+      </a>`;
+  },
+
+  lazyLoadImages(container) {
+    Packages.lazyLoadImages(container); // reuse same logic
+  },
+};
+
+
+/* ============================================================
+   12. TESTIMONIALS
+   ============================================================ */
+const Testimonials = {
+  render(testimonials) {
+    const track = document.getElementById('testimonialsTrack');
+    if (!track) return;
+
+    const lang = I18n.get();
+
+    if (!testimonials?.length) {
+      track.innerHTML = `
+        <p style="text-align:center;color:var(--color-text-muted);padding:var(--sp-8);grid-column:1/-1">
+          ${I18n.t('testimonials.empty')}
+        </p>`;
+      return;
+    }
+
+    track.innerHTML = testimonials.map(t => this.cardHTML(t, lang)).join('');
+    ScrollReveal.observe(track);
+  },
+
+  cardHTML(t, lang) {
+    const review = lang === 'ar' ? t.review_ar : (t.review_en ?? t.review_ar);
+    const dest   = t.destinations;
+    const destName = dest ? (lang === 'ar' ? dest.name_ar : dest.name_en) : '';
+    const stars  = '★'.repeat(t.rating ?? 5);
+    const initial = t.reviewer_name_display?.[0] ?? '؟';
+    const tripDetail = [
+      t.trip_category ? I18n.t(`category.${t.trip_category}`) : '',
+      destName,
+      t.trip_year ?? '',
+    ].filter(Boolean).join(' · ');
+
+    return `
+      <div class="testimonial-card reveal" role="listitem">
+        <div class="testimonial-stars" aria-label="التقييم: ${t.rating} من 5">
+          ${stars}
+        </div>
+        <p class="testimonial-quote">"${review}"</p>
+        <div class="testimonial-meta">
+          <div class="testimonial-avatar" aria-hidden="true">${initial}</div>
+          <div>
+            <p class="testimonial-name">${t.reviewer_name_display} ${t.reviewer_flag ?? '🇸🇦'}</p>
+            <p class="testimonial-detail">${t.reviewer_city ?? ''}${tripDetail ? ' · ' + tripDetail : ''}</p>
+          </div>
+        </div>
+      </div>`;
+  },
+};
+
+
+/* ============================================================
+   13. FAQ
+   ============================================================ */
+const FAQ = {
+  init() {
+    document.querySelectorAll('.faq-question').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const item   = btn.closest('.faq-item');
+        const isOpen = item.classList.contains('is-open');
+
+        // Close all
+        document.querySelectorAll('.faq-item.is-open').forEach(i => {
+          i.classList.remove('is-open');
+          i.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+        });
+
+        // Open clicked (if it was closed)
+        if (!isOpen) {
+          item.classList.add('is-open');
+          btn.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+  },
+};
+
+
+/* ============================================================
+   14. APP — orchestration layer
+   ============================================================ */
+const App = {
+  whatsappNumber: Config.WHATSAPP_NUMBER,
+  cachedPackages:     null,
+  cachedDestinations: null,
+  cachedTestimonials: null,
+
+  async init() {
+    // ── 1. Language (sync — no flash) ──────────────────────
+    I18n.init();
+
+    // ── 2. Static UI components ────────────────────────────
+    Navbar.init();
+    FAQ.init();
+    Stats.init();
+    ScrollReveal.init();
+    WA.updateAll();
+    FloatingWA.init();
+    Packages.init();
+
+    // ── 3. Parallel data fetch ─────────────────────────────
+    if (!DB.isConfigured()) {
+      console.info('[Luxpath] Supabase not configured — running in demo mode.');
+      // Clear skeleton loaders gracefully
+      this.clearSkeletons();
+      return;
+    }
+
+    const [settingsRes, packagesRes, destinationsRes, testimonialsRes] =
+      await Promise.allSettled([
+        DB.getSettings(),
+        DB.getFeaturedPackages(),
+        DB.getDestinations(),
+        DB.getTestimonials(),
+      ]);
+
+    // ── 4. Apply site settings ─────────────────────────────
+    if (settingsRes.status === 'fulfilled' && settingsRes.value) {
+      this.applySettings(settingsRes.value);
+    }
+
+    // ── 5. Render sections ─────────────────────────────────
+    const packages     = packagesRes.status     === 'fulfilled' ? packagesRes.value     : null;
+    const destinations = destinationsRes.status === 'fulfilled' ? destinationsRes.value : null;
+    const testimonials = testimonialsRes.status === 'fulfilled' ? testimonialsRes.value : null;
+
+    // Cache for language re-render
+    this.cachedPackages     = packages;
+    this.cachedDestinations = destinations;
+    this.cachedTestimonials = testimonials;
+
+    Packages.render(packages);
+    Destinations.render(destinations);
+    Testimonials.render(testimonials);
+
+    // Re-init WA links after data render
+    WA.updateAll();
+    FloatingWA.updateHref();
+  },
+
+  applySettings(settings) {
+    // Update WhatsApp number if set in DB
+    const wa = settings['whatsapp_number'];
+    if (wa?.value) {
+      this.whatsappNumber = wa.value;
+      WA.updateAll();
+      FloatingWA.updateHref();
+    }
+
+    // Update phone link
+    const phoneEl = document.getElementById('ctaPhone');
+    const phone   = settings['company_phone']?.value;
+    if (phoneEl && phone) {
+      phoneEl.textContent = phone;
+      phoneEl.href = `tel:${phone.replace(/\s/g, '')}`;
+    }
+  },
+
+  clearSkeletons() {
+    // Show empty state for unconnected skeleton areas
+    const packagesGrid = document.getElementById('packagesGrid');
+    if (packagesGrid) {
+      packagesGrid.innerHTML = `
+        <div class="packages-empty">
+          <p data-i18n="packages.empty">${I18n.t('packages.empty')}</p>
+        </div>`;
+      packagesGrid.setAttribute('aria-busy', 'false');
+    }
+
+    const destGrid = document.getElementById('destGrid');
+    if (destGrid) destGrid.innerHTML = '';
+
+    const testiTrack = document.getElementById('testimonialsTrack');
+    if (testiTrack) testiTrack.innerHTML = '';
+  },
+};
+
+// ── Boot ──────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => App.init());

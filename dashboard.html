@@ -1,0 +1,230 @@
+﻿<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#0A2540">
+  <title>Admin Dashboard — Luxpath Travel</title>
+
+  <!-- Content Security Policy
+       frame-ancestors requires a response header to be enforced by browsers;
+       set X-Frame-Options: DENY and frame-ancestors 'none' at the hosting layer too. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co; img-src 'self' data: blob: https://*.supabase.co; frame-ancestors 'none'">
+
+  <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-title" content="Luxpath" />
+  <link rel="manifest" href="/site.webmanifest" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="assets/css/dashboard.css">
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       AUTH CHECKING OVERLAY
+       Shown while Auth.init() verifies the Supabase session.
+       Prevents a flash of dashboard content before auth resolves.
+  ══════════════════════════════════════════════════════════════ -->
+  <div class="dash-checking" id="dashChecking" aria-live="polite" aria-label="Verifying session">
+    <div class="dash-checking__spinner" aria-hidden="true"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       DASHBOARD (revealed by Auth.init() after session verified)
+  ══════════════════════════════════════════════════════════════ -->
+  <div class="dashboard" id="dashboard" hidden>
+
+    <!-- ── SIDEBAR ──────────────────────────────────────────── -->
+    <aside class="sidebar" id="sidebar" aria-label="Dashboard navigation">
+      <div class="sidebar__header">
+        <img src="luxpath-logo.webp" alt="Luxpath" class="sidebar__logo" data-logo-fallback width="120" height="35">
+        <span class="sidebar__logo-text" style="display:none">Luxpath</span>
+        <button class="sidebar__close" id="sidebarClose" aria-label="Close sidebar">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <nav class="sidebar__nav" aria-label="Main navigation">
+        <a href="#" class="sidebar__link is-active" data-view="packages" aria-current="page">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          Packages
+        </a>
+        <a href="#" class="sidebar__link sidebar__link--disabled" title="Coming soon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Inquiries <span class="sidebar__badge">Soon</span>
+        </a>
+        <a href="#" class="sidebar__link sidebar__link--disabled" title="Coming soon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Testimonials <span class="sidebar__badge">Soon</span>
+        </a>
+      </nav>
+
+      <div class="sidebar__footer">
+        <!-- Authenticated user info — populated by Auth.init() -->
+        <div class="sidebar__user" id="sidebarUser" aria-label="Signed-in user"></div>
+        <button class="sidebar__logout" id="logoutBtn" aria-label="Sign out">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- Mobile sidebar backdrop -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
+
+    <!-- ── MAIN AREA ─────────────────────────────────────────── -->
+    <div class="d-main">
+
+      <!-- Topbar -->
+      <header class="topbar" id="topbar">
+        <button class="topbar__menu" id="menuToggle" aria-label="Open navigation" aria-expanded="false" aria-controls="sidebar">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <h1 class="topbar__title" id="topbarTitle">Packages</h1>
+        <div class="topbar__actions" id="topbarActions">
+          <button class="btn btn--primary" id="newPackageBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Package
+          </button>
+        </div>
+      </header>
+
+      <!-- ── VIEW: PACKAGES LIST ─────────────────────────────── -->
+      <section class="view" id="viewPackages" aria-label="Packages list">
+
+        <!-- Stats row -->
+        <div class="stats-row" id="statsRow" aria-label="Package statistics">
+          <div class="stat-card stat-card--skeleton">
+            <div class="skeleton skeleton--text" style="width:40%"></div>
+            <div class="skeleton skeleton--text skeleton--lg" style="width:60%"></div>
+          </div>
+          <div class="stat-card stat-card--skeleton">
+            <div class="skeleton skeleton--text" style="width:50%"></div>
+            <div class="skeleton skeleton--text skeleton--lg" style="width:50%"></div>
+          </div>
+          <div class="stat-card stat-card--skeleton">
+            <div class="skeleton skeleton--text" style="width:45%"></div>
+            <div class="skeleton skeleton--text skeleton--lg" style="width:40%"></div>
+          </div>
+        </div>
+
+        <!-- Search + Filters -->
+        <div class="list-controls" role="region" aria-label="Search and filter packages">
+          <div class="list-controls__search">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="search" class="form-input list-controls__input" id="searchInput"
+                   placeholder="Search by title (Arabic or English)…" aria-label="Search packages">
+          </div>
+          <div class="list-controls__filters">
+            <select class="form-select" id="filterCategory" aria-label="Filter by category">
+              <option value="">All Categories</option>
+              <option value="honeymoon">Honeymoon</option>
+              <option value="family">Family</option>
+              <option value="luxury">Luxury</option>
+              <option value="adventure">Adventure</option>
+            </select>
+            <select class="form-select" id="filterDestination" aria-label="Filter by destination">
+              <option value="">All Destinations</option>
+            </select>
+            <select class="form-select" id="filterStatus" aria-label="Filter by status">
+              <option value="">All Status</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+              <option value="featured">Featured</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Package list — populated by JS -->
+        <div id="packagesList" role="list" aria-live="polite" aria-label="Packages">
+          <!-- Skeleton cards shown while loading -->
+          <div class="pkg-row pkg-row--skeleton" role="listitem" aria-hidden="true">
+            <div class="skeleton pkg-row__img-skel"></div>
+            <div class="pkg-row__info">
+              <div class="skeleton skeleton--text" style="width:55%"></div>
+              <div class="skeleton skeleton--text" style="width:35%"></div>
+            </div>
+            <div class="skeleton skeleton--text" style="width:80px"></div>
+            <div class="skeleton skeleton--text" style="width:60px"></div>
+            <div class="skeleton skeleton--text" style="width:70px"></div>
+          </div>
+          <div class="pkg-row pkg-row--skeleton" role="listitem" aria-hidden="true">
+            <div class="skeleton pkg-row__img-skel"></div>
+            <div class="pkg-row__info">
+              <div class="skeleton skeleton--text" style="width:60%"></div>
+              <div class="skeleton skeleton--text" style="width:40%"></div>
+            </div>
+            <div class="skeleton skeleton--text" style="width:80px"></div>
+            <div class="skeleton skeleton--text" style="width:60px"></div>
+            <div class="skeleton skeleton--text" style="width:70px"></div>
+          </div>
+          <div class="pkg-row pkg-row--skeleton" role="listitem" aria-hidden="true">
+            <div class="skeleton pkg-row__img-skel"></div>
+            <div class="pkg-row__info">
+              <div class="skeleton skeleton--text" style="width:50%"></div>
+              <div class="skeleton skeleton--text" style="width:30%"></div>
+            </div>
+            <div class="skeleton skeleton--text" style="width:80px"></div>
+            <div class="skeleton skeleton--text" style="width:60px"></div>
+            <div class="skeleton skeleton--text" style="width:70px"></div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ── VIEW: PACKAGE FORM ──────────────────────────────── -->
+      <section class="view" id="viewForm" hidden aria-label="Package form">
+        <!-- Rendered entirely by JS (PackageForm.render) -->
+        <div id="packageFormContainer"></div>
+      </section>
+
+    </div><!-- /d-main -->
+  </div><!-- /dashboard -->
+
+  <!-- ═══════════════════════════════════════════════════════════
+       CONFIRM MODAL (Delete)
+  ══════════════════════════════════════════════════════════════ -->
+  <div class="modal-backdrop" id="confirmModal" hidden role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <div class="modal__header">
+        <div class="modal__icon modal__icon--danger" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+        </div>
+        <h2 class="modal__title" id="modalTitle">Delete Package</h2>
+      </div>
+      <p class="modal__body" id="modalBody">
+        Are you sure you want to delete this package? This will also remove all associated images, itinerary, and inclusions. This action cannot be undone.
+      </p>
+      <div class="modal__actions">
+        <button class="btn btn--ghost" id="modalCancelBtn">Cancel</button>
+        <button class="btn btn--danger" id="modalConfirmBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+          Delete Package
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       TOAST CONTAINER
+  ══════════════════════════════════════════════════════════════ -->
+  <div id="toastContainer" aria-live="polite" aria-atomic="false"></div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.46.1/dist/umd/supabase.min.js"
+          integrity="sha384-f0hTybREi6MIGk1gXyD3UFZAL6sgul9hUVIQHUrByVE26aj5oryZvWtlcda66csi"
+          crossorigin="anonymous"></script>
+  <script src="assets/js/dashboard.js" defer></script>
+
+  <!-- Redirect users with JavaScript disabled — dashboard requires JS for auth -->
+  <noscript><meta http-equiv="refresh" content="0;url=login.html"></noscript>
+</body>
+</html>
