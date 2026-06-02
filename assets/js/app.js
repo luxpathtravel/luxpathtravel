@@ -25,8 +25,8 @@
    1. CONFIG
    ============================================================ */
 const Config = Object.freeze({
-  SUPABASE_URL:      'YOUR_SUPABASE_URL',        // ← replace
-  SUPABASE_ANON_KEY: 'YOUR_SUPABASE_ANON_KEY',   // ← replace
+  SUPABASE_URL:      'https://fgeeysssiesdlryoygoa.supabase.co',        // ← replace
+  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZnZWV5c3NzaWVzZGxyeW95Z29hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MTI0MzUsImV4cCI6MjA5NTk4ODQzNX0.Sa3vcq9U2BrzFobTqQS4sAmVpXkRH09_PGzol9-NCvw',   // ← replace
   get STORAGE_URL()  { return this.SUPABASE_URL + '/storage/v1/object/public/luxpath-media/'; },
   WHATSAPP_NUMBER:   '+6281111826527',
   LANG_KEY:          'luxpath_lang',
@@ -258,8 +258,7 @@ const T = {
 const DB = (() => {
   // Guard: skip if placeholder credentials
   const isConfigured = () =>
-    Config.SUPABASE_URL !== 'YOUR_SUPABASE_URL' &&
-    Config.SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY';
+    Config.SUPABASE_URL.startsWith('https://') && Config.SUPABASE_ANON_KEY.startsWith('eyJ');
 
   let _client = null;
 
