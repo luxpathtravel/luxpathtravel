@@ -276,28 +276,14 @@ const Auth = (() => {
       _session = session;
       _user    = session.user;
 
-      // Verify admin role — uses RLS policy rls_user_roles_self_select
-      let roleData, roleErr;
-      try {
-        ({ data: roleData, error: roleErr } = await db
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', _user.id)
-          .maybeSingle());
-      } catch (e) {
-        console.error('[Auth] role check threw:', e);
-        window.location.replace(Config.LOGIN_URL);
-        return false;
-      }
-
-      if (roleErr || !roleData) {
-        // Authenticated but not an admin — sign out and redirect
+      // Only system@luxpathtravel.com may access the dashboard
+      if (_user.email !== 'system@luxpathtravel.com') {
         await db.auth.signOut().catch(() => {});
         window.location.replace(Config.LOGIN_URL + '?error=unauthorized');
         return false;
       }
 
-      _role = roleData.role;
+      _role = 'admin';
 
       // Subscribe to auth state changes: forced sign-out + token refresh
       db.auth.onAuthStateChange(async (event, newSession) => {
@@ -308,17 +294,10 @@ const Auth = (() => {
         if (event === 'TOKEN_REFRESHED') {
           _session = newSession;
           _user    = newSession.user;
-          // Re-validate admin role on every token refresh
-          const { data: rd, error: re } = await db
-            .from('user_roles')
-            .select('role')
-            .eq('user_id', _user.id)
-            .maybeSingle();
-          if (re || !rd) {
+          // Re-validate email on every token refresh
+          if (_user.email !== 'system@luxpathtravel.com') {
             await db.auth.signOut().catch(() => {});
             window.location.replace(Config.LOGIN_URL + '?error=unauthorized');
-          } else {
-            _role = rd.role;
           }
         }
       });
