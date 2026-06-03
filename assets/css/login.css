@@ -6,6 +6,10 @@
 /* ── Reset ──────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* Author CSS (display:flex on .auth-checking) beats the user-agent [hidden] rule.
+   This re-establishes it with !important so setting .hidden = true always works. */
+[hidden] { display: none !important; }
+
 /* ── Variables ──────────────────────────────────────────── */
 :root {
   --navy:        #0A2540;
@@ -135,11 +139,22 @@ a:hover { text-decoration: underline; }
 .auth-card__brand {
   display: flex;
   justify-content: center;
-  padding-bottom: var(--sp-2);
+  align-items: center;
+  padding-bottom: var(--sp-4);
   border-bottom: 1px solid var(--border);
 }
 
-.auth-logo { display: block; }
+.auth-logo {
+  display: block;
+  width: 110px;
+  height: 110px;
+  border-radius: 30%;
+  object-fit: contain;
+  padding: 16px;
+  background: var(--gold-pale);
+  border: 1.5px solid var(--gold-border);
+  box-shadow: 0 2px 8px rgba(10,37,64,0.08);
+}
 .auth-logo-fallback {
   font-size: var(--text-2xl);
   font-weight: 700;
@@ -178,83 +193,6 @@ a:hover { text-decoration: underline; }
   font-size: var(--text-sm);
   color: var(--text-muted);
 }
-
-/* ── Form ───────────────────────────────────────────────── */
-.auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-5);
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-2);
-}
-
-.form-label {
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--text);
-}
-
-.form-input {
-  width: 100%;
-  padding: 10px var(--sp-4);
-  border: 1.5px solid var(--border-dark);
-  border-radius: var(--r-md);
-  background: var(--surface);
-  color: var(--text);
-  font-family: var(--font-ui);
-  font-size: var(--text-md);
-  line-height: 1.5;
-  transition: border-color var(--trans-fast), box-shadow var(--trans-fast);
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: var(--navy);
-  box-shadow: 0 0 0 3px rgba(10,37,64,0.09);
-}
-
-.form-input.is-error {
-  border-color: var(--error);
-  box-shadow: 0 0 0 3px rgba(220,38,38,0.09);
-}
-
-.form-input:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-  background: var(--bg);
-}
-
-/* ── Password reveal toggle ─────────────────────────────── */
-.password-wrap {
-  position: relative;
-}
-
-.password-wrap .form-input {
-  padding-right: var(--sp-10);
-}
-
-.password-toggle {
-  position: absolute;
-  right: var(--sp-3);
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: var(--text-light);
-  cursor: pointer;
-  padding: var(--sp-1);
-  display: flex;
-  align-items: center;
-  border-radius: var(--r-sm);
-  transition: color var(--trans-fast);
-}
-
-.password-toggle:hover { color: var(--navy); }
-.password-toggle:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 
 /* ── Error Banner ───────────────────────────────────────── */
 .auth-error {
@@ -317,6 +255,38 @@ a:hover { text-decoration: underline; }
   border-top-color: #fff;
   border-radius: 50%;
   animation: spin 0.65s linear infinite;
+}
+
+/* ── Google OAuth Button ────────────────────────────────── */
+.btn--google {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--border-dark);
+  font-weight: 500;
+}
+.btn--google:hover {
+  background: var(--bg);
+  border-color: var(--navy);
+  text-decoration: none;
+}
+.btn--google:disabled { opacity: 0.5; }
+
+/* ── Divider ────────────────────────────────────────────── */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  color: var(--text-light);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
 }
 
 /* ── Card Footer ────────────────────────────────────────── */
