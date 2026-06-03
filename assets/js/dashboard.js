@@ -259,7 +259,14 @@ const Auth = (() => {
       }
 
       // Retrieve persisted session (stored in localStorage by Supabase JS)
-      const { data: { session }, error: sessionErr } = await db.auth.getSession();
+      let session, sessionErr;
+      try {
+        ({ data: { session }, error: sessionErr } = await db.auth.getSession());
+      } catch (e) {
+        console.error('[Auth] getSession threw:', e);
+        window.location.replace(Config.LOGIN_URL);
+        return false;
+      }
 
       if (sessionErr || !session) {
         window.location.replace(Config.LOGIN_URL);
@@ -270,15 +277,22 @@ const Auth = (() => {
       _user    = session.user;
 
       // Verify admin role — uses RLS policy rls_user_roles_self_select
-      const { data: roleData, error: roleErr } = await db
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', _user.id)
-        .maybeSingle();
+      let roleData, roleErr;
+      try {
+        ({ data: roleData, error: roleErr } = await db
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', _user.id)
+          .maybeSingle());
+      } catch (e) {
+        console.error('[Auth] role check threw:', e);
+        window.location.replace(Config.LOGIN_URL);
+        return false;
+      }
 
       if (roleErr || !roleData) {
         // Authenticated but not an admin — sign out and redirect
-        await db.auth.signOut();
+        await db.auth.signOut().catch(() => {});
         window.location.replace(Config.LOGIN_URL + '?error=unauthorized');
         return false;
       }
@@ -2073,10 +2087,16 @@ const App = {
       if (img.complete && !img.naturalWidth) fallback();
     });
 
-    const authed = await Auth.init();
-    if (!authed) return;
-
-    this.showDashboard();
+    try {
+      const authed = await Auth.init();
+      if (!authed) return;
+      this.showDashboard();
+    } catch (err) {
+      // Any uncaught error (network failure, CDN unavailable, etc.)
+      // redirects to login instead of leaving the spinner stuck forever.
+      console.error('[Dashboard] Auth init error:', err);
+      window.location.replace(Config.LOGIN_URL);
+    }
   },
 
   showDashboard() {
@@ -2147,4 +2167,9 @@ const App = {
 };
 
 /* ──────────────────────────────────────────────────────────── */
-document.addEventListener('DOMContentLoaded', () => App.init());
+document.addEventListener('DOMContentLoaded', () => {
+  App.init().catch(err => {
+    console.error('[Dashboard] Fatal startup error:', err);
+    window.location.replace(Config.LOGIN_URL);
+  });
+});
