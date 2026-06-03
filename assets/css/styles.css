@@ -59,8 +59,8 @@
   --color-border: #E4E1DC;
   --color-border-dark: #C8C4BE;
   --color-white: #FFFFFF;
-  --color-whatsapp: #25D366;
-  --color-whatsapp-dark: #1DA851;
+  --color-whatsapp: #009035;
+  --color-whatsapp-dark: #005e23;
   --color-error: #C0392B;
   --color-success: #2D7A5E;
 
@@ -431,11 +431,8 @@ html {
   border-color: var(--color-whatsapp);
 }
 
-.btn--whatsapp:hover,
-.btn--whatsapp:focus-visible {
+.btn--whatsapp:hover\ {
   background: var(--color-whatsapp-dark);
-  border-color: var(--color-whatsapp-dark);
-  box-shadow: 0 4px 16px rgba(37, 211, 102, 0.35);
 }
 
 /* Navy filled */
@@ -445,10 +442,8 @@ html {
   border-color: var(--color-navy);
 }
 
-.btn--navy:hover,
-.btn--navy:focus-visible {
+.btn--navy:hover {
   background: var(--color-navy-mid);
-  box-shadow: var(--shadow-md);
 }
 
 /* Gold filled */
