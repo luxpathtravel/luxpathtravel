@@ -1,6 +1,6 @@
 /* ============================================================
    LUXPATH TRAVEL — ADMIN LOGIN
-   Google OAuth only · single allowed account · role check
+   Google OAuth only · single allowed account
    ============================================================ */
 
 'use strict';
@@ -26,17 +26,6 @@ function getClient() {
     _client = supabase.createClient(Config.SUPABASE_URL, Config.SUPABASE_ANON_KEY);
   }
   return _client;
-}
-
-async function checkAdminRole(userId) {
-  const db = getClient();
-  if (!db) return false;
-  const { data, error } = await db
-    .from('user_roles')
-    .select('role')
-    .eq('user_id', userId)
-    .maybeSingle();
-  return !error && !!data;
 }
 
 function showError(msg) {
@@ -175,23 +164,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    // Correct email — check the user_roles table
-    console.log('[Login]    → Correct email — checking user_roles table...');
-    const isAdmin = await checkAdminRole(session.user.id);
-    console.log('[Login]    isAdmin:', isAdmin);
-
-    if (isAdmin) {
-      console.log('[Login]    → Admin confirmed — redirecting to dashboard.');
-      window.location.replace(Config.DASHBOARD_URL);
-    } else {
-      console.warn('[Login]    → Email correct but no row in user_roles — signing out.');
-      await db.auth.signOut().catch(() => { });
-      showError(
-        'Your account is not assigned an admin role yet. ' +
-        'Add a row for this user in the user_roles table in Supabase.'
-      );
-      resetGoogleBtn();
-    }
+    // Correct email — grant access
+    console.log('[Login]    → Correct email — redirecting to dashboard.');
+    window.location.replace(Config.DASHBOARD_URL);
   });
 
   // ── Step 4: Check for existing session ──────────────────
@@ -214,18 +189,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.warn('[Login]    → Session belongs to wrong account — signing out.');
         await db.auth.signOut().catch(() => { });
       } else {
-        console.log('[Login]    → Correct account — checking user_roles...');
-        const isAdmin = await checkAdminRole(session.user.id);
-        console.log('[Login]    isAdmin:', isAdmin);
-
-        if (isAdmin) {
-          console.log('[Login]    → Admin confirmed — redirecting to dashboard.');
-          window.location.replace(Config.DASHBOARD_URL);
-          return;
-        } else {
-          console.warn('[Login]    → No admin role found — signing out.');
-          await db.auth.signOut().catch(() => { });
-        }
+        console.log('[Login]    → Correct account — redirecting to dashboard.');
+        window.location.replace(Config.DASHBOARD_URL);
+        return;
       }
     } else {
       console.log('[Login] ── Step 5: No existing session — showing login screen.');
