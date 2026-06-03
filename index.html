@@ -53,8 +53,8 @@
   <!-- Critical styles -->
   <link rel="stylesheet" href="assets/css/styles.css">
 
-  <!-- Preload hero image for LCP -->
-  <link rel="preload" as="image" href="assets/images/hero-poster.jpg" fetchpriority="high">
+  <!-- Preload first hero slide for LCP -->
+  <link rel="preload" as="image" href="hero-images/image-1.webp" fetchpriority="high">
 
   <!-- Schema: TravelAgency + WebSite -->
   <script type="application/ld+json">
@@ -84,7 +84,7 @@
       "inLanguage": ["ar", "en"],
       "potentialAction": {
         "@type": "SearchAction",
-        "target": "https://luxpathtravel.com/بكجات-سياحية-اندونيسيا.html?q={search_term_string}",
+        "target": "https://luxpathtravel.com/بكجات-سياحية-اندونيسيا?q={search_term_string}",
         "query-input": "required name=search_term_string"
       }
     },
@@ -133,10 +133,10 @@
     <nav aria-label="Mobile navigation">
       <ul class="mobile-menu__links">
         <li><a href="/"                 data-i18n="nav.home"         class="mobile-menu__link">الرئيسية</a></li>
-        <li><a href="وجهات-السياحة-اندونيسيا.html" data-i18n="nav.destinations" class="mobile-menu__link">الوجهات</a></li>
-        <li><a href="بكجات-سياحية-اندونيسيا.html"     data-i18n="nav.packages"     class="mobile-menu__link">الباقات</a></li>
-        <li><a href="من-نحن.html"        data-i18n="nav.about"        class="mobile-menu__link">عن لوكس باث</a></li>
-        <li><a href="تواصل.html"      data-i18n="nav.contact"      class="mobile-menu__link">تواصل معنا</a></li>
+        <li><a href="وجهات-السياحة-اندونيسيا" data-i18n="nav.destinations" class="mobile-menu__link">الوجهات</a></li>
+        <li><a href="بكجات-سياحية-اندونيسيا"     data-i18n="nav.packages"     class="mobile-menu__link">الباقات</a></li>
+        <li><a href="من-نحن"        data-i18n="nav.about"        class="mobile-menu__link">عن لوكس باث</a></li>
+        <li><a href="تواصل"      data-i18n="nav.contact"      class="mobile-menu__link">تواصل معنا</a></li>
       </ul>
     </nav>
     <div class="mobile-menu__footer">
@@ -165,10 +165,10 @@
       <nav class="navbar__nav" aria-label="التنقل الرئيسي">
         <ul class="navbar__links" role="list">
           <li><a href="/"                 class="navbar__link" data-i18n="nav.home">الرئيسية</a></li>
-          <li><a href="وجهات-السياحة-اندونيسيا.html" class="navbar__link" data-i18n="nav.destinations">الوجهات</a></li>
-          <li><a href="بكجات-سياحية-اندونيسيا.html"     class="navbar__link" data-i18n="nav.packages">الباقات</a></li>
-          <li><a href="من-نحن.html"        class="navbar__link" data-i18n="nav.about">عن لوكس باث</a></li>
-          <li><a href="تواصل.html"      class="navbar__link" data-i18n="nav.contact">تواصل معنا</a></li>
+          <li><a href="وجهات-السياحة-اندونيسيا" class="navbar__link" data-i18n="nav.destinations">الوجهات</a></li>
+          <li><a href="بكجات-سياحية-اندونيسيا"     class="navbar__link" data-i18n="nav.packages">الباقات</a></li>
+          <li><a href="من-نحن"        class="navbar__link" data-i18n="nav.about">عن لوكس باث</a></li>
+          <li><a href="تواصل"      class="navbar__link" data-i18n="nav.contact">تواصل معنا</a></li>
         </ul>
       </nav>
 
@@ -193,6 +193,19 @@
 
     <!-- ── SECTION 1: HERO ──────────────────────────────────── -->
     <section class="hero" id="hero" aria-label="Hero">
+
+      <!-- ── Slideshow background ────────────────────────────── -->
+      <div class="hero__slides" aria-hidden="true">
+        <div class="hero__slide is-active" style="background-image:url('hero-images/image-1.webp')"></div>
+        <div class="hero__slide" style="background-image:url('hero-images/image-2.webp')"></div>
+        <div class="hero__slide" style="background-image:url('hero-images/image-3.webp')"></div>
+        <div class="hero__slide" style="background-image:url('hero-images/image-4.webp')"></div>
+      </div>
+
+      <!-- ── Directional gradient overlay ──────────────────────
+           RTL: dark on right (text side) → transparent on left
+           LTR: dark on left  (text side) → transparent on right
+           + bottom gradient for stats legibility -->
       <div class="hero__overlay" aria-hidden="true"></div>
       <div class="container hero__container">
         <div class="hero__content">
@@ -215,7 +228,7 @@
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.890-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
               <span data-i18n="hero.cta.whatsapp">احجز عبر واتساب الآن</span>
             </a>
-            <a href="بكجات-سياحية-اندونيسيا.html" class="btn btn--outline-white btn--lg hero__cta-secondary" data-i18n="hero.cta.packages">تصفح باقاتنا</a>
+            <a href="بكجات-سياحية-اندونيسيا" class="btn btn--outline-white btn--lg hero__cta-secondary" data-i18n="hero.cta.packages">تصفح باقاتنا</a>
           </div>
         </div>
 
@@ -232,7 +245,7 @@
           </div>
           <div class="hero__stat-divider" aria-hidden="true"></div>
           <div class="hero__stat">
-            <span class="hero__stat-number" data-counter data-target="4" data-suffix="">4</span>
+            <span class="hero__stat-number" data-counter data-target="6" data-suffix="+">6+</span>
             <span class="hero__stat-label" data-i18n="stats.destinations">وجهات</span>
           </div>
           <div class="hero__stat-divider" aria-hidden="true"></div>
@@ -291,7 +304,7 @@
         </div>
 
         <div class="section-footer reveal">
-          <a href="بكجات-سياحية-اندونيسيا.html" class="btn btn--outline-navy" data-i18n="packages.viewAll">عرض جميع الباقات</a>
+          <a href="بكجات-سياحية-اندونيسيا" class="btn btn--outline-navy" data-i18n="packages.viewAll">عرض جميع الباقات</a>
         </div>
       </div>
     </section>
@@ -353,7 +366,7 @@
           <span class="stats-bar__label" data-i18n="stats.families">عائلة سعودية</span>
         </div>
         <div class="stats-bar__item reveal">
-          <span class="stats-bar__number" data-counter data-target="4" data-suffix="">4</span>
+          <span class="stats-bar__number" data-counter data-target="6" data-suffix="+">6+</span>
           <span class="stats-bar__label" data-i18n="stats.destinations">وجهات</span>
         </div>
         <div class="stats-bar__item reveal">
@@ -545,10 +558,10 @@
         <h3 class="footer__heading" data-i18n="footer.links">روابط سريعة</h3>
         <ul class="footer__links" role="list">
           <li><a href="/"                 class="footer__link" data-i18n="nav.home">الرئيسية</a></li>
-          <li><a href="وجهات-السياحة-اندونيسيا.html" class="footer__link" data-i18n="nav.destinations">الوجهات</a></li>
-          <li><a href="بكجات-سياحية-اندونيسيا.html"     class="footer__link" data-i18n="nav.packages">الباقات</a></li>
-          <li><a href="من-نحن.html"        class="footer__link" data-i18n="nav.about">عن لوكس باث</a></li>
-          <li><a href="تواصل.html"      class="footer__link" data-i18n="nav.contact">تواصل معنا</a></li>
+          <li><a href="وجهات-السياحة-اندونيسيا" class="footer__link" data-i18n="nav.destinations">الوجهات</a></li>
+          <li><a href="بكجات-سياحية-اندونيسيا"     class="footer__link" data-i18n="nav.packages">الباقات</a></li>
+          <li><a href="من-نحن"        class="footer__link" data-i18n="nav.about">عن لوكس باث</a></li>
+          <li><a href="تواصل"      class="footer__link" data-i18n="nav.contact">تواصل معنا</a></li>
         </ul>
       </nav>
 
@@ -556,10 +569,10 @@
       <nav class="footer__col" aria-label="الوجهات السياحية">
         <h3 class="footer__heading" data-i18n="footer.destinations">وجهاتنا</h3>
         <ul class="footer__links" role="list">
-          <li><a href="وجهة-سياحية-اندونيسيا.html?slug=bali"    class="footer__link" data-i18n="dest.bali">بالي</a></li>
-          <li><a href="وجهة-سياحية-اندونيسيا.html?slug=jakarta"  class="footer__link" data-i18n="dest.jakarta">جاكرتا</a></li>
-          <li><a href="وجهة-سياحية-اندونيسيا.html?slug=bandung"  class="footer__link" data-i18n="dest.bandung">باندونغ</a></li>
-          <li><a href="وجهة-سياحية-اندونيسيا.html?slug=lombok"   class="footer__link" data-i18n="dest.lombok">لومبوك</a></li>
+          <li><a href="وجهات-السياحة-اندونيسيا" class="footer__link" data-i18n="dest.bali">بالي</a></li>
+          <li><a href="وجهات-السياحة-اندونيسيا" class="footer__link" data-i18n="dest.jakarta">جاكرتا</a></li>
+          <li><a href="وجهات-السياحة-اندونيسيا" class="footer__link" data-i18n="dest.bandung">باندونغ</a></li>
+          <li><a href="وجهات-السياحة-اندونيسيا" class="footer__link" data-i18n="dest.lombok">لومبوك</a></li>
         </ul>
       </nav>
 
@@ -584,7 +597,7 @@
     <div class="footer__bottom">
       <div class="container footer__bottom-inner">
         <p class="footer__copyright" data-i18n="footer.copyright">© 2026 لوكس باث للسياحة. جميع الحقوق محفوظة.</p>
-        <a href="الخصوصية.html" class="footer__link footer__privacy" data-i18n="footer.privacy">سياسة الخصوصية</a>
+        <a href="الخصوصية" class="footer__link footer__privacy" data-i18n="footer.privacy">سياسة الخصوصية</a>
       </div>
     </div>
   </footer>

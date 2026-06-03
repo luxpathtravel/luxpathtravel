@@ -30,7 +30,7 @@ const Config = Object.freeze({
   STORAGE_BUCKET:    'luxpath-media',
   WHATSAPP_NUMBER:   '+6281111826527',
   PLACEHOLDER_IMG:   'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23F0EDE8" width="400" height="300"/%3E%3C/svg%3E',
-  LOGIN_URL:         'login.html',
+  LOGIN_URL:         'login',
 });
 
 const CATEGORY_LABELS = { honeymoon: 'Honeymoon', family: 'Family', luxury: 'Luxury', adventure: 'Adventure' };
@@ -429,7 +429,7 @@ const Sidebar = {
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') this.close(); });
     document.getElementById('logoutBtn').addEventListener('click', async () => {
       await Auth.signOut();
-      // signOut() handles the redirect to login.html
+      // signOut() handles the redirect to login
     });
     document.querySelectorAll('.sidebar__link[data-view]').forEach(link => {
       link.addEventListener('click', (e) => {

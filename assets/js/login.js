@@ -11,7 +11,7 @@
 const Config = Object.freeze({
   SUPABASE_URL: 'https://fgeeysssiesdlryoygoa.supabase.co',
   SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZnZWV5c3NzaWVzZGxyeW95Z29hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MTI0MzUsImV4cCI6MjA5NTk4ODQzNX0.Sa3vcq9U2BrzFobTqQS4sAmVpXkRH09_PGzol9-NCvw',
-  DASHBOARD_URL: 'dashboard.html',
+  DASHBOARD_URL: 'dashboard',
   ALLOWED_EMAIL: 'system@luxpathtravel.com',  // only this Google account is accepted
 });
 

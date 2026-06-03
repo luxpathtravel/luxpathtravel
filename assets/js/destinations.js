@@ -239,7 +239,7 @@ const DestinationGrid = {
         : Config.PLACEHOLDER_IMG;
 
       return `
-        <a href="وجهة-سياحية-اندونيسيا.html?slug=${d.slug}" class="dest-full-card reveal" aria-label="${name}">
+        <a href="وجهة-سياحية-اندونيسيا?slug=${d.slug}" class="dest-full-card reveal" aria-label="${name}">
           <img data-src="${imgSrc}" src="${Config.PLACEHOLDER_IMG}" alt="${name}" width="800" height="450" loading="lazy">
           <div class="dest-full-card__overlay" aria-hidden="true"></div>
           <div class="dest-full-card__content">

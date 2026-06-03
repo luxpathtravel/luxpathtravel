@@ -924,7 +924,7 @@ VALUES
     -- Homepage hero
     ('hero_title',            NULL, 'اكتشف سحر إندونيسيا',                             'Discover the Magic of Indonesia',         'H1 text on homepage hero section.'),
     ('hero_subtitle',         NULL, 'رحلات فاخرة مصممة لك من المملكة العربية السعودية','Luxury travel crafted for Saudi travelers','Subtitle below the H1 on homepage hero.'),
-    ('hero_badge',            NULL, 'وجهة أكثر من 2,000 عائلة سعودية',                'Trusted by 2,000+ Saudi families',        'Trust badge text above the hero H1.'),
+    ('hero_badge',            NULL, 'وجهة أكثر من 2,000 عائلة وعرسان سعوديين',                'Trusted by 2,000+ Saudi families & couples',        'Trust badge text above the hero H1.'),
 
     -- Homepage CTA
     ('hero_cta_whatsapp_ar',  NULL, 'احجز عبر واتساب الآن',                            NULL,                                      'Arabic WhatsApp CTA button text on hero.'),

@@ -1,0 +1,40 @@
+# ============================================================
+# LUXPATH TRAVEL — Apache URL Configuration
+# ============================================================
+
+# Disable directory listing
+Options -Indexes
+
+# Enable rewrite engine
+RewriteEngine On
+
+# 1. Redirect .html URLs to clean URLs (301 permanent)
+#    e.g. /بكجات-سياحية-اندونيسيا.html → /بكجات-سياحية-اندونيسيا
+RewriteCond %{THE_REQUEST} \s/+(.+?)\.html[\s?] [NC]
+RewriteRule ^ /%1 [R=301,L,NE]
+
+# 2. Serve the .html file for clean URLs (internal rewrite, no redirect)
+#    e.g. /بكجات-سياحية-اندونيسيا → serves بكجات-سياحية-اندونيسيا.html
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^(.+)$ $1.html [L]
+
+# Cache static assets
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+</IfModule>
+
+# Security headers
+<IfModule mod_headers.c>
+  Header set X-Frame-Options "DENY"
+  Header set X-Content-Type-Options "nosniff"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>

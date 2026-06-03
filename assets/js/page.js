@@ -1,6 +1,6 @@
 ﻿/* ============================================================
    LUXPATH TRAVEL — SHARED STATIC PAGE MODULE
-   Used by: من-نحن.html · تواصل.html · الخصوصية.html
+   Used by: من-نحن · تواصل · الخصوصية
    Self-contained · No Supabase needed · Bilingual AR/EN
    ============================================================ */
 

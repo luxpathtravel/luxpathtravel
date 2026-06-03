@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
 
@@ -7,99 +7,76 @@
     <loc>https://luxpathtravel.com/</loc>
     <xhtml:link rel="alternate" hreflang="ar" href="https://luxpathtravel.com/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://luxpathtravel.com/"/>
+    <lastmod>2026-06-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
   <!-- Packages listing -->
   <url>
-    <loc>https://luxpathtravel.com/بكجات-سياحية-اندونيسيا.html</loc>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://luxpathtravel.com/بكجات-سياحية-اندونيسيا.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://luxpathtravel.com/بكجات-سياحية-اندونيسيا.html"/>
+    <loc>https://luxpathtravel.com/بكجات-سياحية-اندونيسيا</loc>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://luxpathtravel.com/بكجات-سياحية-اندونيسيا"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://luxpathtravel.com/بكجات-سياحية-اندونيسيا"/>
+    <lastmod>2026-06-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <!-- Destinations overview -->
   <url>
-    <loc>https://luxpathtravel.com/وجهات-السياحة-اندونيسيا.html</loc>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://luxpathtravel.com/وجهات-السياحة-اندونيسيا.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://luxpathtravel.com/وجهات-السياحة-اندونيسيا.html"/>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- Individual destination pages -->
-  <url>
-    <loc>https://luxpathtravel.com/وجهة-سياحية-اندونيسيا.html?slug=bali</loc>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://luxpathtravel.com/وجهة-سياحية-اندونيسيا.html?slug=bali"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://luxpathtravel.com/وجهة-سياحية-اندونيسيا.html?slug=bali"/>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://luxpathtravel.com/وجهة-سياحية-اندونيسيا.html?slug=jakarta</loc>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://luxpathtravel.com/وجهة-سياحية-اندونيسيا.html?slug=jakarta"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://luxpathtravel.com/وجهة-سياحية-اندونيسيا.html?slug=jakarta"/>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://luxpathtravel.com/وجهة-سياحية-اندونيسيا.html?slug=bandung</loc>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://luxpathtravel.com/وجهة-سياحية-اندونيسيا.html?slug=bandung"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://luxpathtravel.com/وجهة-سياحية-اندونيسيا.html?slug=bandung"/>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://luxpathtravel.com/وجهة-سياحية-اندونيسيا.html?slug=lombok</loc>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://luxpathtravel.com/وجهة-سياحية-اندونيسيا.html?slug=lombok"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://luxpathtravel.com/وجهة-سياحية-اندونيسيا.html?slug=lombok"/>
+    <loc>https://luxpathtravel.com/وجهات-السياحة-اندونيسيا</loc>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://luxpathtravel.com/وجهات-السياحة-اندونيسيا"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://luxpathtravel.com/وجهات-السياحة-اندونيسيا"/>
+    <lastmod>2026-06-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <!-- About -->
   <url>
-    <loc>https://luxpathtravel.com/من-نحن.html</loc>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://luxpathtravel.com/من-نحن.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://luxpathtravel.com/من-نحن.html"/>
+    <loc>https://luxpathtravel.com/من-نحن</loc>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://luxpathtravel.com/من-نحن"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://luxpathtravel.com/من-نحن"/>
+    <lastmod>2026-06-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <!-- Contact -->
   <url>
-    <loc>https://luxpathtravel.com/تواصل.html</loc>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://luxpathtravel.com/تواصل.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://luxpathtravel.com/تواصل.html"/>
+    <loc>https://luxpathtravel.com/تواصل</loc>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://luxpathtravel.com/تواصل"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://luxpathtravel.com/تواصل"/>
+    <lastmod>2026-06-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
-  <!-- Privacy -->
+  <!-- Privacy Policy -->
   <url>
-    <loc>https://luxpathtravel.com/الخصوصية.html</loc>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://luxpathtravel.com/الخصوصية.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://luxpathtravel.com/الخصوصية.html"/>
+    <loc>https://luxpathtravel.com/الخصوصية</loc>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://luxpathtravel.com/الخصوصية"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://luxpathtravel.com/الخصوصية"/>
+    <lastmod>2026-06-04</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <!--
-    NOTE: Individual package detail pages (بكج-سياحي-اندونيسيا.html?slug=X) must be added here
-    once packages are entered in the database. Each package should be added as:
+    NOTE: Individual package detail pages must be added here once packages
+    are entered in the database. Add one <url> per package using its slug:
 
     <url>
-      <loc>https://luxpathtravel.com/بكج-سياحي-اندونيسيا.html?slug={slug_en}</loc>
+      <loc>https://luxpathtravel.com/بكج-سياحي-اندونيسيا?slug={slug_en}</loc>
       <changefreq>weekly</changefreq>
       <priority>0.9</priority>
     </url>
 
-    This sitemap should be regenerated after content entry.
+    Regenerate this sitemap after adding or updating packages.
+
+    Pages intentionally excluded from sitemap (admin/internal only):
+    - /login
+    - /dashboard
   -->
 
 </urlset>

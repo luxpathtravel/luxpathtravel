@@ -52,7 +52,7 @@ const T = {
     'nav.whatsapp':     'واتساب',
 
     // Hero
-    'hero.badge':        'وجهة أكثر من 2,000 عائلة سعودية',
+    'hero.badge':        'وجهة أكثر من 2,000 عائلة وعرسان سعوديين',
     'hero.title':        'اكتشف سحر إندونيسيا',
     'hero.subtitle':     'رحلات فاخرة مصممة لك من المملكة العربية السعودية',
     'hero.cta.whatsapp': 'احجز عبر واتساب الآن',
@@ -167,7 +167,7 @@ const T = {
     'nav.about':        'About Us',
     'nav.contact':      'Contact',
     'nav.whatsapp':     'WhatsApp',
-    'hero.badge':        'Trusted by 2,000+ Saudi families',
+    'hero.badge':        'Trusted by 2,000+ Saudi families & couples',
     'hero.title':        'Discover the Magic of Indonesia',
     'hero.subtitle':     'Luxury travel packages crafted for Saudi travelers',
     'hero.cta.whatsapp': 'Book Now via WhatsApp',
@@ -600,7 +600,48 @@ const Stats = {
 
 
 /* ============================================================
-   9. FLOATING WHATSAPP
+   9. HERO SLIDER
+   ============================================================ */
+const HeroSlider = {
+  _slides:  [],
+  _current: 0,
+  _timer:   null,
+  INTERVAL: 5500,   // ms between transitions
+
+  init() {
+    this._slides = Array.from(document.querySelectorAll('.hero__slide'));
+    if (this._slides.length < 2) return;
+
+    // Skip animation when user prefers reduced motion
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    // Pause when tab is hidden, resume when visible
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        clearInterval(this._timer);
+      } else {
+        this._start();
+      }
+    });
+
+    this._start();
+  },
+
+  _start() {
+    clearInterval(this._timer);
+    this._timer = setInterval(() => this._next(), this.INTERVAL);
+  },
+
+  _next() {
+    this._slides[this._current].classList.remove('is-active');
+    this._current = (this._current + 1) % this._slides.length;
+    this._slides[this._current].classList.add('is-active');
+  },
+};
+
+
+/* ============================================================
+   10. FLOATING WHATSAPP
    ============================================================ */
 const FloatingWA = {
   btn: null,
@@ -685,7 +726,7 @@ const Packages = {
       ? `${Config.STORAGE_URL}${pkg.hero_image_url}`
       : Config.PLACEHOLDER_IMG;
     const slugKey = lang === 'ar' ? pkg.slug_ar : pkg.slug_en;
-    const detailUrl = `بكج-سياحي-اندونيسيا.html?slug=${pkg.slug_en}`;
+    const detailUrl = `بكج-سياحي-اندونيسيا?slug=${pkg.slug_en}`;
 
     const origHTML = pkg.original_price_value
       ? `<span class="pkg-card__price-original">${new Intl.NumberFormat('en-US').format(pkg.original_price_value)}</span>`
@@ -769,33 +810,282 @@ const Packages = {
 
 /* ============================================================
    11. DESTINATIONS
+   Hardcoded data for Bali, Jakarta, Puncak.
+   Cards open an in-page panel instead of navigating.
    ============================================================ */
+
+const DEST_DATA = [
+  {
+    slug: 'bali',
+    name_ar: 'بالي',
+    name_en: 'Bali',
+    tagline_ar: 'جزيرة الرفاهية والروقان',
+    tagline_en: 'Island of the Gods',
+    img: 'destination-image/bali.webp',
+    card_image_url: null,
+    hero_ar: 'جزيرة بالي هي جوهرة إندونيسيا السياحية — تجمع بين روحانية المعابد القديمة وسحر الطبيعة الخضراء وفخامة المنتجعات الحصرية في تجربة لا تُنسى.',
+    hero_en: 'Bali is Indonesia\'s crown jewel — an island where ancient temple spirituality meets lush nature and world-class luxury resorts in an unforgettable experience.',
+    attractions: [
+      { icon: '🛕', name_ar: 'معبد تانا لوت', name_en: 'Tanah Lot Temple' },
+      { icon: '🎨', name_ar: 'قرية أوبود الثقافية', name_en: 'Ubud Cultural Village' },
+      { icon: '🏖️', name_ar: 'شاطئ سمينياك الفاخر', name_en: 'Seminyak Luxury Beach' },
+      { icon: '🌿', name_ar: 'مدرجات الأرز تيغالالانغ', name_en: 'Tegalalang Rice Terraces' },
+      { icon: '🤿', name_ar: 'غوص نوسا بينيدا', name_en: 'Nusa Penida Diving' },
+      { icon: '⭐', name_ar: 'منتجعات نوسا دوا 5 نجوم', name_en: 'Nusa Dua 5-Star Resorts' },
+    ],
+    luxpath_ar: [
+      'إقامة في أفضل المنتجعات الخمس نجوم المطلة على البحر أو حقول الأرز',
+      'جولات خاصة مع مرشد سياحي متحدث بالعربية بشكل حصري',
+      'تجربة غروب الشمس في معبد تانا لوت مع ترتيبات VIP',
+      'باقات شهر العسل مع تجارب رومانسية مخصصة',
+    ],
+    luxpath_en: [
+      'Stay in top 5-star resorts overlooking the ocean or rice fields',
+      'Private tours with an exclusive Arabic-speaking guide',
+      'Sunset experience at Tanah Lot Temple with VIP arrangements',
+      'Honeymoon packages with tailored romantic experiences',
+    ],
+  },
+  {
+    slug: 'jakarta',
+    name_ar: 'جاكرتا',
+    name_en: 'Jakarta',
+    tagline_ar: 'العاصمة النابضة بالحياة',
+    tagline_en: 'The Vibrant Capital',
+    img: 'destination-image/jakarta.webp',
+    card_image_url: null,
+    card_image_url: null,
+    hero_ar: 'جاكرتا، عاصمة إندونيسيا، مدينة لا تنام — تمزج بين ناطحات السحاب الحديثة والأحياء التاريخية الأصيلة ومراكز التسوق الفاخرة في مشهد حضري استثنائي.',
+    hero_en: 'Jakarta, Indonesia\'s capital, is a city that never sleeps — blending modern skyscrapers, authentic historic districts, and luxury shopping malls in an exceptional urban landscape.',
+    attractions: [
+      { icon: '🏛️', name_ar: 'موناس — الصرح الوطني', name_en: 'Monas National Monument' },
+      { icon: '🏘️', name_ar: 'كوتا القديمة (باتافيا)', name_en: 'Old Batavia (Kota Tua)' },
+      { icon: '🛍️', name_ar: 'مولات التسوق الفاخرة', name_en: 'Luxury Shopping Malls' },
+      { icon: '🍽️', name_ar: 'مطاعم فاخرة متنوعة', name_en: 'World-Class Restaurants' },
+      { icon: '🌃', name_ar: 'سكاي لاونج على الطابق 47', name_en: 'Sky Lounge on Floor 47' },
+      { icon: '🎭', name_ar: 'المتحف الوطني الإندونيسي', name_en: 'National Museum of Indonesia' },
+    ],
+    luxpath_ar: [
+      'إقامة في الفنادق المركزية الفاخرة بأسعار تنافسية',
+      'جولة في الأحياء التاريخية مع مرشد عربي متمكن',
+      'تجربة التسوق في أفخم مولات جاكرتا مع مرافق شخصي',
+      'وجبات في أفضل المطاعم الإندونيسية والدولية',
+    ],
+    luxpath_en: [
+      'Stay in central luxury hotels at competitive prices',
+      'Tour of historic districts with a knowledgeable Arabic guide',
+      'Shopping experience in Jakarta\'s finest malls with a personal assistant',
+      'Dining at the best Indonesian and international restaurants',
+    ],
+  },
+  {
+    slug: 'puncak',
+    name_ar: 'بونشاك',
+    name_en: 'Puncak',
+    tagline_ar: 'جبل الطبيعة الاخصر',
+    tagline_en: 'A Magical Mountain Escape',
+    img: 'destination-image/puncak.webp',
+    card_image_url: null,
+    card_image_url: null,
+    hero_ar: 'بونشاك هي منتجع الجبال المفضل لعائلات جاكرتا — تشتهر بمزارع الشاي الخضراء اللانهائية والهواء النقي المنعش والإطلالات الخلابة على القمم الجبلية.',
+    hero_en: 'Puncak is Jakarta\'s favourite mountain resort — famous for endless green tea plantations, fresh mountain air, and stunning views of volcanic peaks.',
+    attractions: [
+      { icon: '🍃', name_ar: 'مزارع الشاي الكبرى', name_en: 'Grand Tea Plantations' },
+      { icon: '💧', name_ar: 'شلالات جميلة تسقط', name_en: 'Beautiful Waterfalls' },
+      { icon: '🌺', name_ar: 'حديقة سيبوداس النباتية', name_en: 'Cibodas Botanical Garden' },
+      { icon: '⛰️', name_ar: 'قمة جبل أجمل الجمال', name_en: 'Scenic Mountain Summits' },
+      { icon: '🏡', name_ar: 'فيلات جبلية خاصة', name_en: 'Private Mountain Villas' },
+      { icon: '🐘', name_ar: 'تافيكمانتيري للطبيعة', name_en: 'Tafekamantri Nature Park' },
+    ],
+    luxpath_ar: [
+      'إقامة في فيلات جبلية خاصة بإطلالات خلابة',
+      'جولة حصرية في مزارع الشاي مع تجربة القطاف والتحضير',
+      'باقة عائلية مع أنشطة طبيعية آمنة للأطفال',
+      'مسافة ساعتين فقط من جاكرتا — مثالية لرحلة يوم أو ليلة',
+    ],
+    luxpath_en: [
+      'Stay in private mountain villas with breathtaking views',
+      'Exclusive tea plantation tour with picking and brewing experience',
+      'Family package with safe nature activities for children',
+      'Just 2 hours from Jakarta — perfect for a day trip or overnight stay',
+    ],
+  },
+];
+
+/* ── Destination Panel ───────────────────────────────────── */
+const DestPanel = {
+  _panel: null,
+  _scrollY: 0,
+
+  _ensurePanel() {
+    if (document.getElementById('destPanel')) return;
+    const el = document.createElement('div');
+    el.id = 'destPanel';
+    el.setAttribute('role', 'dialog');
+    el.setAttribute('aria-modal', 'true');
+    el.setAttribute('aria-hidden', 'true');
+    el.innerHTML = `
+      <div class="dest-panel__sheet" id="destPanelSheet">
+        <div class="dest-panel__hero" id="destPanelHero">
+          <img class="dest-panel__hero-img" id="destPanelImg" src="" alt="" width="520" height="240">
+          <div class="dest-panel__hero-overlay" aria-hidden="true"></div>
+          <div class="dest-panel__hero-text">
+            <div class="dest-panel__hero-name" id="destPanelName"></div>
+            <div class="dest-panel__hero-tagline" id="destPanelTagline"></div>
+          </div>
+          <button class="dest-panel__close" id="destPanelClose" aria-label="إغلاق">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="dest-panel__body" id="destPanelBody"></div>
+        <div class="dest-panel__cta" id="destPanelCTA"></div>
+      </div>`;
+    document.body.appendChild(el);
+    this._panel = el;
+
+    // Close on backdrop click
+    el.addEventListener('click', (e) => {
+      if (!document.getElementById('destPanelSheet').contains(e.target)) this.close();
+    });
+    // Close on ESC
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && el.classList.contains('dest-panel--open')) this.close();
+    });
+    document.getElementById('destPanelClose').addEventListener('click', () => this.close());
+  },
+
+  open(slug) {
+    this._ensurePanel();
+    const lang = I18n.get();
+    const d    = DEST_DATA.find(x => x.slug === slug);
+    if (!d) return;
+
+    const name    = lang === 'ar' ? d.name_ar    : d.name_en;
+    const tagline = lang === 'ar' ? d.tagline_ar : d.tagline_en;
+    const hero    = lang === 'ar' ? d.hero_ar    : d.hero_en;
+    const luxpath = lang === 'ar' ? d.luxpath_ar : d.luxpath_en;
+    const imgSrc  = d.img
+      ? d.img
+      : d.card_image_url
+        ? `${Config.STORAGE_URL}${d.card_image_url}`
+        : Config.PLACEHOLDER_IMG;
+
+    document.getElementById('destPanelImg').src  = imgSrc;
+    document.getElementById('destPanelImg').alt  = name;
+    document.getElementById('destPanelName').textContent    = name;
+    document.getElementById('destPanelTagline').textContent = tagline;
+    document.getElementById('destPanelClose').setAttribute('aria-label',
+      lang === 'ar' ? 'إغلاق' : 'Close');
+
+    // Attractions
+    const attractionsHTML = d.attractions.map(a => `
+      <div class="dest-panel__attraction">
+        <span class="dest-panel__attraction-icon" aria-hidden="true">${a.icon}</span>
+        <span>${lang === 'ar' ? a.name_ar : a.name_en}</span>
+      </div>`).join('');
+
+    // Luxpath advantage
+    const luxpathHTML = luxpath.map(item => `<li class="dest-panel__luxpath-item">${item}</li>`).join('');
+
+    const secTitle1 = lang === 'ar' ? 'أبرز المعالم السياحية' : 'Top Attractions';
+    const secTitle2 = lang === 'ar' ? 'كيف نمنحك أفضل تجربة' : 'The Luxpath Advantage';
+
+    document.getElementById('destPanelBody').innerHTML = `
+      <p class="dest-panel__desc">${hero}</p>
+      <div>
+        <div class="dest-panel__section-title">${secTitle1}</div>
+        <div class="dest-panel__attractions">${attractionsHTML}</div>
+      </div>
+      <div class="dest-panel__luxpath">
+        <div class="dest-panel__section-title">${secTitle2}</div>
+        <ul class="dest-panel__luxpath-list">${luxpathHTML}</ul>
+      </div>`;
+
+    const waText = lang === 'ar'
+      ? `مرحباً، أود الاستفسار عن رحلات ${name}`
+      : `Hello, I'd like to inquire about trips to ${name}`;
+    const waUrl = `https://wa.me/${Config.WHATSAPP_NUMBER}?text=${encodeURIComponent(waText)}`;
+    const btnLabel = lang === 'ar' ? `احجز رحلة ${name} عبر واتساب` : `Book a ${name} Trip via WhatsApp`;
+
+    document.getElementById('destPanelCTA').innerHTML = `
+      <a href="${waUrl}" class="btn btn--whatsapp btn--full" target="_blank" rel="noopener noreferrer">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.890-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        ${btnLabel}
+      </a>`;
+
+    // Scroll to top of panel sheet
+    document.getElementById('destPanelSheet').scrollTop = 0;
+
+    // Lock body scroll
+    this._scrollY = window.scrollY;
+    document.body.style.overflow = 'hidden';
+
+    const panel = document.getElementById('destPanel');
+    panel.setAttribute('aria-hidden', 'false');
+    panel.classList.add('dest-panel--open');
+
+    // Focus close button for accessibility
+    requestAnimationFrame(() => document.getElementById('destPanelClose').focus());
+  },
+
+  close() {
+    const panel = document.getElementById('destPanel');
+    if (!panel) return;
+    panel.classList.remove('dest-panel--open');
+    panel.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    window.scrollTo(0, this._scrollY);
+  },
+};
+
+/* ── Destinations module ─────────────────────────────────── */
 const Destinations = {
-  render(destinations) {
+  render(/* _unused — data is hardcoded in DEST_DATA */) {
     const grid = document.getElementById('destGrid');
     if (!grid) return;
 
-    if (!destinations?.length) {
-      grid.innerHTML = '';
-      return;
+    const lang = I18n.get();
+
+    // Render exactly 3 hardcoded cards
+    grid.innerHTML = DEST_DATA.map(d => this.cardHTML(d, lang)).join('');
+
+    // "View more" button below grid (inside the section container)
+    const existing = document.getElementById('destMoreBtn');
+    if (!existing) {
+      const wrap = document.createElement('div');
+      wrap.className = 'dest-more section-footer reveal';
+      wrap.id = 'destMoreBtn';
+      const label = lang === 'ar' ? 'عرض المزيد من الوجهات' : 'View More Destinations';
+      wrap.innerHTML = `<a href="وجهات-السياحة-اندونيسيا" class="btn btn--outline-navy">${label}</a>`;
+      grid.parentElement.appendChild(wrap);
+    } else {
+      // Re-render label on language switch
+      const a = existing.querySelector('a');
+      if (a) a.textContent = lang === 'ar' ? 'عرض المزيد من الوجهات' : 'View More Destinations';
     }
 
-    const lang = I18n.get();
-    grid.innerHTML = destinations.map(d => this.cardHTML(d, lang)).join('');
-    this.lazyLoadImages(grid);
+    this.bindCards(grid);
+    Packages.lazyLoadImages(grid);
     ScrollReveal.observe(grid);
   },
 
   cardHTML(d, lang) {
     const name    = lang === 'ar' ? d.name_ar    : d.name_en;
     const tagline = lang === 'ar' ? d.tagline_ar : d.tagline_en;
-    const imgSrc  = d.card_image_url
-      ? `${Config.STORAGE_URL}${d.card_image_url}`
-      : Config.PLACEHOLDER_IMG;
-    const href = `وجهة-سياحية-اندونيسيا.html?slug=${d.slug}`;
+    const imgSrc  = d.img
+      ? d.img
+      : d.card_image_url
+        ? `${Config.STORAGE_URL}${d.card_image_url}`
+        : Config.PLACEHOLDER_IMG;
+    const exploreLabel = lang === 'ar' ? 'اكتشف' : 'Explore';
 
     return `
-      <a href="${href}" class="dest-card reveal" role="listitem" aria-label="${name}">
+      <button type="button" class="dest-card reveal" role="listitem"
+              aria-label="${name}" data-dest="${d.slug}"
+              style="cursor:pointer;background:none;border:none;padding:0;text-align:inherit;width:100%">
         <img
           class="dest-card__image"
           data-src="${imgSrc}"
@@ -808,7 +1098,7 @@ const Destinations = {
           <span class="dest-card__name">${name}</span>
           ${tagline ? `<span class="dest-card__tagline">${tagline}</span>` : ''}
           <span class="dest-card__cta">
-            ${I18n.t('destinations.explore')}
+            ${exploreLabel}
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
               ${lang === 'ar'
                 ? '<polyline points="15 18 9 12 15 6"/>'
@@ -816,11 +1106,13 @@ const Destinations = {
             </svg>
           </span>
         </div>
-      </a>`;
+      </button>`;
   },
 
-  lazyLoadImages(container) {
-    Packages.lazyLoadImages(container); // reuse same logic
+  bindCards(grid) {
+    grid.querySelectorAll('.dest-card[data-dest]').forEach(btn => {
+      btn.addEventListener('click', () => DestPanel.open(btn.dataset.dest));
+    });
   },
 };
 
@@ -924,9 +1216,13 @@ const App = {
     ScrollReveal.init();
     WA.updateAll();
     FloatingWA.init();
+    HeroSlider.init();
     Packages.init();
 
-    // ── 3. Parallel data fetch ─────────────────────────────
+    // ── 3. Destinations render immediately (hardcoded — no DB needed) ──
+    Destinations.render();
+
+    // ── 4. Parallel data fetch ─────────────────────────────
     if (!DB.isConfigured()) {
       console.info('[Luxpath] Supabase not configured — running in demo mode.');
       // Clear skeleton loaders gracefully
@@ -995,8 +1291,8 @@ const App = {
       packagesGrid.setAttribute('aria-busy', 'false');
     }
 
-    const destGrid = document.getElementById('destGrid');
-    if (destGrid) destGrid.innerHTML = '';
+    // Destinations are hardcoded — render them even in demo mode
+    Destinations.render();
 
     const testiTrack = document.getElementById('testimonialsTrack');
     if (testiTrack) testiTrack.innerHTML = '';

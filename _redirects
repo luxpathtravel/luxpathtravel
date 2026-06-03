@@ -1,0 +1,28 @@
+# ============================================================
+# LUXPATH TRAVEL — Netlify URL Configuration
+# Clean URLs: serve .html files without the extension in the URL
+# ============================================================
+
+# Redirect old .html URLs to clean URLs (301)
+/index.html                           /                                  301
+/login.html                           /login                             301
+/dashboard.html                       /dashboard                         301
+
+# Arabic page redirects
+/وجهات-السياحة-اندونيسيا.html        /وجهات-السياحة-اندونيسيا          301
+/بكجات-سياحية-اندونيسيا.html         /بكجات-سياحية-اندونيسيا           301
+/بكج-سياحي-اندونيسيا.html            /بكج-سياحي-اندونيسيا              301
+/وجهة-سياحية-اندونيسيا.html          /وجهات-السياحة-اندونيسيا          301
+/من-نحن.html                          /من-نحن                            301
+/تواصل.html                           /تواصل                             301
+/الخصوصية.html                        /الخصوصية                          301
+
+# Serve clean URLs by rewriting to .html files (200 = internal rewrite)
+/login                                /login.html                        200
+/dashboard                            /dashboard.html                    200
+/وجهات-السياحة-اندونيسيا             /وجهات-السياحة-اندونيسيا.html     200
+/بكجات-سياحية-اندونيسيا              /بكجات-سياحية-اندونيسيا.html      200
+/بكج-سياحي-اندونيسيا                 /بكج-سياحي-اندونيسيا.html         200
+/من-نحن                               /من-نحن.html                       200
+/تواصل                                /تواصل.html                        200
+/الخصوصية                             /الخصوصية.html                     200
