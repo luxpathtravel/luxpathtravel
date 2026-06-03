@@ -240,9 +240,22 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // ── Check for an existing valid session ──────────────────
-  const db = getClient();
+  // getClient() is inside the try so any exception falls through to show form.
+  // A 6-second timeout guarantees the form always appears — prevents the spinner
+  // from hanging forever if Supabase's token-refresh request never resolves
+  // (e.g. stale localStorage session from a previous environment).
   try {
-    const { data: { session } } = await db.auth.getSession();
+    const db = getClient();
+    if (!db) throw new Error('client-null');
+
+    const timeout = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('session-check-timeout')), 6000)
+    );
+
+    const { data: { session } } = await Promise.race([
+      db.auth.getSession(),
+      timeout,
+    ]);
 
     if (session) {
       const isAdmin = await checkAdminRole(session.user.id);
@@ -252,11 +265,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         return; // leave spinner visible during redirect
       } else {
         // Session exists but not an admin — sign out silently
-        await db.auth.signOut();
+        await db.auth.signOut().catch(() => {});
       }
     }
-  } catch (_) {
-    // Network error during session check — fall through to show form
+  } catch (err) {
+    // Network error, timeout, or any unexpected throw — always show the form.
+    if (err.message !== 'session-check-timeout') {
+      console.warn('[Login] Session check failed:', err.message);
+    }
   }
 
   // ── Show login form ───────────────────────────────────────
