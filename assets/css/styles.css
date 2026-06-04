@@ -160,7 +160,9 @@ html[lang="en"] {
 }
 
 /* Ensure the HTML `hidden` attribute always wins over CSS display rules */
-[hidden] { display: none !important; }
+[hidden] {
+  display: none !important;
+}
 
 html {
   font-size: 16px;
@@ -434,7 +436,7 @@ html {
   border-color: var(--color-whatsapp);
 }
 
-.btn--whatsapp:hover\ {
+.btn--whatsapp:hover\  {
   background: var(--color-whatsapp-dark);
 }
 
@@ -1479,12 +1481,14 @@ html[dir="ltr"] .hero__overlay {
   opacity: 0;
   transition:
     max-height 0.65s ease-in-out,
-    opacity    0.45s ease,
+    opacity 0.45s ease,
     margin-top 0.45s ease;
   margin-top: 0;
 }
+
 .dest-extras.is-open {
-  max-height: 900px; /* tall enough for 1 row of cards at any viewport */
+  max-height: 900px;
+  /* tall enough for 1 row of cards at any viewport */
   opacity: 1;
   margin-top: var(--sp-3);
 }
@@ -1500,6 +1504,7 @@ html[dir="ltr"] .hero__overlay {
   transition: transform 0.3s ease;
   flex-shrink: 0;
 }
+
 .dest-more-toggle.is-open .dest-toggle-chevron {
   transform: rotate(180deg);
 }
@@ -1726,7 +1731,10 @@ html[dir="rtl"] .dest-panel__sheet {
   /* scroll padding aligns snapped cards with the visible start */
   scroll-padding-inline-start: var(--sp-2);
 }
-.testimonials-track::-webkit-scrollbar { display: none; }
+
+.testimonials-track::-webkit-scrollbar {
+  display: none;
+}
 
 .testi-empty {
   text-align: center;
@@ -1751,6 +1759,7 @@ html[dir="rtl"] .dest-panel__sheet {
   gap: var(--sp-4);
   transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
+
 .testimonial-card:hover {
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
@@ -1761,8 +1770,19 @@ html[dir="rtl"] .dest-panel__sheet {
   gap: var(--sp-3);
   border-top-color: var(--color-border);
 }
-.testi-skel-header { display: flex; gap: var(--sp-3); align-items: center; }
-.skeleton--circle  { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; }
+
+.testi-skel-header {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: center;
+}
+
+.skeleton--circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
 
 /* ── Card Header (avatar + name + brand mark) ───────────── */
 .testimonial-header {
@@ -1784,7 +1804,7 @@ html[dir="rtl"] .dest-panel__sheet {
   font-weight: 700;
   color: var(--color-gold);
   flex-shrink: 0;
-  border: 2px solid rgba(212,175,55,0.2);
+  border: 2px solid rgba(212, 175, 55, 0.2);
 }
 
 .testimonial-header__info {
@@ -1804,7 +1824,10 @@ html[dir="rtl"] .dest-panel__sheet {
   color: var(--color-navy);
   line-height: 1.3;
 }
-.testimonial-flag { font-style: normal; }
+
+.testimonial-flag {
+  font-style: normal;
+}
 
 .testimonial-detail {
   font-size: var(--text-xs);
@@ -1852,12 +1875,16 @@ html[dir="rtl"] .dest-panel__sheet {
   letter-spacing: 0.3px;
   transition: color 0.15s ease;
 }
-.testimonial-reply-toggle:hover { color: var(--color-navy); }
+
+.testimonial-reply-toggle:hover {
+  color: var(--color-navy);
+}
 
 .trt-chevron {
   transition: transform 0.3s ease;
   flex-shrink: 0;
 }
+
 .testimonial-reply-toggle[aria-expanded="true"] .trt-chevron {
   transform: rotate(180deg);
 }
@@ -1868,10 +1895,12 @@ html[dir="rtl"] .dest-panel__sheet {
   transition: grid-template-rows 0.35s ease;
   overflow: hidden;
 }
+
 .testimonial-reply-body.is-open {
   grid-template-rows: 1fr;
 }
-.testimonial-reply-body > * {
+
+.testimonial-reply-body>* {
   /* inner wrapper needs min-height: 0 for grid row trick */
   overflow: hidden;
 }
@@ -1924,14 +1953,19 @@ html[dir="rtl"] .dest-panel__sheet {
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease;
 }
+
 .btn-testi-more:hover {
   background: var(--color-gold);
   color: #fff;
 }
+
 .btn-testi-more svg {
   transition: transform 0.2s ease;
 }
-.btn-testi-more:hover svg { transform: translateY(2px); }
+
+.btn-testi-more:hover svg {
+  transform: translateY(2px);
+}
 
 
 /* ============================================================
@@ -3046,12 +3080,6 @@ html[dir="ltr"] .search-input {
 
 a.contact-card__value:hover {
   color: var(--color-gold);
-}
-
-.contact-card__note {
-  font-size: var(--text-xs);
-  color: var(--color-text-muted);
-  margin-top: var(--sp-1);
 }
 
 .contact-wa-hero {

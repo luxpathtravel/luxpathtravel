@@ -912,9 +912,9 @@ ON CONFLICT (slug) DO NOTHING;
 INSERT INTO site_settings (key, value, value_ar, value_en, description)
 VALUES
     -- Contact
-    ('whatsapp_number',       '+966500000000', NULL,                                    NULL,                                      'WhatsApp number with country code. Used in all CTA links.'),
+    ('whatsapp_number',       '+62500000000', NULL,                                    NULL,                                      'WhatsApp number with country code. Used in all CTA links.'),
     ('company_email',         'info@luxpathtravel.com', NULL,                           NULL,                                      'Primary contact email shown in footer.'),
-    ('company_phone',         '+966500000000', NULL,                                    NULL,                                      'Phone number shown in footer.'),
+    ('company_phone',         '+62500000000', NULL,                                    NULL,                                      'Phone number shown in footer.'),
 
     -- Social media
     ('instagram_url',         'https://instagram.com/luxpathtravel', NULL,              NULL,                                      'Instagram profile URL.'),
