@@ -1466,11 +1466,39 @@ html[dir="ltr"] .hero__overlay {
   border-color: var(--color-gold-light);
 }
 
-/* Dest "view more" button below grid */
+/* ── Extras container (Bandung + Gili — hidden until toggled) ── */
+.dest-extras {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--sp-3);
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    max-height 0.65s ease-in-out,
+    opacity    0.45s ease,
+    margin-top 0.45s ease;
+  margin-top: 0;
+}
+.dest-extras.is-open {
+  max-height: 900px; /* tall enough for 1 row of cards at any viewport */
+  opacity: 1;
+  margin-top: var(--sp-3);
+}
+
+/* ── View more / less toggle button ─────────────────────── */
 .dest-more {
   display: flex;
   justify-content: center;
   margin-top: var(--sp-8);
+}
+
+.dest-toggle-chevron {
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+.dest-more-toggle.is-open .dest-toggle-chevron {
+  transform: rotate(180deg);
 }
 
 /* ── Destination Panel (in-page drawer) ──────────────────────── */
@@ -2081,13 +2109,11 @@ html[dir="rtl"] .dest-panel__sheet {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.45), var(--shadow-md);
   opacity: 0;
   transform: scale(0.8) translateY(16px);
   pointer-events: none;
   transition: opacity var(--trans-base),
     transform var(--trans-base),
-    box-shadow var(--trans-fast),
     background var(--trans-fast);
 }
 
@@ -2099,7 +2125,6 @@ html[dir="rtl"] .dest-panel__sheet {
 
 .wa-float:hover {
   background: var(--color-whatsapp-dark);
-  box-shadow: 0 6px 28px rgba(37, 211, 102, 0.55), var(--shadow-lg);
   transform: scale(1.06) translateY(-2px);
 }
 
@@ -2348,7 +2373,8 @@ html[dir="rtl"] .dest-panel__sheet {
   }
 
   /* Destinations — 4 columns, shorter aspect */
-  .dest-grid {
+  .dest-grid,
+  .dest-extras {
     grid-template-columns: repeat(4, 1fr);
   }
 

@@ -940,7 +940,7 @@ VALUES
 
     -- Contact CTA section
     ('contact_cta_title',     NULL, 'جاهز لتخطيط رحلتك الفاخرة؟',                    'Ready to Plan Your Luxury Trip?',         'H2 on the full-width contact CTA section.'),
-    ('contact_cta_subtitle',  NULL, 'تواصل معنا الآن وسنصمم لك رحلة الأحلام خلال 24 ساعة', 'Contact us and we will design your dream trip within 24 hours', 'Subtitle on the contact CTA section.'),
+    ('contact_cta_subtitle',  NULL, 'تواصل معنا الآن وسنصمم لك رحلة الأحلام في اقل من ساعة', 'Contact us and we will design your dream trip in less than an hour.', 'Subtitle on the contact CTA section.'),
 
     -- Footer
     ('footer_tagline',        NULL, 'وكالتك المتخصصة لرحلات إندونيسيا من المملكة العربية السعودية', 'Your specialist agency for Indonesia travel from Saudi Arabia', 'Tagline shown below logo in footer.')

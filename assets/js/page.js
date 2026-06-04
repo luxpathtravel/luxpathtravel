@@ -59,7 +59,7 @@ const T = {
     'about.val4.title':     'مرشدون يتحدثون العربية',
     'about.val4.body':      'جميع مرشدينا في إندونيسيا يتحدثون العربية بطلاقة. رحلتك بلغتك وثقافتك',
     'about.cta.title':      'جاهز لتخطيط رحلة لا تُنسى؟',
-    'about.cta.sub':        'تواصل معنا الآن وسنصمم لك رحلة الأحلام خلال 24 ساعة',
+    'about.cta.sub':        'تواصل معنا الآن وسنصمم لك رحلة الأحلام في اقل من ساعة',
     'about.cta.btn':        'ابدأ محادثة على واتساب',
 
     /* Contact */
@@ -124,7 +124,7 @@ const T = {
     'about.val4.title':     'Arabic-Speaking Guides',
     'about.val4.body':      'All our guides in Indonesia speak fluent Arabic. Your trip, in your language',
     'about.cta.title':      'Ready to Plan an Unforgettable Trip?',
-    'about.cta.sub':        'Contact us now and we\'ll design your dream trip within 24 hours',
+    'about.cta.sub':        'Contact us now and we\'ll design your dream trip in less than an hour',
     'about.cta.btn':        'Start a WhatsApp conversation',
 
     /* Contact */

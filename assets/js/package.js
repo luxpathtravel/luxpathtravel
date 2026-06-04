@@ -462,7 +462,7 @@ const Breadcrumbs = {
       <li class="breadcrumbs__item">
         <a href="بكجات-سياحية-اندونيسيا">${I18n.t('breadcrumb.packages')}</a>
       </li>
-      ${destName ? `<li class="breadcrumbs__item"><a href="وجهة-سياحية-اندونيسيا?slug=${destSlug}">${destName}</a></li>` : ''}
+      ${destName ? `<li class="breadcrumbs__item"><a href="وجهات-السياحة-اندونيسيا">${destName}</a></li>` : ''}
       <li class="breadcrumbs__item breadcrumbs__item--current">${pkgTitle}</li>`;
   },
 };

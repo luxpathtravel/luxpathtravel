@@ -141,7 +141,7 @@ const T = {
 
     // Contact CTA
     'cta.title':    'جاهز لتخطيط رحلتك الفاخرة؟',
-    'cta.subtitle': 'تواصل معنا الآن وسنصمم لك رحلة الأحلام خلال 24 ساعة',
+    'cta.subtitle': 'تواصل معنا الآن وسنصمم لك رحلة الأحلام في اقل من ساعة',
     'cta.whatsapp': 'تحدث معنا على واتساب',
     'cta.phone':    'أو اتصل بنا:',
 
@@ -236,7 +236,7 @@ const T = {
     'faq.q6': 'What is the cancellation policy?',
     'faq.a6': 'Cancellation policies vary by package and travel dates. Contact us on WhatsApp for the full details of your specific package.',
     'cta.title':    'Ready to Plan Your Luxury Trip?',
-    'cta.subtitle': 'Contact us now and we\'ll design your dream trip within 24 hours',
+    'cta.subtitle': 'Contact us now and we\'ll design your dream trip in less than an hour',
     'cta.whatsapp': 'Chat with Us on WhatsApp',
     'cta.phone':    'Or call us:',
     'footer.tagline':      'Your specialist agency for Indonesia travel from Saudi Arabia',
@@ -494,6 +494,22 @@ const Navbar = {
     // Language toggles (navbar + mobile menu)
     document.querySelectorAll('.btn-lang').forEach(btn => {
       btn.addEventListener('click', () => I18n.toggle());
+    });
+
+    // Logo: scroll to top if already on homepage, otherwise navigate
+    const isHomepage = () => {
+      const p = window.location.pathname;
+      return p === '/' || p === '/index.html' || p.endsWith('/index.html');
+    };
+    document.querySelectorAll('.navbar__logo, .mobile-menu__logo').forEach(logo => {
+      logo.addEventListener('click', e => {
+        if (isHomepage()) {
+          e.preventDefault();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          this.closeMenu();
+        }
+        // On other pages: default href="/" navigation applies
+      });
     });
   },
 
@@ -880,22 +896,21 @@ const DEST_DATA = [
   },
   {
     slug: 'puncak',
-    name_ar: 'بونشاك',
+    name_ar: 'بنكاك',
     name_en: 'Puncak',
-    tagline_ar: 'جبل الطبيعة الاخصر',
+    tagline_ar: 'هروب جبلي ساحر',
     tagline_en: 'A Magical Mountain Escape',
     img: 'destination-image/puncak.webp',
     card_image_url: null,
-    card_image_url: null,
-    hero_ar: 'بونشاك هي منتجع الجبال المفضل لعائلات جاكرتا — تشتهر بمزارع الشاي الخضراء اللانهائية والهواء النقي المنعش والإطلالات الخلابة على القمم الجبلية.',
+    hero_ar: 'بنكاك هي منتجع الجبال المفضل لعائلات جاكرتا — تشتهر بمزارع الشاي الخضراء اللانهائية والهواء النقي المنعش والإطلالات الخلابة على القمم الجبلية.',
     hero_en: 'Puncak is Jakarta\'s favourite mountain resort — famous for endless green tea plantations, fresh mountain air, and stunning views of volcanic peaks.',
     attractions: [
       { icon: '🍃', name_ar: 'مزارع الشاي الكبرى', name_en: 'Grand Tea Plantations' },
-      { icon: '💧', name_ar: 'شلالات جميلة تسقط', name_en: 'Beautiful Waterfalls' },
+      { icon: '💧', name_ar: 'شلالات جميلة', name_en: 'Beautiful Waterfalls' },
       { icon: '🌺', name_ar: 'حديقة سيبوداس النباتية', name_en: 'Cibodas Botanical Garden' },
-      { icon: '⛰️', name_ar: 'قمة جبل أجمل الجمال', name_en: 'Scenic Mountain Summits' },
+      { icon: '⛰️', name_ar: 'قمم جبلية خلابة', name_en: 'Scenic Mountain Summits' },
       { icon: '🏡', name_ar: 'فيلات جبلية خاصة', name_en: 'Private Mountain Villas' },
-      { icon: '🐘', name_ar: 'تافيكمانتيري للطبيعة', name_en: 'Tafekamantri Nature Park' },
+      { icon: '🌿', name_ar: 'محمية طبيعية خضراء', name_en: 'Lush Nature Reserve' },
     ],
     luxpath_ar: [
       'إقامة في فيلات جبلية خاصة بإطلالات خلابة',
@@ -908,6 +923,103 @@ const DEST_DATA = [
       'Exclusive tea plantation tour with picking and brewing experience',
       'Family package with safe nature activities for children',
       'Just 2 hours from Jakarta — perfect for a day trip or overnight stay',
+    ],
+  },
+
+  // ── Visible by default (4th card) ────────────────────────
+  {
+    slug: 'lombok',
+    name_ar: 'لومبوك',
+    name_en: 'Lombok',
+    tagline_ar: 'جزيرة الطبيعة الخام',
+    tagline_en: 'Island of Raw Nature',
+    img: 'destination-image/lombok.webp',
+    card_image_url: null,
+    hero_ar: 'لومبوك هي جوهرة إندونيسيا الخفية — جزيرة بركانية خلابة بشواطئ بيضاء ناصعة ومياه فيروزية صافية وقمم جبلية شامخة.',
+    hero_en: 'Lombok is Indonesia\'s hidden gem — a stunning volcanic island with pristine white beaches, turquoise waters, and majestic mountain peaks.',
+    attractions: [
+      { icon: '⛰️', name_ar: 'جبل رينجاني البركاني', name_en: 'Mount Rinjani Volcano' },
+      { icon: '🏝️', name_ar: 'جزر جيلي القريبة', name_en: 'Nearby Gili Islands' },
+      { icon: '🏖️', name_ar: 'شاطئ سينغيغي الفاخر', name_en: 'Senggigi Luxury Beach' },
+      { icon: '🤿', name_ar: 'غوص وسنوركل احترافي', name_en: 'Professional Diving & Snorkeling' },
+      { icon: '🎋', name_ar: 'قرى الساساك الأصيلة', name_en: 'Authentic Sasak Villages' },
+      { icon: '🌅', name_ar: 'غروب شمس ساحر', name_en: 'Breathtaking Sunsets' },
+    ],
+    luxpath_ar: [
+      'فيلات فاخرة مطلة على المحيط الهندي',
+      'جولات خاصة لجبل رينجاني مع مرشد عربي',
+      'رحلات بحرية خاصة لجزر جيلي',
+      'تجربة ثقافة الساساك بشكل حصري',
+    ],
+    luxpath_en: [
+      'Luxury villas overlooking the Indian Ocean',
+      'Private Mount Rinjani tours with an Arabic-speaking guide',
+      'Private boat trips to the Gili Islands',
+      'Exclusive Sasak cultural experience',
+    ],
+  },
+
+  // ── Hidden initially (revealed by "عرض المزيد" button) ───
+  {
+    slug: 'bandung',
+    name_ar: 'باندونج',
+    name_en: 'Bandung',
+    tagline_ar: 'باريس جاوة',
+    tagline_en: 'Paris of Java',
+    img: 'destination-image/bandung.webp',
+    card_image_url: null,
+    hero_ar: 'باندونج، باريس جاوة، مدينة جبلية ساحرة تجمع بين الهواء المنعش والعمارة الاستعمارية الهولندية الأنيقة وأسواق التسوق الحديثة والمصانع الحصرية.',
+    hero_en: 'Bandung, the Paris of Java, is a charming mountain city that blends cool fresh air, elegant Dutch colonial architecture, modern shopping, and exclusive factory outlets.',
+    attractions: [
+      { icon: '🌋', name_ar: 'بركان تانغكوبان براهو', name_en: 'Tangkuban Perahu Volcano' },
+      { icon: '🛍️', name_ar: 'متاجر المصانع الحصرية', name_en: 'Exclusive Factory Outlets' },
+      { icon: '🕌', name_ar: 'المسجد الكبير', name_en: 'Grand Mosque of Bandung' },
+      { icon: '🌸', name_ar: 'بحيرة كاواه بوتيه', name_en: 'Kawah Putih Crater Lake' },
+      { icon: '☕', name_ar: 'مقاهي ومطاعم راقية', name_en: 'Premium Cafés & Restaurants' },
+      { icon: '🏘️', name_ar: 'الحي الاستعماري التاريخي', name_en: 'Historic Colonial Quarter' },
+    ],
+    luxpath_ar: [
+      'إقامة في الفنادق الجبلية الفاخرة بهواء منعش',
+      'جولة في متاجر المصانع مع مرشد تسوق شخصي',
+      'رحلة حصرية لبركان تانغكوبان براهو',
+      'تجربة المطبخ الجاوي الأصيل في أفضل المطاعم',
+    ],
+    luxpath_en: [
+      'Stay in luxury mountain hotels with fresh cool air',
+      'Factory outlet tour with a personal shopping guide',
+      'Exclusive trip to Tangkuban Perahu volcano',
+      'Experience authentic Javanese cuisine at top restaurants',
+    ],
+  },
+  {
+    slug: 'gili',
+    name_ar: 'جزر جيلي',
+    name_en: 'Gili Islands',
+    tagline_ar: 'جنة استوائية',
+    tagline_en: 'Tropical Paradise',
+    img: 'destination-image/gili-islands.webp',
+    card_image_url: null,
+    hero_ar: 'جزر جيلي الثلاث — جيلي ترواينغان، جيلي مينو، وجيلي أير — أكثر وجهات إندونيسيا سحراً. بلا سيارات ولا ضجيج، فقط الرمال البيضاء والمياه الزرقاء الشفافة.',
+    hero_en: 'The three Gili Islands — Gili Trawangan, Gili Meno, and Gili Air — are Indonesia\'s most enchanting destination. No cars, no noise — just white sand and crystal-clear water.',
+    attractions: [
+      { icon: '🤿', name_ar: 'غوص بين السلاحف البحرية', name_en: 'Diving with Sea Turtles' },
+      { icon: '🏖️', name_ar: 'شواطئ بيضاء نقية', name_en: 'Pure White Sand Beaches' },
+      { icon: '🌊', name_ar: 'سنوركل في مياه شفافة', name_en: 'Snorkeling in Crystal Waters' },
+      { icon: '🌅', name_ar: 'غروب شمس أسطوري', name_en: 'Legendary Sunsets' },
+      { icon: '🚴', name_ar: 'استكشاف بالدراجات', name_en: 'Explore by Bicycle' },
+      { icon: '🏝️', name_ar: 'عزلة استوائية تامة', name_en: 'Complete Tropical Seclusion' },
+    ],
+    luxpath_ar: [
+      'إقامة في فيلات مطلة على الشاطئ مباشرةً',
+      'رحلة بحرية خاصة بين الجزر الثلاث',
+      'تجربة غوص مع مدرب معتمد ومعدات حديثة',
+      'جولة مسائية حصرية لأجمل غروب شمس',
+    ],
+    luxpath_en: [
+      'Stay in beachfront villas with direct ocean access',
+      'Private boat tour between all three islands',
+      'Diving experience with a certified instructor and modern equipment',
+      'Exclusive evening sunset cruise',
     ],
   },
 ];
@@ -1043,33 +1155,82 @@ const DestPanel = {
 
 /* ── Destinations module ─────────────────────────────────── */
 const Destinations = {
+  VISIBLE_COUNT: 4, // first 4 always visible; rest revealed by toggle
+
   render(/* _unused — data is hardcoded in DEST_DATA */) {
     const grid = document.getElementById('destGrid');
     if (!grid) return;
 
-    const lang = I18n.get();
+    const lang    = I18n.get();
+    // data-show-all="true" on the dedicated destinations page → skip toggle
+    const showAll = grid.dataset.showAll === 'true';
+    const visible = showAll ? DEST_DATA : DEST_DATA.slice(0, this.VISIBLE_COUNT);
+    const extra   = showAll ? []         : DEST_DATA.slice(this.VISIBLE_COUNT);
 
-    // Render exactly 3 hardcoded cards
-    grid.innerHTML = DEST_DATA.map(d => this.cardHTML(d, lang)).join('');
+    // ── Main grid (always visible) ──────────────────────────
+    grid.innerHTML = visible.map(d => this.cardHTML(d, lang)).join('');
 
-    // "View more" button below grid (inside the section container)
-    const existing = document.getElementById('destMoreBtn');
-    if (!existing) {
-      const wrap = document.createElement('div');
-      wrap.className = 'dest-more section-footer reveal';
-      wrap.id = 'destMoreBtn';
-      const label = lang === 'ar' ? 'عرض المزيد من الوجهات' : 'View More Destinations';
-      wrap.innerHTML = `<a href="وجهات-السياحة-اندونيسيا" class="btn btn--outline-navy">${label}</a>`;
-      grid.parentElement.appendChild(wrap);
-    } else {
-      // Re-render label on language switch
-      const a = existing.querySelector('a');
-      if (a) a.textContent = lang === 'ar' ? 'عرض المزيد من الوجهات' : 'View More Destinations';
+    // ── Extras + toggle (index page only — skip on destinations page) ──
+    if (!showAll) {
+      let extrasEl = document.getElementById('destExtras');
+      if (!extrasEl) {
+        extrasEl = document.createElement('div');
+        extrasEl.id        = 'destExtras';
+        extrasEl.className = 'dest-extras';
+        grid.after(extrasEl);
+      }
+      extrasEl.innerHTML = extra.map(d => this.cardHTML(d, lang)).join('');
+
+      let btnWrap = document.getElementById('destMoreBtn');
+      if (!btnWrap) {
+        btnWrap = document.createElement('div');
+        btnWrap.className = 'dest-more';
+        btnWrap.id        = 'destMoreBtn';
+        extrasEl.after(btnWrap);
+
+        btnWrap.innerHTML = `
+          <button type="button" class="btn btn--outline-navy dest-more-toggle"
+                  id="destMoreToggle" aria-expanded="false">
+            <span id="destMoreLabel"></span>
+            <svg class="dest-toggle-chevron" xmlns="http://www.w3.org/2000/svg"
+                 width="16" height="16" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2.5"
+                 stroke-linecap="round" aria-hidden="true">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </button>`;
+
+        document.getElementById('destMoreToggle').addEventListener('click', () => {
+          const opening = !extrasEl.classList.contains('is-open');
+          extrasEl.classList.toggle('is-open', opening);
+          if (opening) ScrollReveal.observe(extrasEl);
+          Destinations._syncToggleBtn(extrasEl);
+        });
+      }
+
+      this._syncToggleBtn(extrasEl);
+      this.bindCards(extrasEl);
+      Packages.lazyLoadImages(extrasEl);
     }
 
+    // ── Bind cards & lazy-load ──────────────────────────────
     this.bindCards(grid);
     Packages.lazyLoadImages(grid);
     ScrollReveal.observe(grid);
+  },
+
+  // Updates button text + aria + chevron — called on render & on click
+  _syncToggleBtn(extrasEl) {
+    const lang   = I18n.get();
+    const isOpen = extrasEl.classList.contains('is-open');
+    const btn    = document.getElementById('destMoreToggle');
+    const label  = document.getElementById('destMoreLabel');
+    if (!btn || !label) return;
+    label.textContent = isOpen
+      ? (lang === 'ar' ? 'عرض أقل' : 'View Less')
+      : (lang === 'ar' ? 'عرض المزيد' : 'View More');
+    btn.setAttribute('aria-expanded', String(isOpen));
+    btn.classList.toggle('is-open', isOpen);
   },
 
   cardHTML(d, lang) {
