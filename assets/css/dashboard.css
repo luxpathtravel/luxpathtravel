@@ -106,6 +106,12 @@
    ============================================================ */
 html { font-size: 16px; -webkit-text-size-adjust: 100%; }
 
+/* Ensure the HTML `hidden` attribute always wins, even when a CSS class
+   sets display:flex/grid. Without this, .modal-backdrop[hidden] is still
+   visible because the class rule has higher specificity than the browser
+   built-in `[hidden]{display:none}`. */
+[hidden] { display: none !important; }
+
 body {
   font-family: var(--font-ui);
   font-size: var(--text-md);
@@ -930,7 +936,10 @@ h1, h2, h3, h4 { color: var(--navy); line-height: 1.2; }
   border: 1px solid var(--border);
   border-radius: var(--r-xl);
   box-shadow: var(--shadow-md);
-  overflow: hidden;
+  /* overflow:clip clips children to border-radius (same visual as hidden)
+     but does NOT create a scroll container, so position:sticky on
+     .form-header and .form-tabs-nav works correctly. */
+  overflow: clip;
 }
 
 .form-header {
@@ -965,7 +974,8 @@ h1, h2, h3, h4 { color: var(--navy); line-height: 1.2; }
   overflow-x: auto;
   scrollbar-width: none;
   position: sticky;
-  top: calc(var(--topbar-h) + 66px);
+  /* form-header height = 20px pad + 30px title + 2px gap + 18px subtitle + 20px pad + 1px border = 91px */
+  top: calc(var(--topbar-h) + 91px);
   z-index: 40;
   background: var(--surface);
   padding: 0 var(--sp-6);
@@ -1552,7 +1562,7 @@ h1, h2, h3, h4 { color: var(--navy); line-height: 1.2; }
   .topbar__menu { display: flex; }
   .view { padding: var(--sp-5) var(--sp-4); }
   .form-body { padding: var(--sp-5) var(--sp-4); }
-  .form-tabs-nav { padding: 0 var(--sp-4); top: calc(var(--topbar-h) + 80px); }
+  .form-tabs-nav { padding: 0 var(--sp-4); top: calc(var(--topbar-h) + 91px); }
   .incl-builder { grid-template-columns: 1fr; }
   .field-row { grid-template-columns: 1fr; }
   .field-row--3 { grid-template-columns: 1fr 1fr; }
@@ -1597,4 +1607,305 @@ h1, h2, h3, h4 { color: var(--navy); line-height: 1.2; }
   .modal__actions { flex-direction: column-reverse; }
   .modal__actions .btn { width: 100%; }
   #toastContainer { right: var(--sp-4); left: var(--sp-4); max-width: unset; }
+}
+
+
+/* ============================================================
+   25. TESTIMONIALS
+   ============================================================ */
+
+/* ── List Row ──────────────────────────────────────────────── */
+.testi-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: var(--sp-5);
+  padding: var(--sp-4) var(--sp-5);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  margin-bottom: var(--sp-3);
+  transition: box-shadow var(--trans-fast);
+}
+.testi-row:hover { box-shadow: var(--shadow-sm); }
+.testi-row--skeleton { pointer-events: none; display: flex; gap: var(--sp-4); }
+
+.testi-row__stars {
+  font-size: 1.05rem;
+  color: var(--gold);
+  letter-spacing: 2px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.testi-row__info { min-width: 0; }
+
+.testi-row__name {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 3px;
+}
+
+.testi-row__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-bottom: var(--sp-1);
+}
+
+.testi-row__excerpt {
+  font-size: var(--text-xs);
+  color: var(--text-light);
+  font-style: italic;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 480px;
+}
+
+.testi-row__badges {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--sp-1);
+}
+
+.testi-reply-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--text-xs);
+  color: var(--navy);
+  background: #f0f4ff;
+  border: 1px solid #c7d5f8;
+  border-radius: var(--r-sm);
+  padding: 2px var(--sp-2);
+  white-space: nowrap;
+}
+
+.testi-row__actions {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+/* ── Form Body ─────────────────────────────────────────────── */
+.testi-form-body {
+  padding: var(--sp-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-6);
+}
+
+/* ── Form Sections ─────────────────────────────────────────── */
+.testi-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  padding: var(--sp-6);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+}
+
+/* ── Star Rating Selector ──────────────────────────────────── */
+.star-selector {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.star-btn {
+  font-size: 1.9rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--border-dark);
+  padding: 0 2px;
+  line-height: 1;
+  transition: color var(--trans-fast), transform var(--trans-fast);
+}
+.star-btn:hover,
+.star-btn.is-active { color: var(--gold); }
+.star-btn:hover { transform: scale(1.2); }
+
+.star-selector__label {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-left: var(--sp-3);
+  min-width: 36px;
+}
+
+/* ── Company Reply Section ─────────────────────────────────── */
+.testi-section--reply {
+  border-color: #d4af37;
+  background: linear-gradient(135deg, #fffdf5 0%, #faf8ee 100%);
+}
+
+.testi-reply-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-6);
+}
+
+.testi-reply-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  animation: testi-reply-in 0.18s ease;
+}
+@keyframes testi-reply-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.testi-reply-author {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: var(--sp-2) var(--sp-3);
+}
+
+/* ── Responsive ────────────────────────────────────────────── */
+@media (max-width: 1023px) {
+  .testi-form-body { padding: var(--sp-5) var(--sp-4); }
+}
+
+@media (max-width: 767px) {
+  .testi-row {
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto auto;
+    gap: var(--sp-2) var(--sp-4);
+  }
+  .testi-row__stars   { grid-column: 1; grid-row: 1; }
+  .testi-row__badges  { grid-column: 2; grid-row: 1 / 3; align-self: start; }
+  .testi-row__info    { grid-column: 1; grid-row: 2; }
+  .testi-row__actions { grid-column: 1 / -1; grid-row: 3; justify-content: flex-end; border-top: 1px solid var(--border); padding-top: var(--sp-2); margin-top: var(--sp-1); }
+  .testi-row__excerpt { max-width: 100%; }
+  .star-btn { font-size: 1.6rem; }
+  .testi-reply-header { flex-direction: column; gap: var(--sp-3); }
+}
+
+
+/* ============================================================
+   26. HERO IMAGES
+   ============================================================ */
+
+.hero-img-shell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-6);
+}
+
+.hero-img-shell__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-6);
+  flex-wrap: wrap;
+}
+
+.hero-img-shell__title {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: var(--sp-2);
+}
+
+.hero-img-shell__desc {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  line-height: 1.65;
+  max-width: 600px;
+}
+
+.hero-img-shell__desc code {
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 1px 6px;
+  font-size: 0.85em;
+  color: var(--navy);
+}
+
+/* ── Image grid ─────────────────────────────────────────── */
+.hero-img-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--sp-5);
+}
+
+/* ── Individual image card ──────────────────────────────── */
+.hero-img-card {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: clip;
+  transition: border-color var(--trans-fast), box-shadow var(--trans-fast);
+}
+
+.hero-img-card.is-active {
+  border-color: var(--success);
+  box-shadow: 0 0 0 3px rgba(16,185,129,0.12);
+}
+
+.hero-img-card__thumb-wrap {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--surface-alt);
+}
+
+.hero-img-card__thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+.hero-img-card:hover .hero-img-card__thumb {
+  transform: scale(1.04);
+}
+
+.hero-img-card__badge {
+  position: absolute;
+  top: var(--sp-2);
+  inset-inline-start: var(--sp-2);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  padding: 3px var(--sp-2);
+  border-radius: var(--r-sm);
+  letter-spacing: 0.3px;
+}
+.hero-img-card__badge--on  { background: var(--success); color: #fff; }
+.hero-img-card__badge--off { background: rgba(0,0,0,0.45); color: #fff; }
+
+.hero-img-card__body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+}
+
+.hero-img-card__label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--navy);
+}
+
+@media (max-width: 767px) {
+  .hero-img-grid { grid-template-columns: repeat(2, 1fr); }
+  .hero-img-shell__header { flex-direction: column; align-items: stretch; }
+  .hero-img-shell__header .btn { width: 100%; justify-content: center; }
 }

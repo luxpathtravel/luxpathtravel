@@ -48,7 +48,7 @@
   <!-- Fonts: preconnect for performance -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Tajawal:wght@300;400;500;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Tajawal:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <!-- Critical styles -->
   <link rel="stylesheet" href="assets/css/styles.css">
@@ -406,26 +406,16 @@
         </header>
 
         <!-- JS renders testimonials here -->
-        <div class="testimonials-track" id="testimonialsTrack" role="list" aria-live="polite">
-          <!-- Skeleton -->
-          <div class="testimonial-card testimonial-card--skeleton" role="listitem" aria-hidden="true">
-            <div class="skeleton skeleton--text" style="width:30%"></div>
-            <div class="skeleton skeleton--text"></div>
-            <div class="skeleton skeleton--text" style="width:80%"></div>
-            <div class="skeleton skeleton--text" style="width:90%"></div>
-          </div>
-          <div class="testimonial-card testimonial-card--skeleton" role="listitem" aria-hidden="true">
-            <div class="skeleton skeleton--text" style="width:30%"></div>
-            <div class="skeleton skeleton--text"></div>
-            <div class="skeleton skeleton--text" style="width:75%"></div>
-            <div class="skeleton skeleton--text" style="width:85%"></div>
-          </div>
-          <div class="testimonial-card testimonial-card--skeleton" role="listitem" aria-hidden="true">
-            <div class="skeleton skeleton--text" style="width:30%"></div>
-            <div class="skeleton skeleton--text"></div>
-            <div class="skeleton skeleton--text" style="width:85%"></div>
-            <div class="skeleton skeleton--text" style="width:70%"></div>
-          </div>
+        <div class="testimonials-track" id="testimonialsTrack" role="list" aria-live="polite" aria-label="Customer reviews">
+          <!-- Populated by JS — no skeletons needed, section appears once data is ready -->
+        </div>
+
+        <!-- Load more button — shown by JS when there are >4 testimonials -->
+        <div class="testi-more-wrap" id="testiMoreWrap" hidden>
+          <button class="btn-testi-more" id="testiMoreBtn" type="button">
+            <span data-i18n="testimonials.loadMore">عرض المزيد</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
         </div>
       </div>
     </section>
@@ -609,3 +599,4 @@
 
 </body>
 </html>
+

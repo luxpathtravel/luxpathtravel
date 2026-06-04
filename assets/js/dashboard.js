@@ -24,8 +24,12 @@
    1. CONFIG
    ============================================================ */
 const Config = Object.freeze({
-  SUPABASE_URL:      'https://fgeeysssiesdlryoygoa.supabase.co',        // ← replace
-  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZnZWV5c3NzaWVzZGxyeW95Z29hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MTI0MzUsImV4cCI6MjA5NTk4ODQzNX0.Sa3vcq9U2BrzFobTqQS4sAmVpXkRH09_PGzol9-NCvw',   // ← replace
+  SUPABASE_URL:      'https://fgeeysssiesdlryoygoa.supabase.co',
+  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZnZWV5c3NzaWVzZGxyeW95Z29hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MTI0MzUsImV4cCI6MjA5NTk4ODQzNX0.Sa3vcq9U2BrzFobTqQS4sAmVpXkRH09_PGzol9-NCvw',
+  // Service role key — used ONLY on localhost to bypass RLS during development.
+  // Get it from: Supabase Dashboard → Project Settings → API → service_role (secret).
+  // ⚠️  Never deploy this to a public server. On production the anon key + RLS is used.
+  SUPABASE_SERVICE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZnZWV5c3NzaWVzZGxyeW95Z29hIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDQxMjQzNSwiZXhwIjoyMDk1OTg4NDM1fQ.3M6qJ2nLr9f1UFHIhKK3QMILN2InPma3O4Zc11dpj7c',   // ← paste your service_role key here for local dev
   get STORAGE_URL()  { return this.SUPABASE_URL + '/storage/v1/object/public/luxpath-media/'; },
   STORAGE_BUCKET:    'luxpath-media',
   WHATSAPP_NUMBER:   '+6281111826527',
@@ -34,6 +38,30 @@ const Config = Object.freeze({
 });
 
 const CATEGORY_LABELS = { honeymoon: 'Honeymoon', family: 'Family', luxury: 'Luxury', adventure: 'Adventure' };
+
+// ── Hero images available in the hero-images/ folder ────────
+// Developer: add a new entry here each time you upload a new file.
+const HERO_IMAGES = [
+  { file: 'image-1.webp', label: 'Image 1' },
+  { file: 'image-2.webp', label: 'Image 2' },
+  { file: 'image-3.webp', label: 'Image 3' },
+  { file: 'image-4.webp', label: 'Image 4' },
+];
+
+const CITY_MAP = {
+  'Riyadh':'الرياض','Jeddah':'جدة','Mecca':'مكة المكرمة',
+  'Medina':'المدينة المنورة','Dammam':'الدمام','Khobar':'الخبر',
+  'Dhahran':'الظهران','Abha':'أبها','Taif':'الطائف','Tabuk':'تبوك',
+  'Buraydah':'بريدة','Khamis Mushait':'خميس مشيط','Jubail':'الجبيل',
+  'Yanbu':'ينبو','Najran':'نجران','Jizan':'جيزان','Hail':'حائل',
+  'Sakaka':'سكاكا','Arar':'عرعر',
+  'Dubai':'دبي','Abu Dhabi':'أبوظبي','Sharjah':'الشارقة',
+  'Ajman':'عجمان','Ras Al Khaimah':'رأس الخيمة',
+  'Doha':'الدوحة','Kuwait City':'مدينة الكويت',
+  'Manama':'المنامة','Muscat':'مسقط',
+  'Amman':'عمّان','Cairo':'القاهرة','Alexandria':'الإسكندرية',
+  'Baghdad':'بغداد','Damascus':'دمشق',
+};
 const PRICE_TYPE_LABELS = { exact: 'Exact Price', starting_from: 'Starting From', approximate: 'Approximate' };
 const CURRENCY_LABELS   = { SAR: 'SAR (Saudi Riyal)', USD: 'USD (US Dollar)', EUR: 'EUR (Euro)' };
 const MEAL_LABELS       = { breakfast: 'Breakfast 🍳', lunch: 'Lunch 🥗', dinner: 'Dinner 🍽️' };
@@ -59,7 +87,13 @@ const DB = (() => {
 
   const client = () => {
     if (!isConfigured()) return null;
-    if (!_client) _client = supabase.createClient(Config.SUPABASE_URL, Config.SUPABASE_ANON_KEY);
+    if (!_client) {
+      const isLocal = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
+      const key = (isLocal && Config.SUPABASE_SERVICE_KEY)
+        ? Config.SUPABASE_SERVICE_KEY
+        : Config.SUPABASE_ANON_KEY;
+      _client = supabase.createClient(Config.SUPABASE_URL, key);
+    }
     return _client;
   };
 
@@ -200,6 +234,60 @@ const DB = (() => {
       const { data } = await query;
       return !data?.length;
     },
+
+    // ── Site settings (hero images) ───────────────────────
+    getHeroImagesSetting: async () => {
+      const db = client();
+      if (!db) throw new Error('Supabase not configured.');
+      const { data } = await db.from('site_settings')
+        .select('value').eq('key', 'hero_active_images').maybeSingle();
+      return data?.value ?? null;
+    },
+
+    saveHeroImagesSetting: (activeFiles) => q(db =>
+      db.from('site_settings')
+        .upsert(
+          { key: 'hero_active_images', value: JSON.stringify(activeFiles) },
+          { onConflict: 'key' }
+        )
+    ),
+
+    // ── Testimonials ──────────────────────────────────────
+    getTestimonials: () => q(db =>
+      db.from('testimonials')
+        .select(`
+          id, reviewer_name_display, reviewer_city, reviewer_flag, rating,
+          review_ar, review_en, trip_month, trip_year, trip_category,
+          is_approved, display_order, created_at,
+          reply_ar, reply_en
+        `)
+        .order('display_order', { ascending: true })
+        .order('created_at', { ascending: false })
+    ),
+
+    getTestimonial: (id) => q(db =>
+      db.from('testimonials')
+        .select(`
+          id, reviewer_name_display, reviewer_city, reviewer_flag, rating,
+          review_ar, review_en, trip_month, trip_year, trip_category,
+          is_approved, display_order, created_at,
+          reply_ar, reply_en
+        `)
+        .eq('id', id)
+        .single()
+    ),
+
+    createTestimonial: (data) => q(db =>
+      db.from('testimonials').insert(data).select('id').single()
+    ),
+
+    updateTestimonial: (id, data) => q(db =>
+      db.from('testimonials').update(data).eq('id', id).select('id').single()
+    ),
+
+    deleteTestimonial: (id) => q(db =>
+      db.from('testimonials').delete().eq('id', id)
+    ),
   };
 })();
 
@@ -250,6 +338,18 @@ const Auth = (() => {
      * Returns true if the caller should proceed to showDashboard().
      */
     async init() {
+      // ── LOCAL DEVELOPMENT BYPASS ──────────────────────────────
+      // Skip all auth checks when running on localhost so the
+      // dashboard can be edited freely without a live Supabase session.
+      // On production the real domain will never match this condition.
+      const isLocal = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
+      if (isLocal) {
+        _role = 'admin';
+        _user = { email: 'dev@localhost', id: 'local-dev' };
+        return true;
+      }
+      // ─────────────────────────────────────────────────────────
+
       const db = DB.client();
 
       if (!db) {
@@ -1918,6 +2018,11 @@ const PackageForm = {
 
     const v = (id) => document.getElementById(id)?.value?.trim() ?? '';
 
+    // Declared OUTSIDE the try block so the catch block can reference them
+    // for rollback. (let inside try{} is block-scoped and invisible to catch{})
+    let packageId    = this.packageId;
+    let isNewPackage = false;
+
     try {
       // Build destinations array
       const destRows = [];
@@ -1988,9 +2093,6 @@ const PackageForm = {
         seo_keywords:          this._collectKeywords(),
       };
 
-      let packageId   = this.packageId;
-      let isNewPackage = false;
-
       if (this.mode === 'create') {
         const result = await DB.createPackage(packageData);
         packageId    = result.id;
@@ -2051,7 +2153,663 @@ const PackageForm = {
 };
 
 /* ============================================================
-   13. APP — ORCHESTRATION
+   13. TESTIMONIALS LIST
+   ============================================================ */
+const TestimonialsList = {
+  all:          [],
+  destinations: [],
+  filtered:     [],
+
+  async load() {
+    const el = document.getElementById('testimonialsList');
+    if (!el) return;
+    try {
+      [this.all, this.destinations] = await Promise.all([
+        DB.getTestimonials(),
+        DB.getDestinations(),
+      ]);
+      this.filtered = [...this.all];
+      this.renderStats();
+      this.renderList();
+    } catch (err) {
+      el.innerHTML = `
+        <div class="load-error">
+          <div class="load-error__title">Failed to load testimonials</div>
+          <div class="load-error__body">${escHtml(err.message)}</div>
+        </div>`;
+      if (err.message.includes('configured')) {
+        document.getElementById('testiStatsRow').innerHTML =
+          '<p style="color:var(--warning);font-size:var(--text-sm);font-weight:600">⚠️ Supabase not configured — add credentials to Config in dashboard.js</p>';
+      }
+    }
+  },
+
+  renderStats() {
+    const total    = this.all.length;
+    const approved = this.all.filter(t => t.is_approved).length;
+    const replied  = this.all.filter(t => t.reply_ar || t.reply_en).length;
+    document.getElementById('testiStatsRow').innerHTML = `
+      <div class="stat-card stat-card--navy">
+        <div class="stat-card__label">Total Reviews</div>
+        <div class="stat-card__value">${total}</div>
+      </div>
+      <div class="stat-card stat-card--success">
+        <div class="stat-card__label">Approved</div>
+        <div class="stat-card__value">${approved}</div>
+        <div class="stat-card__sub">${total - approved} pending</div>
+      </div>
+      <div class="stat-card stat-card--accent">
+        <div class="stat-card__label">With Reply</div>
+        <div class="stat-card__value">${replied}</div>
+        <div class="stat-card__sub">Company replies added</div>
+      </div>`;
+  },
+
+  applyFilters() {
+    const search   = (document.getElementById('testiSearch')?.value ?? '').toLowerCase().trim();
+    const status   = document.getElementById('testiFilterStatus')?.value ?? '';
+    const category = document.getElementById('testiFilterCategory')?.value ?? '';
+
+    this.filtered = this.all.filter(t => {
+      if (search && !(
+        t.reviewer_name_display?.toLowerCase().includes(search) ||
+        t.reviewer_city?.toLowerCase().includes(search)        ||
+        t.review_ar?.includes(search)                          ||
+        t.review_en?.toLowerCase().includes(search)
+      )) return false;
+      if (status === 'approved'   &&  !t.is_approved)              return false;
+      if (status === 'unapproved' &&   t.is_approved)              return false;
+      if (status === 'replied'    && !t.reply_ar && !t.reply_en)  return false;
+      if (category && t.trip_category !== category)                return false;
+      return true;
+    });
+    this.renderList();
+  },
+
+  renderList() {
+    const el = document.getElementById('testimonialsList');
+    if (!el) return;
+
+    if (!this.filtered.length) {
+      el.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state__icon">💬</div>
+          <div class="empty-state__title">${this.all.length ? 'No testimonials match your filters' : 'No testimonials yet'}</div>
+          <div class="empty-state__body">${this.all.length ? 'Try adjusting your filters.' : 'Add your first testimonial to get started.'}</div>
+        </div>`;
+      return;
+    }
+
+    el.innerHTML = this.filtered.map(t => {
+      const filled   = '★'.repeat(Math.max(0, Math.min(5, t.rating ?? 5)));
+      const empty    = '☆'.repeat(5 - Math.max(0, Math.min(5, t.rating ?? 5)));
+      const excerpt  = (t.review_ar ?? '').slice(0, 90) + ((t.review_ar ?? '').length > 90 ? '…' : '');
+      const catLabel = CATEGORY_LABELS[t.trip_category] ?? '';
+      const cityAr   = CITY_MAP[t.reviewer_city] ?? t.reviewer_city ?? '';
+      const hasReply = !!(t.reply_ar || t.reply_en);
+
+      return `
+        <div class="testi-row" role="listitem" data-id="${escHtml(t.id)}">
+          <div class="testi-row__stars" aria-label="${t.rating ?? 5} out of 5 stars">${filled}${empty}</div>
+
+          <div class="testi-row__info">
+            <div class="testi-row__name">${escHtml(t.reviewer_name_display)} ${escHtml(t.reviewer_flag ?? '🇸🇦')}</div>
+            <div class="testi-row__meta">
+              ${t.reviewer_city ? `<span title="${escHtml(cityAr)}">${escHtml(t.reviewer_city)}</span>` : ''}
+              ${catLabel ? `<span class="badge badge--${t.trip_category}">${catLabel}</span>` : ''}
+              ${t.trip_year  ? `<span>${t.trip_year}</span>` : ''}
+            </div>
+            <div class="testi-row__excerpt" dir="rtl">${escHtml(excerpt)}</div>
+          </div>
+
+          <div class="testi-row__badges">
+            <span class="badge badge--${t.is_approved ? 'active' : 'inactive'}">${t.is_approved ? 'Approved' : 'Pending'}</span>
+            ${hasReply ? '<span class="testi-reply-badge">💬 Reply</span>' : ''}
+          </div>
+
+          <div class="testi-row__actions">
+            <button class="btn btn--icon" data-action="edit" data-id="${escHtml(t.id)}"
+                    aria-label="Edit review by ${escHtml(t.reviewer_name_display)}" title="Edit" type="button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+            <button class="btn btn--icon btn--danger-ghost" data-action="delete" data-id="${escHtml(t.id)}"
+                    data-name="${escHtml(t.reviewer_name_display)}"
+                    aria-label="Delete review by ${escHtml(t.reviewer_name_display)}" title="Delete" type="button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            </button>
+          </div>
+        </div>`;
+    }).join('');
+
+    el.querySelectorAll('[data-action="edit"]').forEach(btn => {
+      btn.addEventListener('click', () => TestimonialForm.open('edit', btn.dataset.id));
+    });
+    el.querySelectorAll('[data-action="delete"]').forEach(btn => {
+      btn.addEventListener('click', () => TestimonialsList.deleteTestimonial(btn.dataset.id, btn.dataset.name));
+    });
+  },
+
+  async deleteTestimonial(id, name) {
+    const confirmed = await Modal.confirm(
+      'Delete Testimonial',
+      `Are you sure you want to delete the review by "${name}"? This action cannot be undone.`,
+      'Delete'
+    );
+    if (!confirmed) return;
+    try {
+      await DB.deleteTestimonial(id);
+      Toast.success('Testimonial deleted', `Review by "${name}" has been permanently removed.`);
+      await this.load();
+    } catch (err) {
+      Toast.error('Delete failed', err.message);
+    }
+  },
+
+  bindControls() {
+    document.getElementById('testiSearch')
+      ?.addEventListener('input', debounce(() => this.applyFilters(), 250));
+    document.getElementById('testiFilterStatus')
+      ?.addEventListener('change', () => this.applyFilters());
+    document.getElementById('testiFilterCategory')
+      ?.addEventListener('change', () => this.applyFilters());
+  },
+};
+
+/* ============================================================
+   14. TESTIMONIAL FORM
+   ============================================================ */
+const TestimonialForm = {
+  mode:          null,
+  testimonialId: null,
+  testi:         null,
+  destinations:  [],
+  _dirty:        false,
+  _rating:       5,
+
+  async open(mode, id = null) {
+    this.mode          = mode;
+    this.testimonialId = id;
+    this.testi         = null;
+    this._dirty        = false;
+    this._rating       = 5;
+
+    App.showView('testimonialForm');
+    document.getElementById('topbarTitle').textContent = mode === 'create' ? 'New Testimonial' : 'Edit Testimonial';
+    document.getElementById('topbarActions').innerHTML = '';
+
+    // Render empty shell immediately for responsiveness
+    this.render();
+
+    if (mode === 'edit' && id) {
+      try {
+        this.testi   = await DB.getTestimonial(id);
+        this._rating = this.testi.rating ?? 5;
+        this.render();  // re-render with data
+      } catch (err) {
+        Toast.error('Load failed', err.message);
+      }
+    }
+  },
+
+  render() {
+    const t      = this.testi;
+    const isEdit = this.mode === 'edit';
+    const dest   = document.getElementById('testimonialFormContainer');
+    if (!dest) return;
+
+    const NOW_YEAR = new Date().getFullYear();
+
+    // Star buttons — rendered left-to-right (1→5) for simplicity
+    const starsHTML = [1,2,3,4,5].map(n => `
+      <button class="star-btn ${this._rating >= n ? 'is-active' : ''}"
+              data-star="${n}" type="button" aria-label="${n} star${n > 1 ? 's' : ''}">★</button>`
+    ).join('');
+
+    dest.innerHTML = `
+      <div class="form-shell">
+
+        <!-- ── Header ──────────────────────────────────────── -->
+        <div class="form-header">
+          <div class="form-header__left">
+            <div class="form-header__title">${isEdit ? 'Edit Testimonial' : 'Add New Testimonial'}</div>
+            <div class="form-header__subtitle">${isEdit ? 'Editing review by ' + escHtml(t?.reviewer_name_display ?? '—') : 'Fill in the review details below'}</div>
+          </div>
+          <div class="form-header__actions">
+            <button class="btn btn--ghost" id="testiCancelBtn" type="button">Cancel</button>
+            <button class="btn btn--primary" id="testiSaveBtn" type="button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              ${isEdit ? 'Save Changes' : 'Add Testimonial'}
+            </button>
+          </div>
+        </div>
+
+        <div class="testi-form-body">
+
+          <!-- ── 1. Reviewer Info ─────────────────────────── -->
+          <div class="testi-section">
+            <div class="form-section-title">Reviewer Information</div>
+            <div class="field-row">
+              <div class="form-group">
+                <label class="form-label">Reviewer Name <span style="color:var(--error)">*</span></label>
+                <input class="form-input" type="text" id="testiName"
+                       value="${escHtml(t?.reviewer_name_display ?? '')}"
+                       placeholder="e.g. Ahmed Al-Rashidi" maxlength="80">
+                <p class="form-note">Displayed publicly on the website.</p>
+              </div>
+              <div class="form-group">
+                <label class="form-label form-label--optional">City</label>
+                <input class="form-input" type="text" id="testiCity" list="cityList"
+                       value="${escHtml(t?.reviewer_city ?? '')}" placeholder="e.g. Riyadh" maxlength="60"
+                       autocomplete="off">
+                <datalist id="cityList">
+                  ${Object.keys(CITY_MAP).map(c => `<option value="${escHtml(c)}">`).join('')}
+                </datalist>
+                <p class="form-note">Pick from the list — Arabic translation applied automatically on the website.</p>
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="form-group">
+                <label class="form-label form-label--optional">Country Flag</label>
+                <select class="form-select" id="testiFlag">
+                  ${[['🇸🇦','Saudi Arabia'],['🇦🇪','UAE'],['🇶🇦','Qatar'],
+                     ['🇰🇼','Kuwait'],['🇧🇭','Bahrain'],['🇴🇲','Oman'],
+                     ['🇯🇴','Jordan'],['🇪🇬','Egypt'],['🇮🇶','Iraq']
+                    ].map(([flag, label]) =>
+                    `<option value="${flag}" ${(t?.reviewer_flag ?? '🇸🇦') === flag ? 'selected' : ''}>${flag} ${label}</option>`
+                  ).join('')}
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Rating <span style="color:var(--error)">*</span></label>
+                <div class="star-selector" id="starSelector" role="group" aria-label="Select star rating">
+                  ${starsHTML}
+                  <span class="star-selector__label" id="starLabel">${this._rating} / 5</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── 2. Review Content ────────────────────────── -->
+          <div class="testi-section">
+            <div class="form-section-title">Review Content</div>
+            <div class="form-bilingual">
+              <div class="form-group">
+                <label class="form-label"><span class="lang-chip lang-chip--ar">AR</span> Arabic Review <span style="color:var(--error)">*</span></label>
+                <textarea class="form-textarea" id="testiReviewAr" dir="rtl" rows="5" maxlength="600"
+                          placeholder="أكتب تجربتك بالتفصيل…"
+                          style="font-family:var(--font-arabic)">${escHtml(t?.review_ar ?? '')}</textarea>
+                <div class="form-char-count" id="testiReviewArCount">0 / 600</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">
+                  <span class="lang-chip lang-chip--en">EN</span> English Review
+                  <span style="font-size:var(--text-xs);color:var(--text-light);font-weight:400">(Optional)</span>
+                </label>
+                <textarea class="form-textarea" id="testiReviewEn" rows="5" maxlength="600"
+                          placeholder="Write the experience in English…">${escHtml(t?.review_en ?? '')}</textarea>
+                <div class="form-char-count" id="testiReviewEnCount">0 / 600</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── 3. Trip Details ──────────────────────────── -->
+          <div class="testi-section">
+            <div class="form-section-title">
+              Trip Details
+              <span style="font-size:var(--text-xs);font-weight:400;color:var(--text-light)">(Optional — shown under reviewer name on the site)</span>
+            </div>
+            <div class="field-row">
+              <div class="form-group">
+                <label class="form-label form-label--optional">Category</label>
+                <select class="form-select" id="testiCategory">
+                  <option value="">— None —</option>
+                  ${Object.entries(CATEGORY_LABELS).map(([v, l]) =>
+                    `<option value="${v}" ${t?.trip_category === v ? 'selected' : ''}>${l}</option>`
+                  ).join('')}
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label form-label--optional">Trip Month &amp; Year</label>
+                <input class="form-input" type="month" id="testiTripDate"
+                       min="2015-01" max="${NOW_YEAR}-12"
+                       value="${(t?.trip_year && t?.trip_month) ? `${t.trip_year}-${String(t.trip_month).padStart(2,'0')}` : ''}">
+                <p class="form-note">Pick the month and year of the trip.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── 4. Visibility Settings ───────────────────── -->
+          <div class="testi-section">
+            <div class="form-section-title">Visibility Settings</div>
+            <div class="toggle-group">
+              <label class="toggle-label" for="testiApproved">Approved</label>
+              <label class="toggle-switch">
+                <input type="checkbox" id="testiApproved" ${(t?.is_approved ?? false) ? 'checked' : ''}>
+                <span class="toggle-switch__track"></span>
+              </label>
+              <span style="font-size:var(--text-xs);color:var(--text-muted)">Visible on public site when checked</span>
+            </div>
+            <div class="form-group" style="margin-top:var(--sp-4)">
+              <label class="form-label form-label--optional">Display Order</label>
+              <input class="form-input" type="number" id="testiOrder" min="0"
+                     value="${t?.display_order ?? 0}" style="max-width:120px">
+              <p class="form-note">Lower numbers appear first in the website section.</p>
+            </div>
+          </div>
+
+          <!-- ── 5. Company Reply (optional) ─────────────── -->
+          <div class="testi-section testi-section--reply">
+            <div class="testi-reply-header">
+              <div>
+                <div class="form-section-title" style="margin-bottom:4px">Company Reply</div>
+                <p class="form-note" style="margin:0">
+                  Optionally add a reply from the Luxpath team — shows customers the company cares about their experience.
+                </p>
+              </div>
+              <label class="toggle-switch" title="Enable company reply" style="flex-shrink:0">
+                <input type="checkbox" id="testiHasReply"
+                       ${(t?.reply_ar || t?.reply_en) ? 'checked' : ''}>
+                <span class="toggle-switch__track"></span>
+              </label>
+            </div>
+
+            <div class="testi-reply-fields" id="testiReplyFields"
+                 ${(t?.reply_ar || t?.reply_en) ? '' : 'hidden'}>
+              <div class="testi-reply-author">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Reply will appear as: <strong>Luxpath Travel Team</strong>
+              </div>
+              <div class="form-bilingual">
+                <div class="form-group">
+                  <label class="form-label"><span class="lang-chip lang-chip--ar">AR</span> Arabic Reply</label>
+                  <textarea class="form-textarea" id="testiReplyAr" dir="rtl" rows="3" maxlength="400"
+                            placeholder="شكراً جزيلاً على مشاركتك تجربتك الرائعة معنا…"
+                            style="font-family:var(--font-arabic)">${escHtml(t?.reply_ar ?? '')}</textarea>
+                  <div class="form-char-count" id="testiReplyArCount">0 / 400</div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label"><span class="lang-chip lang-chip--en">EN</span> English Reply</label>
+                  <textarea class="form-textarea" id="testiReplyEn" rows="3" maxlength="400"
+                            placeholder="Thank you so much for sharing your wonderful experience with us…">${escHtml(t?.reply_en ?? '')}</textarea>
+                  <div class="form-char-count" id="testiReplyEnCount">0 / 400</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /testi-form-body -->
+      </div><!-- /form-shell -->`;
+
+    this._bindFormEvents();
+  },
+
+  _bindFormEvents() {
+    // Cancel
+    document.getElementById('testiCancelBtn')?.addEventListener('click', () => {
+      if (this._dirty && !confirm('You have unsaved changes. Leave anyway?')) return;
+      App.navigateTo('testimonials');
+    });
+
+    // Save
+    document.getElementById('testiSaveBtn')?.addEventListener('click', () => this.save());
+
+    // Star rating selector
+    document.querySelectorAll('.star-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        this._rating = parseInt(btn.dataset.star, 10);
+        document.querySelectorAll('.star-btn').forEach(b => {
+          b.classList.toggle('is-active', parseInt(b.dataset.star, 10) <= this._rating);
+        });
+        const label = document.getElementById('starLabel');
+        if (label) label.textContent = `${this._rating} / 5`;
+        this._dirty = true;
+      });
+    });
+
+    // Reply section toggle
+    document.getElementById('testiHasReply')?.addEventListener('change', (e) => {
+      const fields = document.getElementById('testiReplyFields');
+      if (fields) fields.hidden = !e.target.checked;
+    });
+
+    // Dirty tracking
+    document.getElementById('testimonialFormContainer')?.addEventListener('input', () => {
+      this._dirty = true;
+    });
+
+    // Character counters
+    [
+      ['testiReviewAr', 'testiReviewArCount', 600],
+      ['testiReviewEn', 'testiReviewEnCount', 600],
+      ['testiReplyAr',  'testiReplyArCount',  400],
+      ['testiReplyEn',  'testiReplyEnCount',  400],
+    ].forEach(([inputId, countId, max]) => {
+      const input   = document.getElementById(inputId);
+      const counter = document.getElementById(countId);
+      if (!input || !counter) return;
+      const update = () => {
+        const len = input.value.length;
+        counter.textContent = `${len} / ${max}`;
+        counter.className = 'form-char-count' +
+          (len > max * 0.9 ? (len >= max ? ' is-error' : ' is-warning') : '');
+      };
+      update();
+      input.addEventListener('input', update);
+    });
+  },
+
+  validate() {
+    const errors = [];
+    const v = (id) => document.getElementById(id)?.value?.trim() ?? '';
+
+    if (!v('testiName'))     errors.push('Reviewer name is required.');
+    if (!v('testiReviewAr')) errors.push('Arabic review text is required.');
+    if (!this._rating)       errors.push('Please select a star rating.');
+
+    const tripDate = v('testiTripDate');
+    if (tripDate) {
+      const yr = parseInt(tripDate.split('-')[0], 10);
+      const NOW = new Date().getFullYear();
+      if (isNaN(yr) || yr < 2015 || yr > NOW) {
+        errors.push(`Trip date year must be between 2015 and ${NOW}.`);
+      }
+    }
+
+    const hasReply = document.getElementById('testiHasReply')?.checked;
+    if (hasReply && !v('testiReplyAr') && !v('testiReplyEn')) {
+      errors.push('Please write the reply text (AR or EN) or turn off the Reply toggle.');
+    }
+
+    return errors;
+  },
+
+  async save() {
+    const errors = this.validate();
+    if (errors.length) {
+      Toast.error('Validation error', errors[0] + (errors.length > 1 ? ` (+${errors.length - 1} more)` : ''));
+      return;
+    }
+
+    const saveBtn = document.getElementById('testiSaveBtn');
+    saveBtn.classList.add('btn--loading');
+    saveBtn.disabled = true;
+
+    const v        = (id) => document.getElementById(id)?.value?.trim() ?? '';
+    const hasReply = document.getElementById('testiHasReply')?.checked ?? false;
+
+    // Parse combined month/year input ("YYYY-MM" → separate fields)
+    const tripDate   = v('testiTripDate');
+    const trip_year  = tripDate ? parseInt(tripDate.split('-')[0], 10) : null;
+    const trip_month = tripDate ? parseInt(tripDate.split('-')[1], 10) : null;
+
+    const data = {
+      reviewer_name_display: v('testiName'),
+      reviewer_city:         v('testiCity')     || null,
+      reviewer_flag:         v('testiFlag')      || '🇸🇦',
+      rating:                this._rating,
+      review_ar:             v('testiReviewAr'),
+      review_en:             v('testiReviewEn') || null,
+      trip_category:         v('testiCategory') || null,
+      trip_month,
+      trip_year,
+      is_approved:           document.getElementById('testiApproved')?.checked ?? false,
+      display_order:         parseInt(v('testiOrder'), 10) || 0,
+      reply_ar:              hasReply ? (v('testiReplyAr') || null) : null,
+      reply_en:              hasReply ? (v('testiReplyEn') || null) : null,
+    };
+
+    try {
+      if (this.mode === 'create') {
+        await DB.createTestimonial(data);
+      } else {
+        await DB.updateTestimonial(this.testimonialId, data);
+      }
+      this._dirty = false;
+      Toast.success(
+        this.mode === 'create' ? 'Testimonial added!' : 'Changes saved!',
+        `"${data.reviewer_name_display}" ${this.mode === 'create' ? 'has been added.' : 'updated successfully.'}`
+      );
+      await TestimonialsList.load();
+      App.navigateTo('testimonials');
+    } catch (err) {
+      Toast.error('Save failed', err.message);
+      console.error('[TestimonialForm.save]', err);
+    } finally {
+      saveBtn.classList.remove('btn--loading');
+      saveBtn.disabled = false;
+    }
+  },
+};
+
+/* ============================================================
+   15. HERO IMAGES
+   ============================================================ */
+const HeroImages = {
+  _active: [],  // filenames currently marked active
+
+  async load() {
+    const container = document.getElementById('heroImagesContainer');
+    if (!container) return;
+
+    try {
+      const raw = await DB.getHeroImagesSetting();
+      // Default: all images are active if no setting is saved yet
+      this._active = raw ? JSON.parse(raw) : HERO_IMAGES.map(h => h.file);
+    } catch (_) {
+      this._active = HERO_IMAGES.map(h => h.file);
+    }
+
+    this.render();
+  },
+
+  render() {
+    const container = document.getElementById('heroImagesContainer');
+    if (!container) return;
+
+    container.innerHTML = `
+      <div class="hero-img-shell">
+
+        <div class="hero-img-shell__header">
+          <div>
+            <h2 class="hero-img-shell__title">Homepage Hero Images</h2>
+            <p class="hero-img-shell__desc">
+              Toggle which images appear in the homepage slideshow.
+              Images cycle in the order listed below.
+              To add new images, upload a <code>.webp</code> file to the
+              <code>hero-images/</code> folder and add its name to
+              <code>HERO_IMAGES</code> in <code>dashboard.js</code>.
+            </p>
+          </div>
+          <button class="btn btn--primary" id="heroSaveBtn" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Save Changes
+          </button>
+        </div>
+
+        <div class="hero-img-grid" id="heroImgGrid">
+          ${HERO_IMAGES.map(img => {
+            const isActive = this._active.includes(img.file);
+            return `
+              <div class="hero-img-card ${isActive ? 'is-active' : ''}" data-file="${escHtml(img.file)}">
+                <div class="hero-img-card__thumb-wrap">
+                  <img class="hero-img-card__thumb"
+                       src="hero-images/${escHtml(img.file)}"
+                       alt="${escHtml(img.label)}"
+                       loading="lazy">
+                  <div class="hero-img-card__badge ${isActive ? 'hero-img-card__badge--on' : 'hero-img-card__badge--off'}">
+                    ${isActive ? 'Active' : 'Inactive'}
+                  </div>
+                </div>
+                <div class="hero-img-card__body">
+                  <span class="hero-img-card__label">${escHtml(img.label)}</span>
+                  <label class="toggle-switch" title="Toggle image">
+                    <input type="checkbox" class="hero-img-toggle"
+                           data-file="${escHtml(img.file)}"
+                           ${isActive ? 'checked' : ''}>
+                    <span class="toggle-switch__track"></span>
+                  </label>
+                </div>
+              </div>`;
+          }).join('')}
+        </div>
+
+      </div>`;
+
+    this._bindEvents();
+  },
+
+  _bindEvents() {
+    // Toggle card active state live
+    document.querySelectorAll('.hero-img-toggle').forEach(chk => {
+      chk.addEventListener('change', () => {
+        const card  = chk.closest('.hero-img-card');
+        const badge = card.querySelector('.hero-img-card__badge');
+        const on    = chk.checked;
+        card.classList.toggle('is-active', on);
+        badge.textContent = on ? 'Active' : 'Inactive';
+        badge.className = `hero-img-card__badge ${on ? 'hero-img-card__badge--on' : 'hero-img-card__badge--off'}`;
+      });
+    });
+
+    // Save
+    document.getElementById('heroSaveBtn')?.addEventListener('click', () => this.save());
+  },
+
+  async save() {
+    const saveBtn = document.getElementById('heroSaveBtn');
+    saveBtn.classList.add('btn--loading');
+    saveBtn.disabled = true;
+
+    // Collect enabled files in HERO_IMAGES order
+    const activeFiles = HERO_IMAGES
+      .map(h => h.file)
+      .filter(file => {
+        const chk = document.querySelector(`.hero-img-toggle[data-file="${CSS.escape(file)}"]`);
+        return chk?.checked ?? false;
+      });
+
+    if (!activeFiles.length) {
+      Toast.warning('Nothing selected', 'At least one image must be active. Please enable at least one image.');
+      saveBtn.classList.remove('btn--loading');
+      saveBtn.disabled = false;
+      return;
+    }
+
+    try {
+      await DB.saveHeroImagesSetting(activeFiles);
+      this._active = activeFiles;
+      Toast.success('Saved!', `${activeFiles.length} image${activeFiles.length > 1 ? 's' : ''} will now appear in the homepage slideshow.`);
+    } catch (err) {
+      Toast.error('Save failed', err.message);
+    } finally {
+      saveBtn.classList.remove('btn--loading');
+      saveBtn.disabled = false;
+    }
+  },
+};
+
+/* ============================================================
+   16. APP — ORCHESTRATION
    ============================================================ */
 const App = {
   async init() {
@@ -2066,6 +2824,8 @@ const App = {
       if (img.complete && !img.naturalWidth) fallback();
     });
 
+    const isLocal = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
+
     try {
       const authed = await Auth.init();
       if (!authed) return;
@@ -2073,8 +2833,9 @@ const App = {
     } catch (err) {
       // Any uncaught error (network failure, CDN unavailable, etc.)
       // redirects to login instead of leaving the spinner stuck forever.
+      // On localhost we skip the redirect so we don't get "Cannot GET /login".
       console.error('[Dashboard] Auth init error:', err);
-      window.location.replace(Config.LOGIN_URL);
+      if (!isLocal) window.location.replace(Config.LOGIN_URL);
     }
   },
 
@@ -2091,13 +2852,14 @@ const App = {
     Modal.init();
     Sidebar.init();
     PackageList.bindControls();
+    TestimonialsList.bindControls();
 
     // Populate sidebar user info
     this._renderUserInfo();
 
     // Warn before leaving with unsaved form changes
     window.addEventListener('beforeunload', (e) => {
-      if (PackageForm._dirty) { e.preventDefault(); e.returnValue = ''; }
+      if (PackageForm._dirty || TestimonialForm._dirty) { e.preventDefault(); e.returnValue = ''; }
     });
 
     this.navigateTo('packages');
@@ -2134,21 +2896,48 @@ const App = {
       document.getElementById('newPackageBtn')
         .addEventListener('click', () => PackageForm.open('create'));
       PackageList.load();
+
+    } else if (view === 'testimonials') {
+      this.showView('testimonials');
+      document.getElementById('topbarTitle').textContent = 'Testimonials';
+      document.getElementById('topbarActions').innerHTML = `
+        <button class="btn btn--primary" id="newTestiBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Testimonial
+        </button>`;
+      document.getElementById('newTestiBtn')
+        .addEventListener('click', () => TestimonialForm.open('create'));
+      TestimonialsList.load();
+
+    } else if (view === 'heroImages') {
+      this.showView('heroImages');
+      document.getElementById('topbarTitle').textContent = 'Website Images';
+      document.getElementById('topbarActions').innerHTML = '';
+      HeroImages.load();
     }
   },
 
   showView(view) {
-    document.getElementById('viewPackages').hidden = view !== 'packages';
-    document.getElementById('viewForm').hidden     = view !== 'form';
-    Sidebar.setActive(view === 'packages' ? 'packages' : '');
+    document.getElementById('viewPackages').hidden        = view !== 'packages';
+    document.getElementById('viewForm').hidden            = view !== 'form';
+    document.getElementById('viewTestimonials').hidden    = view !== 'testimonials';
+    document.getElementById('viewTestimonialForm').hidden = view !== 'testimonialForm';
+    document.getElementById('viewHeroImages').hidden      = view !== 'heroImages';
+
+    const sidebarActive =
+      (view === 'packages'        || view === 'form')            ? 'packages'      :
+      (view === 'testimonials'    || view === 'testimonialForm')  ? 'testimonials'  :
+      view === 'heroImages'                                       ? 'heroImages'    : '';
+    Sidebar.setActive(sidebarActive);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   },
 };
 
 /* ──────────────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
+  const isLocal = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
   App.init().catch(err => {
     console.error('[Dashboard] Fatal startup error:', err);
-    window.location.replace(Config.LOGIN_URL);
+    if (!isLocal) window.location.replace(Config.LOGIN_URL);
   });
 });

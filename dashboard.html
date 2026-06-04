@@ -22,7 +22,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="assets/css/dashboard.css">
 </head>
@@ -58,13 +58,13 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
           Packages
         </a>
-        <a href="#" class="sidebar__link sidebar__link--disabled" title="Coming soon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          Inquiries <span class="sidebar__badge">Soon</span>
+        <a href="#" class="sidebar__link" data-view="heroImages">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          Website Images
         </a>
-        <a href="#" class="sidebar__link sidebar__link--disabled" title="Coming soon">
+        <a href="#" class="sidebar__link" data-view="testimonials">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          Testimonials <span class="sidebar__badge">Soon</span>
+          Testimonials
         </a>
       </nav>
 
@@ -187,6 +187,78 @@
         <div id="packageFormContainer"></div>
       </section>
 
+      <!-- ── VIEW: TESTIMONIALS LIST ───────────────────────── -->
+      <section class="view" id="viewTestimonials" hidden aria-label="Testimonials list">
+
+        <!-- Stats -->
+        <div class="stats-row" id="testiStatsRow" aria-label="Testimonial statistics">
+          <div class="stat-card stat-card--skeleton">
+            <div class="skeleton skeleton--text" style="width:40%"></div>
+            <div class="skeleton skeleton--text skeleton--lg" style="width:50%"></div>
+          </div>
+          <div class="stat-card stat-card--skeleton">
+            <div class="skeleton skeleton--text" style="width:50%"></div>
+            <div class="skeleton skeleton--text skeleton--lg" style="width:40%"></div>
+          </div>
+          <div class="stat-card stat-card--skeleton">
+            <div class="skeleton skeleton--text" style="width:45%"></div>
+            <div class="skeleton skeleton--text skeleton--lg" style="width:35%"></div>
+          </div>
+        </div>
+
+        <!-- Search + Filters -->
+        <div class="list-controls" role="region" aria-label="Search and filter testimonials">
+          <div class="list-controls__search">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="search" class="form-input list-controls__input" id="testiSearch"
+                   placeholder="Search by name, city, or review text…" aria-label="Search testimonials">
+          </div>
+          <div class="list-controls__filters">
+            <select class="form-select" id="testiFilterStatus" aria-label="Filter by status">
+              <option value="">All Status</option>
+              <option value="approved">Approved</option>
+              <option value="unapproved">Pending</option>
+              <option value="replied">Has Reply</option>
+            </select>
+            <select class="form-select" id="testiFilterCategory" aria-label="Filter by category">
+              <option value="">All Categories</option>
+              <option value="honeymoon">Honeymoon</option>
+              <option value="family">Family</option>
+              <option value="luxury">Luxury</option>
+              <option value="adventure">Adventure</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Testimonials list — populated by JS -->
+        <div id="testimonialsList" role="list" aria-live="polite" aria-label="Testimonials">
+          <div class="testi-row testi-row--skeleton" role="listitem" aria-hidden="true">
+            <div class="skeleton skeleton--text" style="width:80px"></div>
+            <div style="flex:1"><div class="skeleton skeleton--text" style="width:40%"></div><div class="skeleton skeleton--text" style="width:70%;margin-top:6px"></div></div>
+            <div class="skeleton skeleton--text" style="width:60px"></div>
+            <div class="skeleton skeleton--text" style="width:70px"></div>
+          </div>
+          <div class="testi-row testi-row--skeleton" role="listitem" aria-hidden="true">
+            <div class="skeleton skeleton--text" style="width:80px"></div>
+            <div style="flex:1"><div class="skeleton skeleton--text" style="width:50%"></div><div class="skeleton skeleton--text" style="width:65%;margin-top:6px"></div></div>
+            <div class="skeleton skeleton--text" style="width:60px"></div>
+            <div class="skeleton skeleton--text" style="width:70px"></div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ── VIEW: TESTIMONIAL FORM ────────────────────────── -->
+      <section class="view" id="viewTestimonialForm" hidden aria-label="Testimonial form">
+        <!-- Rendered entirely by JS (TestimonialForm.render) -->
+        <div id="testimonialFormContainer"></div>
+      </section>
+
+      <!-- ── VIEW: WEBSITE IMAGES ──────────────────────────── -->
+      <section class="view" id="viewHeroImages" hidden aria-label="Website hero images">
+        <div id="heroImagesContainer"></div>
+      </section>
+
     </div><!-- /d-main -->
   </div><!-- /dashboard -->
 
@@ -229,3 +301,4 @@
   <noscript><meta http-equiv="refresh" content="0;url=login"></noscript>
 </body>
 </html>
+

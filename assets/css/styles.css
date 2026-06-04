@@ -143,7 +143,7 @@
 
 /* English: refined serif heading + clean modern body */
 html[lang="en"] {
-  --font-heading: 'Cormorant Garamond', Georgia, serif;
+  --font-heading: 'Playfair Display', Georgia, serif;
   --font-body: 'Inter', system-ui, sans-serif;
 }
 
@@ -158,6 +158,9 @@ html[lang="en"] {
   margin: 0;
   padding: 0;
 }
+
+/* Ensure the HTML `hidden` attribute always wins over CSS display rules */
+[hidden] { display: none !important; }
 
 html {
   font-size: 16px;
@@ -1707,67 +1710,70 @@ html[dir="rtl"] .dest-panel__sheet {
 /* ============================================================
    18. TESTIMONIALS
    ============================================================ */
+/* ── Track ──────────────────────────────────────────────── */
 .testimonials-track {
   display: flex;
   gap: var(--sp-4);
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  padding-inline: var(--sp-4);
-  padding-bottom: var(--sp-3);
-  margin-inline: calc(var(--sp-4) * -1);
+  -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  /* small vertical breathing room so card shadows aren't clipped */
+  padding-block: var(--sp-2);
+  /* horizontal padding creates the edge-peek effect */
+  padding-inline: var(--sp-2);
+  /* scroll padding aligns snapped cards with the visible start */
+  scroll-padding-inline-start: var(--sp-2);
+}
+.testimonials-track::-webkit-scrollbar { display: none; }
+
+.testi-empty {
+  text-align: center;
+  color: var(--color-text-muted);
+  padding: var(--sp-8);
+  flex: 1;
 }
 
-.testimonials-track::-webkit-scrollbar {
-  display: none;
-}
-
+/* ── Card ───────────────────────────────────────────────── */
 .testimonial-card {
-  flex: 0 0 290px;
+  /* fixed width: fills ~85% of viewport on mobile, caps at 320px on wide screens */
+  flex: 0 0 min(320px, 82vw);
   scroll-snap-align: start;
   background: var(--color-surface);
   border-radius: var(--radius-lg);
   padding: var(--sp-6);
   border: 1px solid var(--color-border);
-  border-inline-start: 3px solid var(--color-gold);
+  border-top: 3px solid var(--color-gold);
   box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
   gap: var(--sp-4);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.testimonial-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 .testimonial-card--skeleton {
   pointer-events: none;
   gap: var(--sp-3);
+  border-top-color: var(--color-border);
 }
+.testi-skel-header { display: flex; gap: var(--sp-3); align-items: center; }
+.skeleton--circle  { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; }
 
-.testimonial-stars {
+/* ── Card Header (avatar + name + brand mark) ───────────── */
+.testimonial-header {
   display: flex;
-  gap: 2px;
-  color: var(--color-gold);
-}
-
-.testimonial-quote {
-  font-size: var(--text-sm);
-  color: var(--color-text-muted);
-  line-height: 1.75;
-  font-style: italic;
-  flex: 1;
-  max-width: none;
-}
-
-.testimonial-meta {
-  border-top: 1px solid var(--color-border);
-  padding-top: var(--sp-4);
-  display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--sp-3);
 }
 
 .testimonial-avatar {
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: var(--radius-full);
   background: var(--color-gold-pale);
   display: flex;
@@ -1778,19 +1784,153 @@ html[dir="rtl"] .dest-panel__sheet {
   font-weight: 700;
   color: var(--color-gold);
   flex-shrink: 0;
+  border: 2px solid rgba(212,175,55,0.2);
+}
+
+.testimonial-header__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.testimonial-brand {
+  flex-shrink: 0;
+  margin-top: 2px;
+  opacity: 0.6;
 }
 
 .testimonial-name {
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 700;
   color: var(--color-navy);
+  line-height: 1.3;
 }
+.testimonial-flag { font-style: normal; }
 
 .testimonial-detail {
   font-size: var(--text-xs);
   color: var(--color-text-light);
-  margin-top: 2px;
+  margin-top: 3px;
+  line-height: 1.4;
 }
+
+/* ── Stars ──────────────────────────────────────────────── */
+.testimonial-stars {
+  display: flex;
+  gap: 1px;
+  color: var(--color-gold);
+  font-size: 1rem;
+  letter-spacing: 1px;
+}
+
+/* ── Quote ──────────────────────────────────────────────── */
+.testimonial-quote {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: 1.8;
+  font-style: italic;
+  flex: 1;
+}
+
+/* ── Company Reply ──────────────────────────────────────── */
+.testimonial-reply {
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--sp-3);
+  margin-top: auto;
+}
+
+.testimonial-reply-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-gold);
+  padding: 4px 0;
+  letter-spacing: 0.3px;
+  transition: color 0.15s ease;
+}
+.testimonial-reply-toggle:hover { color: var(--color-navy); }
+
+.trt-chevron {
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+.testimonial-reply-toggle[aria-expanded="true"] .trt-chevron {
+  transform: rotate(180deg);
+}
+
+.testimonial-reply-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.35s ease;
+  overflow: hidden;
+}
+.testimonial-reply-body.is-open {
+  grid-template-rows: 1fr;
+}
+.testimonial-reply-body > * {
+  /* inner wrapper needs min-height: 0 for grid row trick */
+  overflow: hidden;
+}
+
+/* Use a single inner div for the grid-row animation */
+.testimonial-reply-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--color-navy);
+  margin-top: var(--sp-3);
+  margin-bottom: var(--sp-2);
+}
+
+.testi-reply-logo {
+  height: 18px;
+  width: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.testimonial-reply-text {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  line-height: 1.7;
+  padding-bottom: var(--sp-1);
+}
+
+/* ── Load More button ───────────────────────────────────── */
+.testi-more-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--sp-8);
+}
+
+.btn-testi-more {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  background: transparent;
+  border: 2px solid var(--color-gold);
+  color: var(--color-navy);
+  border-radius: var(--radius-full);
+  padding: var(--sp-3) var(--sp-8);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.btn-testi-more:hover {
+  background: var(--color-gold);
+  color: #fff;
+}
+.btn-testi-more svg {
+  transition: transform 0.2s ease;
+}
+.btn-testi-more:hover svg { transform: translateY(2px); }
 
 
 /* ============================================================
@@ -2316,18 +2456,9 @@ html[dir="rtl"] .dest-panel__sheet {
     aspect-ratio: 3/4;
   }
 
-  /* Testimonials — no horizontal scroll */
-  .testimonials-track {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    overflow-x: visible;
-    padding-inline: 0;
-    margin-inline: 0;
-    padding-bottom: 0;
-  }
-
+  /* Testimonials — larger cards on wide screens */
   .testimonial-card {
-    flex: unset;
+    flex: 0 0 340px;
   }
 
   /* Contact CTA */

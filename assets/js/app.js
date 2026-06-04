@@ -21,6 +21,29 @@
 
 'use strict';
 
+/* ── HTML escape helper (prevents XSS in rendered cards) ── */
+const escHtml = s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+/* ── City map: English key → Arabic display ─────────────── */
+const CITY_MAP = {
+  // Saudi Arabia
+  'Riyadh':'الرياض','Jeddah':'جدة','Mecca':'مكة المكرمة',
+  'Medina':'المدينة المنورة','Dammam':'الدمام','Khobar':'الخبر',
+  'Dhahran':'الظهران','Abha':'أبها','Taif':'الطائف','Tabuk':'تبوك',
+  'Buraydah':'بريدة','Khamis Mushait':'خميس مشيط','Jubail':'الجبيل',
+  'Yanbu':'ينبو','Najran':'نجران','Jizan':'جيزان','Hail':'حائل',
+  'Sakaka':'سكاكا','Arar':'عرعر',
+  // UAE
+  'Dubai':'دبي','Abu Dhabi':'أبوظبي','Sharjah':'الشارقة',
+  'Ajman':'عجمان','Ras Al Khaimah':'رأس الخيمة',
+  // Other Gulf
+  'Doha':'الدوحة','Kuwait City':'مدينة الكويت',
+  'Manama':'المنامة','Muscat':'مسقط',
+  // Levant & beyond
+  'Amman':'عمّان','Cairo':'القاهرة','Alexandria':'الإسكندرية',
+  'Baghdad':'بغداد','Damascus':'دمشق',
+};
+
 /* ============================================================
    1. CONFIG
    ============================================================ */
@@ -60,7 +83,7 @@ const T = {
 
     // Stats
     'stats.trips':        'رحلة ناجحة',
-    'stats.families':     'عائلة سعودية',
+    'stats.families':     'عائلة وعرسان سعوديين',
     'stats.destinations': 'وجهات',
     'stats.years':        'سنوات خبرة',
 
@@ -115,10 +138,17 @@ const T = {
     'dest.lombok':  'لومبوك',
 
     // Testimonials
-    'testimonials.eyebrow':  'آراء العملاء',
-    'testimonials.title':    'ماذا يقول عملاؤنا؟',
-    'testimonials.subtitle': 'تجارب حقيقية من مسافرين سعوديين',
-    'testimonials.empty':    'سيتم إضافة تجارب عملائنا قريباً.',
+    'testimonials.eyebrow':   'آراء العملاء',
+    'testimonials.title':     'ماذا يقول عملاؤنا؟',
+    'testimonials.subtitle':  'تجارب حقيقية من مسافرين سعوديين',
+    'testimonials.empty':     'سيتم إضافة تجارب عملائنا قريباً.',
+    'testimonials.loadMore':  'عرض المزيد',
+    'testimonials.reply':     'رد',
+    'testimonials.replyBy':   'فريق لوكس باث',
+    'testimonials.cat.honeymoon': 'شهر عسل',
+    'testimonials.cat.family':    'عائلي',
+    'testimonials.cat.luxury':    'فاخر',
+    'testimonials.cat.adventure': 'مغامرة',
 
     // FAQ
     'faq.eyebrow':  'مساعدة',
@@ -173,7 +203,7 @@ const T = {
     'hero.cta.whatsapp': 'Book Now via WhatsApp',
     'hero.cta.packages': 'Browse Our Packages',
     'stats.trips':        'Successful Trips',
-    'stats.families':     'Saudi Families',
+    'stats.families':     'Saudi Families & couples',
     'stats.destinations': 'Destinations',
     'stats.years':        'Years Experience',
     'packages.eyebrow':  'Most Popular',
@@ -214,10 +244,17 @@ const T = {
     'dest.jakarta': 'Jakarta',
     'dest.bandung': 'Bandung',
     'dest.lombok':  'Lombok',
-    'testimonials.eyebrow':  'Client Reviews',
-    'testimonials.title':    'What Our Clients Say',
-    'testimonials.subtitle': 'Real experiences from Saudi travelers',
-    'testimonials.empty':    'Client testimonials coming soon.',
+    'testimonials.eyebrow':   'Client Reviews',
+    'testimonials.title':     'What Our Clients Say',
+    'testimonials.subtitle':  'Real experiences from Saudi travelers',
+    'testimonials.empty':     'Client testimonials coming soon.',
+    'testimonials.loadMore':  'Load More',
+    'testimonials.reply':     'Reply',
+    'testimonials.replyBy':   'Luxpath Travel Team',
+    'testimonials.cat.honeymoon': 'Honeymoon',
+    'testimonials.cat.family':    'Family',
+    'testimonials.cat.luxury':    'Luxury',
+    'testimonials.cat.adventure': 'Adventure',
     'faq.eyebrow':  'Help',
     'faq.title':    'Frequently Asked Questions',
     'faq.subtitle': 'Answers to the questions we hear most',
@@ -316,13 +353,12 @@ const DB = (() => {
       db.from('testimonials')
         .select(`
           reviewer_name_display, reviewer_city, reviewer_flag, rating,
-          review_ar, review_en, trip_month, trip_year, trip_category,
-          destinations ( name_ar, name_en )
+          review_ar, review_en, reply_ar, reply_en,
+          trip_month, trip_year, trip_category
         `)
         .eq('is_approved', true)
-        .eq('is_featured', true)
         .order('display_order', { ascending: true })
-        .limit(3)
+        .order('created_at', { ascending: false })
     ),
 
     getSettings: () => q(async db => {
@@ -653,6 +689,12 @@ const HeroSlider = {
     this._current = (this._current + 1) % this._slides.length;
     this._slides[this._current].classList.add('is-active');
   },
+
+  reinit() {
+    clearInterval(this._timer);
+    this._current = 0;
+    this.init();
+  },
 };
 
 
@@ -896,13 +938,13 @@ const DEST_DATA = [
   },
   {
     slug: 'puncak',
-    name_ar: 'بنكاك',
+    name_ar: 'بونشاك',
     name_en: 'Puncak',
-    tagline_ar: 'هروب جبلي ساحر',
+    tagline_ar: 'جبال الطبيعة الخضراء',
     tagline_en: 'A Magical Mountain Escape',
     img: 'destination-image/puncak.webp',
     card_image_url: null,
-    hero_ar: 'بنكاك هي منتجع الجبال المفضل لعائلات جاكرتا — تشتهر بمزارع الشاي الخضراء اللانهائية والهواء النقي المنعش والإطلالات الخلابة على القمم الجبلية.',
+    hero_ar: 'بونشاك هي منتجع الجبال المفضل لعائلات جاكرتا — تشتهر بمزارع الشاي الخضراء اللانهائية والهواء النقي المنعش والإطلالات الخلابة على القمم الجبلية.',
     hero_en: 'Puncak is Jakarta\'s favourite mountain resort — famous for endless green tea plantations, fresh mountain air, and stunning views of volcanic peaks.',
     attractions: [
       { icon: '🍃', name_ar: 'مزارع الشاي الكبرى', name_en: 'Grand Tea Plantations' },
@@ -1282,49 +1324,123 @@ const Destinations = {
    12. TESTIMONIALS
    ============================================================ */
 const Testimonials = {
+  _all:        [],
+  _replyBound: false,
+
   render(testimonials) {
-    const track = document.getElementById('testimonialsTrack');
+    const track    = document.getElementById('testimonialsTrack');
+    const moreWrap = document.getElementById('testiMoreWrap');
     if (!track) return;
 
-    const lang = I18n.get();
+    // Always wipe the track first — removes skeletons AND prevents
+    // duplicates when this is called again on a language switch.
+    track.innerHTML = '';
 
-    if (!testimonials?.length) {
+    this._all = testimonials ?? [];
+
+    if (!this._all.length) {
       track.innerHTML = `
-        <p style="text-align:center;color:var(--color-text-muted);padding:var(--sp-8);grid-column:1/-1">
-          ${I18n.t('testimonials.empty')}
-        </p>`;
+        <p class="testi-empty">${I18n.t('testimonials.empty')}</p>`;
+      if (moreWrap) moreWrap.hidden = true;
       return;
     }
 
-    track.innerHTML = testimonials.map(t => this.cardHTML(t, lang)).join('');
+    // Render all cards into the horizontal scroll track at once
+    const lang = I18n.get();
+    const frag = document.createDocumentFragment();
+    this._all.forEach(t => {
+      const wrap = document.createElement('div');
+      wrap.innerHTML = this.cardHTML(t, lang);
+      frag.appendChild(wrap.firstElementChild);
+    });
+    track.appendChild(frag);
+
+    // Hide load-more button — all cards are reachable by scrolling
+    if (moreWrap) moreWrap.hidden = true;
+
     ScrollReveal.observe(track);
+
+    // Reply toggle — single delegated listener, bound once per page load
+    if (!this._replyBound) {
+      document.addEventListener('click', (e) => {
+        const toggle = e.target.closest('.testimonial-reply-toggle');
+        if (!toggle) return;
+        const body   = toggle.nextElementSibling;
+        const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.setAttribute('aria-expanded', String(!isOpen));
+        body.classList.toggle('is-open', !isOpen);
+      });
+      this._replyBound = true;
+    }
   },
 
   cardHTML(t, lang) {
-    const review = lang === 'ar' ? t.review_ar : (t.review_en ?? t.review_ar);
-    const dest   = t.destinations;
-    const destName = dest ? (lang === 'ar' ? dest.name_ar : dest.name_en) : '';
-    const stars  = '★'.repeat(t.rating ?? 5);
-    const initial = t.reviewer_name_display?.[0] ?? '؟';
-    const tripDetail = [
-      t.trip_category ? I18n.t(`category.${t.trip_category}`) : '',
-      destName,
-      t.trip_year ?? '',
-    ].filter(Boolean).join(' · ');
+    const review   = lang === 'ar' ? t.review_ar : (t.review_en ?? t.review_ar);
+    const replyTxt = lang === 'ar' ? (t.reply_ar ?? t.reply_en) : (t.reply_en ?? t.reply_ar);
+    const hasReply = !!(t.reply_ar || t.reply_en);
+
+    const city     = t.reviewer_city ?? '';
+    const cityDisp = lang === 'ar' ? (CITY_MAP[city] ?? city) : city;
+
+    const catKey   = t.trip_category ? `testimonials.cat.${t.trip_category}` : '';
+    const catLabel = catKey ? I18n.t(catKey) : '';
+
+    const AR_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو',
+                       'يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+    const EN_MONTHS = ['Jan','Feb','Mar','Apr','May','Jun',
+                       'Jul','Aug','Sep','Oct','Nov','Dec'];
+    const monthStr  = t.trip_month
+      ? (lang === 'ar' ? AR_MONTHS[t.trip_month - 1] : EN_MONTHS[t.trip_month - 1])
+      : '';
+    const dateStr   = [monthStr, t.trip_year].filter(Boolean).join(' ');
+
+    const detail    = [cityDisp, catLabel, dateStr].filter(Boolean).join(' · ');
+    const initial   = (t.reviewer_name_display?.[0] ?? '؟').toUpperCase();
+    const stars     = '★'.repeat(Math.min(5, t.rating ?? 5));
+
+    const replyHTML = hasReply ? `
+      <div class="testimonial-reply">
+        <button class="testimonial-reply-toggle" type="button" aria-expanded="false">
+          <svg class="trt-chevron" xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+               viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+          <span>${I18n.t('testimonials.reply')} / Reply</span>
+        </button>
+        <div class="testimonial-reply-body">
+          <div>
+            <div class="testimonial-reply-brand">
+              <img src="luxpath-logo.webp" alt="Luxpath" class="testi-reply-logo">
+              ${escHtml(I18n.t('testimonials.replyBy'))}
+            </div>
+            <p class="testimonial-reply-text" dir="${lang === 'ar' ? 'rtl' : 'ltr'}">${escHtml(replyTxt ?? '')}</p>
+          </div>
+        </div>
+      </div>` : '';
 
     return `
       <div class="testimonial-card reveal" role="listitem">
-        <div class="testimonial-stars" aria-label="التقييم: ${t.rating} من 5">
-          ${stars}
-        </div>
-        <p class="testimonial-quote">"${review}"</p>
-        <div class="testimonial-meta">
-          <div class="testimonial-avatar" aria-hidden="true">${initial}</div>
-          <div>
-            <p class="testimonial-name">${t.reviewer_name_display} ${t.reviewer_flag ?? '🇸🇦'}</p>
-            <p class="testimonial-detail">${t.reviewer_city ?? ''}${tripDetail ? ' · ' + tripDetail : ''}</p>
+        <div class="testimonial-header">
+          <div class="testimonial-avatar" aria-hidden="true">${escHtml(initial)}</div>
+          <div class="testimonial-header__info">
+            <p class="testimonial-name">${escHtml(t.reviewer_name_display ?? '')} <span class="testimonial-flag">${escHtml(t.reviewer_flag ?? '🇸🇦')}</span></p>
+            ${detail ? `<p class="testimonial-detail">${escHtml(detail)}</p>` : ''}
+          </div>
+          <div class="testimonial-brand" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                 fill="var(--color-gold)" opacity="0.35">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
           </div>
         </div>
+
+        <div class="testimonial-stars" aria-label="${lang === 'ar' ? 'التقييم:' : 'Rating:'} ${t.rating ?? 5} / 5">
+          ${stars}
+        </div>
+
+        <p class="testimonial-quote">"${escHtml(review ?? '')}"</p>
+
+        ${replyHTML}
       </div>`;
   },
 };
@@ -1438,6 +1554,23 @@ const App = {
     if (phoneEl && phone) {
       phoneEl.textContent = phone;
       phoneEl.href = `tel:${phone.replace(/\s/g, '')}`;
+    }
+
+    // Update hero slideshow images
+    const heroSetting = settings['hero_active_images'];
+    if (heroSetting?.value) {
+      try {
+        const activeList = JSON.parse(heroSetting.value);
+        if (Array.isArray(activeList) && activeList.length) {
+          const container = document.querySelector('.hero__slides');
+          if (container) {
+            container.innerHTML = activeList.map((img, i) =>
+              `<div class="hero__slide${i === 0 ? ' is-active' : ''}" style="background-image:url('hero-images/${escHtml(img)}')"></div>`
+            ).join('');
+            HeroSlider.reinit();
+          }
+        }
+      } catch (_) {}
     }
   },
 
