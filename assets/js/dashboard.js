@@ -24,17 +24,17 @@
    1. CONFIG
    ============================================================ */
 const Config = Object.freeze({
-  SUPABASE_URL:      'https://fgeeysssiesdlryoygoa.supabase.co',
+  SUPABASE_URL: 'https://fgeeysssiesdlryoygoa.supabase.co',
   SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZnZWV5c3NzaWVzZGxyeW95Z29hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MTI0MzUsImV4cCI6MjA5NTk4ODQzNX0.Sa3vcq9U2BrzFobTqQS4sAmVpXkRH09_PGzol9-NCvw',
   // Service role key — used ONLY on localhost to bypass RLS during development.
   // Get it from: Supabase Dashboard → Project Settings → API → service_role (secret).
   // ⚠️  Never deploy this to a public server. On production the anon key + RLS is used.
   SUPABASE_SERVICE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZnZWV5c3NzaWVzZGxyeW95Z29hIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDQxMjQzNSwiZXhwIjoyMDk1OTg4NDM1fQ.3M6qJ2nLr9f1UFHIhKK3QMILN2InPma3O4Zc11dpj7c',   // ← paste your service_role key here for local dev
-  get STORAGE_URL()  { return this.SUPABASE_URL + '/storage/v1/object/public/luxpath-media/'; },
-  STORAGE_BUCKET:    'luxpath-media',
-  WHATSAPP_NUMBER:   '+6281111826527',
-  PLACEHOLDER_IMG:   'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23F0EDE8" width="400" height="300"/%3E%3C/svg%3E',
-  LOGIN_URL:         'login',
+  get STORAGE_URL() { return this.SUPABASE_URL + '/storage/v1/object/public/luxpath-media/'; },
+  STORAGE_BUCKET: 'luxpath-media',
+  WHATSAPP_NUMBER: '+6281111826527',
+  PLACEHOLDER_IMG: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23F0EDE8" width="400" height="300"/%3E%3C/svg%3E',
+  LOGIN_URL: 'login',
 });
 
 const CATEGORY_LABELS = { honeymoon: 'Honeymoon', family: 'Family', luxury: 'Luxury', adventure: 'Adventure' };
@@ -49,31 +49,31 @@ const HERO_IMAGES = [
 ];
 
 const CITY_MAP = {
-  'Riyadh':'الرياض','Jeddah':'جدة','Mecca':'مكة المكرمة',
-  'Medina':'المدينة المنورة','Dammam':'الدمام','Khobar':'الخبر',
-  'Dhahran':'الظهران','Abha':'أبها','Taif':'الطائف','Tabuk':'تبوك',
-  'Buraydah':'بريدة','Khamis Mushait':'خميس مشيط','Jubail':'الجبيل',
-  'Yanbu':'ينبو','Najran':'نجران','Jizan':'جيزان','Hail':'حائل',
-  'Sakaka':'سكاكا','Arar':'عرعر',
-  'Dubai':'دبي','Abu Dhabi':'أبوظبي','Sharjah':'الشارقة',
-  'Ajman':'عجمان','Ras Al Khaimah':'رأس الخيمة',
-  'Doha':'الدوحة','Kuwait City':'مدينة الكويت',
-  'Manama':'المنامة','Muscat':'مسقط',
-  'Amman':'عمّان','Cairo':'القاهرة','Alexandria':'الإسكندرية',
-  'Baghdad':'بغداد','Damascus':'دمشق',
+  'Riyadh': 'الرياض', 'Jeddah': 'جدة', 'Mecca': 'مكة المكرمة',
+  'Medina': 'المدينة المنورة', 'Dammam': 'الدمام', 'Khobar': 'الخبر',
+  'Dhahran': 'الظهران', 'Abha': 'أبها', 'Taif': 'الطائف', 'Tabuk': 'تبوك',
+  'Buraydah': 'بريدة', 'Khamis Mushait': 'خميس مشيط', 'Jubail': 'الجبيل',
+  'Yanbu': 'ينبو', 'Najran': 'نجران', 'Jizan': 'جيزان', 'Hail': 'حائل',
+  'Sakaka': 'سكاكا', 'Arar': 'عرعر',
+  'Dubai': 'دبي', 'Abu Dhabi': 'أبوظبي', 'Sharjah': 'الشارقة',
+  'Ajman': 'عجمان', 'Ras Al Khaimah': 'رأس الخيمة',
+  'Doha': 'الدوحة', 'Kuwait City': 'مدينة الكويت',
+  'Manama': 'المنامة', 'Muscat': 'مسقط',
+  'Amman': 'عمّان', 'Cairo': 'القاهرة', 'Alexandria': 'الإسكندرية',
+  'Baghdad': 'بغداد', 'Damascus': 'دمشق',
 };
 const PRICE_TYPE_LABELS = { exact: 'Exact Price', starting_from: 'Starting From', approximate: 'Approximate' };
-const CURRENCY_LABELS   = { SAR: 'SAR (Saudi Riyal)', USD: 'USD (US Dollar)', EUR: 'EUR (Euro)' };
-const MEAL_LABELS       = { breakfast: 'Breakfast 🍳', lunch: 'Lunch 🥗', dinner: 'Dinner 🍽️' };
+const CURRENCY_LABELS = { SAR: 'SAR (Saudi Riyal)', USD: 'USD (US Dollar)', EUR: 'EUR (Euro)' };
+const MEAL_LABELS = { breakfast: 'Breakfast 🍳', lunch: 'Lunch 🥗', dinner: 'Dinner 🍽️' };
 
 const INCLUSION_ICONS = [
-  ['flight','✈️ Flight'],['hotel','🏨 Hotel'],['transfer','🚌 Transfer'],
-  ['guide_arabic','🗣️ Arabic Guide'],['guide_local','👤 Local Guide'],
-  ['tour','🗺️ Tour'],['meal_breakfast','🍳 Breakfast'],
-  ['meal_lunch','🥗 Lunch'],['meal_dinner','🍽️ Dinner'],['meals_all','🍽️ All Meals'],
-  ['visa','📋 Visa'],['insurance','🛡️ Insurance'],['sim_card','📱 SIM Card'],
-  ['photo_session','📸 Photo Session'],['water_activities','🤿 Water Activities'],
-  ['spa','💆 Spa'],['custom','✨ Custom'],
+  ['flight', '✈️ Flight'], ['hotel', '🏨 Hotel'], ['transfer', '🚌 Transfer'],
+  ['guide_arabic', '🗣️ Arabic Guide'], ['guide_local', '👤 Local Guide'],
+  ['tour', '🗺️ Tour'], ['meal_breakfast', '🍳 Breakfast'],
+  ['meal_lunch', '🥗 Lunch'], ['meal_dinner', '🍽️ Dinner'], ['meals_all', '🍽️ All Meals'],
+  ['visa', '📋 Visa'], ['insurance', '🛡️ Insurance'], ['sim_card', '📱 SIM Card'],
+  ['photo_session', '📸 Photo Session'], ['water_activities', '🤿 Water Activities'],
+  ['spa', '💆 Spa'], ['custom', '✨ Custom'],
 ];
 
 /* ============================================================
@@ -324,9 +324,9 @@ const StorageManager = {
    4. AUTH — Supabase Authentication
    ============================================================ */
 const Auth = (() => {
-  let _session   = null;
-  let _user      = null;
-  let _role      = null;
+  let _session = null;
+  let _user = null;
+  let _role = null;
   let _idleTimer = null;
 
   const IDLE_MS = 30 * 60 * 1000; // 30-minute idle timeout
@@ -374,11 +374,11 @@ const Auth = (() => {
       }
 
       _session = session;
-      _user    = session.user;
+      _user = session.user;
 
       // Only system@luxpathtravel.com may access the dashboard
       if (_user.email !== 'system@luxpathtravel.com') {
-        await db.auth.signOut().catch(() => {});
+        await db.auth.signOut().catch(() => { });
         window.location.replace(Config.LOGIN_URL + '?error=unauthorized');
         return false;
       }
@@ -393,10 +393,10 @@ const Auth = (() => {
         }
         if (event === 'TOKEN_REFRESHED') {
           _session = newSession;
-          _user    = newSession.user;
+          _user = newSession.user;
           // Re-validate email on every token refresh
           if (_user.email !== 'system@luxpathtravel.com') {
-            await db.auth.signOut().catch(() => {});
+            await db.auth.signOut().catch(() => { });
             window.location.replace(Config.LOGIN_URL + '?error=unauthorized');
           }
         }
@@ -418,12 +418,12 @@ const Auth = (() => {
     async signOut() {
       clearTimeout(_idleTimer);
       const db = DB.client();
-      if (db) await db.auth.signOut().catch(() => {});
+      if (db) await db.auth.signOut().catch(() => { });
       window.location.replace(Config.LOGIN_URL);
     },
 
-    getUser()    { return _user; },
-    getRole()    { return _role; },
+    getUser() { return _user; },
+    getRole() { return _role; },
     getSession() { return _session; },
   };
 })();
@@ -435,9 +435,9 @@ const Toast = {
   show(type, title, msg = '', duration = 4000) {
     const icons = {
       success: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
-      error:   `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
+      error: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
       warning: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
-      info:    `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+      info: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
     };
     const el = document.createElement('div');
     el.className = `toast toast--${type}`;
@@ -459,9 +459,9 @@ const Toast = {
     el.addEventListener('animationend', () => el.remove(), { once: true });
   },
   success: (t, m) => Toast.show('success', t, m),
-  error:   (t, m) => Toast.show('error',   t, m),
+  error: (t, m) => Toast.show('error', t, m),
   warning: (t, m) => Toast.show('warning', t, m),
-  info:    (t, m) => Toast.show('info',    t, m),
+  info: (t, m) => Toast.show('info', t, m),
 };
 
 /* ============================================================
@@ -497,16 +497,16 @@ const Modal = {
     ));
     if (!focusable.length) return;
     const first = focusable[0];
-    const last  = focusable[focusable.length - 1];
+    const last = focusable[focusable.length - 1];
     if (e.shiftKey) {
       if (document.activeElement === first) { e.preventDefault(); last.focus(); }
     } else {
-      if (document.activeElement === last)  { e.preventDefault(); first.focus(); }
+      if (document.activeElement === last) { e.preventDefault(); first.focus(); }
     }
   },
 
   init() {
-    document.getElementById('modalCancelBtn').addEventListener('click',  () => this.close(false));
+    document.getElementById('modalCancelBtn').addEventListener('click', () => this.close(false));
     document.getElementById('modalConfirmBtn').addEventListener('click', () => this.close(true));
     document.getElementById('confirmModal').addEventListener('click', (e) => {
       if (e.target === document.getElementById('confirmModal')) this.close(false);
@@ -555,7 +555,7 @@ const Sidebar = {
       const isActive = l.dataset.view === view;
       l.classList.toggle('is-active', isActive);
       if (isActive) { l.setAttribute('aria-current', 'page'); }
-      else          { l.removeAttribute('aria-current'); }
+      else { l.removeAttribute('aria-current'); }
     });
   },
 };
@@ -697,11 +697,11 @@ const ImageManager = {
 
     // Upload all new images in parallel
     const results = await Promise.allSettled(newItems.map(async (item) => {
-      const ext  = item.file.name.split('.').pop().toLowerCase();
+      const ext = item.file.name.split('.').pop().toLowerCase();
       const base = slugify(item.file.name.replace(/\.[^.]+$/, ''));
-      const idx  = this.items.indexOf(item);
-      const path = `packages/${packageSlug}/gallery/${String(idx).padStart(2,'0')}-${base}.${ext}`;
-      item.url    = await StorageManager.upload(item.file, path);
+      const idx = this.items.indexOf(item);
+      const path = `packages/${packageSlug}/gallery/${String(idx).padStart(2, '0')}-${base}.${ext}`;
+      item.url = await StorageManager.upload(item.file, path);
       item.status = 'saved';
     }));
 
@@ -721,11 +721,11 @@ const ImageManager = {
     return this.items
       .filter(x => x.status !== 'deleted')
       .map((item, i) => ({
-        package_id:    packageId,
-        image_url:     item.url ?? '',
-        alt_ar:        item.alt_ar,
-        alt_en:        item.alt_en,
-        is_hero:       item.is_hero,
+        package_id: packageId,
+        image_url: item.url ?? '',
+        alt_ar: item.alt_ar,
+        alt_en: item.alt_en,
+        is_hero: item.is_hero,
         display_order: i,
       }));
   },
@@ -790,15 +790,15 @@ const ItineraryBuilder = {
       .sort((a, b) => a.day_number - b.day_number)
       .map(d => ({
         _lid: `day_${d.id ?? Date.now() + Math.random()}`,
-        day_number:     d.day_number,
-        title_ar:       d.title_ar ?? '',
-        title_en:       d.title_en ?? '',
+        day_number: d.day_number,
+        title_ar: d.title_ar ?? '',
+        title_en: d.title_en ?? '',
         description_ar: d.description_ar ?? '',
         description_en: d.description_en ?? '',
-        location_ar:    d.location_ar ?? '',
-        location_en:    d.location_en ?? '',
+        location_ar: d.location_ar ?? '',
+        location_en: d.location_en ?? '',
         meals_included: d.meals_included ?? [],
-        image_url:      d.image_url ?? '',
+        image_url: d.image_url ?? '',
       }));
   },
 
@@ -806,7 +806,7 @@ const ItineraryBuilder = {
     this.collectFromDOM();
     this.days.push({
       _lid: `day_${Date.now()}_${Math.random().toString(36).slice(2)}`,
-      day_number:     this.days.length + 1,
+      day_number: this.days.length + 1,
       title_ar: '', title_en: '',
       description_ar: '', description_en: '',
       location_ar: '', location_en: '',
@@ -829,13 +829,13 @@ const ItineraryBuilder = {
     this.days.forEach(day => {
       const el = document.querySelector(`.itin-day[data-lid="${day._lid}"]`);
       if (!el) return;
-      day.title_ar       = el.querySelector('[data-f="title_ar"]')?.value ?? '';
-      day.title_en       = el.querySelector('[data-f="title_en"]')?.value ?? '';
+      day.title_ar = el.querySelector('[data-f="title_ar"]')?.value ?? '';
+      day.title_en = el.querySelector('[data-f="title_en"]')?.value ?? '';
       day.description_ar = el.querySelector('[data-f="description_ar"]')?.value ?? '';
       day.description_en = el.querySelector('[data-f="description_en"]')?.value ?? '';
-      day.location_ar    = el.querySelector('[data-f="location_ar"]')?.value ?? '';
-      day.location_en    = el.querySelector('[data-f="location_en"]')?.value ?? '';
-      day.image_url      = el.querySelector('[data-f="image_url"]')?.value ?? '';
+      day.location_ar = el.querySelector('[data-f="location_ar"]')?.value ?? '';
+      day.location_en = el.querySelector('[data-f="location_en"]')?.value ?? '';
+      day.image_url = el.querySelector('[data-f="image_url"]')?.value ?? '';
       day.meals_included = Array.from(el.querySelectorAll('[data-f="meal"]:checked')).map(c => c.value);
     });
   },
@@ -945,16 +945,16 @@ const ItineraryBuilder = {
   toDBRows(packageId) {
     this.collectFromDOM();
     return this.days.map(d => ({
-      package_id:     packageId,
-      day_number:     d.day_number,
-      title_ar:       d.title_ar,
-      title_en:       d.title_en,
+      package_id: packageId,
+      day_number: d.day_number,
+      title_ar: d.title_ar,
+      title_en: d.title_en,
       description_ar: d.description_ar,
       description_en: d.description_en,
-      location_ar:    d.location_ar,
-      location_en:    d.location_en,
+      location_ar: d.location_ar,
+      location_en: d.location_en,
       meals_included: d.meals_included,
-      image_url:      d.image_url || null,
+      image_url: d.image_url || null,
     }));
   },
 };
@@ -1007,7 +1007,7 @@ const InclusionsBuilder = {
       arr.forEach(item => {
         const el = listEl.querySelector(`[data-lid="${item._lid}"]`);
         if (!el) return;
-        item.icon    = el.querySelector('[data-f="icon"]')?.value ?? 'custom';
+        item.icon = el.querySelector('[data-f="icon"]')?.value ?? 'custom';
         item.text_ar = el.querySelector('[data-f="text_ar"]')?.value ?? '';
         item.text_en = el.querySelector('[data-f="text_en"]')?.value ?? '';
       });
@@ -1080,8 +1080,8 @@ const PackageList = {
   },
 
   renderStats() {
-    const total    = this.all.length;
-    const active   = this.all.filter(p => p.is_active).length;
+    const total = this.all.length;
+    const active = this.all.filter(p => p.is_active).length;
     const featured = this.all.filter(p => p.is_featured).length;
     document.getElementById('statsRow').innerHTML = `
       <div class="stat-card stat-card--navy">
@@ -1115,8 +1115,8 @@ const PackageList = {
 
   applyFilters() {
     const search = document.getElementById('searchInput').value.toLowerCase().trim();
-    const cat    = document.getElementById('filterCategory').value;
-    const dest   = document.getElementById('filterDestination').value;
+    const cat = document.getElementById('filterCategory').value;
+    const dest = document.getElementById('filterDestination').value;
     const status = document.getElementById('filterStatus').value;
 
     this.filtered = this.all.filter(p => {
@@ -1127,8 +1127,8 @@ const PackageList = {
       )) return false;
       if (cat && p.category !== cat) return false;
       if (dest && !p.package_destinations?.some(pd => pd.destination_id === dest)) return false;
-      if (status === 'active'   && !p.is_active)   return false;
-      if (status === 'inactive' &&  p.is_active)   return false;
+      if (status === 'active' && !p.is_active) return false;
+      if (status === 'inactive' && p.is_active) return false;
       if (status === 'featured' && !p.is_featured) return false;
       return true;
     });
@@ -1148,13 +1148,13 @@ const PackageList = {
     }
 
     el.innerHTML = this.filtered.map(pkg => {
-      const dest    = getPrimaryDest(pkg);
-      const destEN  = dest?.name_en ?? '—';
-      const imgSrc  = pkg.hero_image_url ? StorageManager.publicUrl(pkg.hero_image_url) : Config.PLACEHOLDER_IMG;
-      const nights  = pkg.duration_nights ?? 0;
-      const days    = pkg.duration_days   ?? 1;
-      const price   = fmtPrice(pkg.price_value, pkg.currency);
-      const pLabel  = PRICE_TYPE_LABELS[pkg.price_type] ?? '';
+      const dest = getPrimaryDest(pkg);
+      const destEN = dest?.name_en ?? '—';
+      const imgSrc = pkg.hero_image_url ? StorageManager.publicUrl(pkg.hero_image_url) : Config.PLACEHOLDER_IMG;
+      const nights = pkg.duration_nights ?? 0;
+      const days = pkg.duration_days ?? 1;
+      const price = fmtPrice(pkg.price_value, pkg.currency);
+      const pLabel = PRICE_TYPE_LABELS[pkg.price_type] ?? '';
 
       return `
         <div class="pkg-row" role="listitem" data-id="${pkg.id}">
@@ -1211,7 +1211,7 @@ const PackageList = {
       btn.addEventListener('click', () => PackageList.deletePackage(btn.dataset.id, btn.dataset.title));
     });
     el.querySelectorAll('.pkg-row__thumb').forEach(img => {
-      img.addEventListener('error', function() {
+      img.addEventListener('error', function () {
         this.style.display = 'none';
         if (this.nextElementSibling) this.nextElementSibling.style.display = 'flex';
       }, { once: true });
@@ -1263,18 +1263,18 @@ const PackageList = {
    12. PACKAGE FORM
    ============================================================ */
 const PackageForm = {
-  mode:        null,
-  packageId:   null,
-  pkg:         null,
+  mode: null,
+  packageId: null,
+  pkg: null,
   destinations: [],
-  _dirty:      false,
-  _activeTab:  'basic',
+  _dirty: false,
+  _activeTab: 'basic',
 
   async open(mode, packageId = null) {
-    this.mode      = mode;
+    this.mode = mode;
     this.packageId = packageId;
-    this.pkg       = null;
-    this._dirty    = false;
+    this.pkg = null;
+    this._dirty = false;
     this._activeTab = 'basic';
 
     // Reset sub-builders
@@ -1335,9 +1335,9 @@ const PackageForm = {
 
         <!-- Tabs nav -->
         <div class="form-tabs-nav" role="tablist" aria-label="Form sections">
-          ${[['basic','Basic Info'],['content','Descriptions'],['media','Media'],
-             ['itinerary','Itinerary'],['includes','Inclusions'],['pricing','Pricing'],['seo','SEO']
-            ].map(([id, label]) => `
+          ${[['basic', 'Basic Info'], ['content', 'Descriptions'], ['media', 'Media'],
+      ['itinerary', 'Itinerary'], ['includes', 'Inclusions'], ['pricing', 'Pricing'], ['seo', 'SEO']
+      ].map(([id, label]) => `
             <button class="form-tab-btn ${this._activeTab === id ? 'is-active' : ''}"
                     role="tab" id="tab-${id}" data-tab="${id}"
                     aria-selected="${this._activeTab === id}"
@@ -1371,11 +1371,11 @@ const PackageForm = {
   },
 
   _renderPanelBasic() {
-    const pkg  = this.pkg;
+    const pkg = this.pkg;
     const dests = this.destinations;
 
     const destRows = dests.map(d => {
-      const isPrimary  = pkg?.package_destinations?.find(pd => pd.destination_id === d.id && pd.is_primary);
+      const isPrimary = pkg?.package_destinations?.find(pd => pd.destination_id === d.id && pd.is_primary);
       const isSelected = pkg?.package_destinations?.some(pd => pd.destination_id === d.id);
       return `
         <div class="dest-selector__item">
@@ -1752,9 +1752,9 @@ const PackageForm = {
     document.querySelectorAll('.form-tab-panel').forEach(panel => {
       panel.classList.toggle('is-active', panel.dataset.panel === tabId);
     });
-    if (tabId === 'media')     ImageManager.render();
+    if (tabId === 'media') ImageManager.render();
     if (tabId === 'itinerary') ItineraryBuilder.render();
-    if (tabId === 'includes')  InclusionsBuilder.render();
+    if (tabId === 'includes') InclusionsBuilder.render();
   },
 
   populateForm() {
@@ -1762,11 +1762,11 @@ const PackageForm = {
     // Refresh char counter displays only — listeners are already attached in _bindFormEvents.
     // Calling _updateCharCount here again would add duplicate input listeners.
     [
-      ['shortDescEn','shortDescEnCount',300],['shortDescAr','shortDescArCount',300],
+      ['shortDescEn', 'shortDescEnCount', 300], ['shortDescAr', 'shortDescArCount', 300],
       ['seoTitleEn', 'seoTitleEnCount', 70], ['seoTitleAr', 'seoTitleArCount', 70],
-      ['seoDescEn',  'seoDescEnCount',  170], ['seoDescAr', 'seoDescArCount',  170],
+      ['seoDescEn', 'seoDescEnCount', 170], ['seoDescAr', 'seoDescArCount', 170],
     ].forEach(([inputId, countId, max]) => {
-      const input   = document.getElementById(inputId);
+      const input = document.getElementById(inputId);
       const counter = document.getElementById(countId);
       if (!input || !counter) return;
       const len = input.value.length;
@@ -1798,7 +1798,7 @@ const PackageForm = {
   },
 
   _updateCharCount(inputId, countId, max) {
-    const input   = document.getElementById(inputId);
+    const input = document.getElementById(inputId);
     const counter = document.getElementById(countId);
     if (!input || !counter) return;
     const update = () => {
@@ -1828,12 +1828,12 @@ const PackageForm = {
     // Tab switching — keyboard (ARIA tablist arrow-key pattern)
     document.querySelector('.form-tabs-nav')?.addEventListener('keydown', (e) => {
       const tabs = [...document.querySelectorAll('.form-tab-btn')];
-      const idx  = tabs.findIndex(t => t.dataset.tab === this._activeTab);
+      const idx = tabs.findIndex(t => t.dataset.tab === this._activeTab);
       let next = -1;
       if (e.key === 'ArrowRight') next = (idx + 1) % tabs.length;
       else if (e.key === 'ArrowLeft') next = (idx - 1 + tabs.length) % tabs.length;
-      else if (e.key === 'Home')  next = 0;
-      else if (e.key === 'End')   next = tabs.length - 1;
+      else if (e.key === 'Home') next = 0;
+      else if (e.key === 'End') next = tabs.length - 1;
       if (next < 0) return;
       e.preventDefault();
       this._switchTab(tabs[next].dataset.tab);
@@ -1898,9 +1898,9 @@ const PackageForm = {
     this._bindTagInput();
 
     // Char counters
-    [['shortDescEn','shortDescEnCount',300],['shortDescAr','shortDescArCount',300],
-     ['seoTitleEn','seoTitleEnCount',70],['seoTitleAr','seoTitleArCount',70],
-     ['seoDescEn','seoDescEnCount',170],['seoDescAr','seoDescArCount',170]
+    [['shortDescEn', 'shortDescEnCount', 300], ['shortDescAr', 'shortDescArCount', 300],
+    ['seoTitleEn', 'seoTitleEnCount', 70], ['seoTitleAr', 'seoTitleArCount', 70],
+    ['seoDescEn', 'seoDescEnCount', 170], ['seoDescAr', 'seoDescArCount', 170]
     ].forEach(([id, cid, max]) => this._updateCharCount(id, cid, max));
   },
 
@@ -1951,27 +1951,27 @@ const PackageForm = {
     const errors = [];
     const v = (id) => document.getElementById(id)?.value?.trim() ?? '';
 
-    if (!v('titleEn'))        errors.push({ tab: 'basic',   msg: 'English title is required.' });
-    if (!v('titleAr'))        errors.push({ tab: 'basic',   msg: 'Arabic title is required.' });
-    if (!v('category'))       errors.push({ tab: 'basic',   msg: 'Category is required.' });
+    if (!v('titleEn')) errors.push({ tab: 'basic', msg: 'English title is required.' });
+    if (!v('titleAr')) errors.push({ tab: 'basic', msg: 'Arabic title is required.' });
+    if (!v('category')) errors.push({ tab: 'basic', msg: 'Category is required.' });
     if (!v('durationNights') && v('durationNights') !== '0') errors.push({ tab: 'basic', msg: 'Duration nights is required.' });
-    if (!v('durationDays'))   errors.push({ tab: 'basic',   msg: 'Duration days is required.' });
-    if (!v('slugEn'))         errors.push({ tab: 'basic',   msg: 'English slug is required.' });
+    if (!v('durationDays')) errors.push({ tab: 'basic', msg: 'Duration days is required.' });
+    if (!v('slugEn')) errors.push({ tab: 'basic', msg: 'English slug is required.' });
 
     const nights = parseInt(v('durationNights'), 10);
-    const days   = parseInt(v('durationDays'),   10);
+    const days = parseInt(v('durationDays'), 10);
     if (!isNaN(nights) && !isNaN(days) && days < nights) {
       errors.push({ tab: 'basic', msg: 'Duration days must be ≥ duration nights.' });
     }
 
     const checkedDests = document.querySelectorAll('#destSelector input[name="dest_check"]:checked');
-    const primaryDest  = document.querySelector('#destSelector input[name="dest_primary"]:checked');
-    if (!checkedDests.length)    errors.push({ tab: 'basic', msg: 'Select at least one destination.' });
+    const primaryDest = document.querySelector('#destSelector input[name="dest_primary"]:checked');
+    if (!checkedDests.length) errors.push({ tab: 'basic', msg: 'Select at least one destination.' });
     if (checkedDests.length && !primaryDest) errors.push({ tab: 'basic', msg: 'Mark one destination as primary.' });
 
-    if (!v('priceValue'))     errors.push({ tab: 'pricing', msg: 'Price value is required.' });
+    if (!v('priceValue')) errors.push({ tab: 'pricing', msg: 'Price value is required.' });
     const price = parseFloat(v('priceValue'));
-    const orig  = parseFloat(v('originalPriceValue'));
+    const orig = parseFloat(v('originalPriceValue'));
     if (!isNaN(price) && !isNaN(orig) && orig <= price) {
       errors.push({ tab: 'pricing', msg: 'Original price must be greater than the sale price.' });
     }
@@ -1983,14 +1983,14 @@ const PackageForm = {
       if (!day.title_ar?.trim()) errors.push({ tab: 'itinerary', msg: `Day ${day.day_number}: Arabic title is required.` });
     });
 
-    const seoTitleEnLen  = v('seoTitleEn').length;
-    const seoTitleArLen  = v('seoTitleAr').length;
-    const seoDescEnLen   = v('seoDescEn').length;
-    const seoDescArLen   = v('seoDescAr').length;
-    if (seoTitleEnLen > 70)  errors.push({ tab: 'seo', msg: 'SEO title EN exceeds 70 characters.' });
-    if (seoTitleArLen > 70)  errors.push({ tab: 'seo', msg: 'SEO title AR exceeds 70 characters.' });
-    if (seoDescEnLen  > 170) errors.push({ tab: 'seo', msg: 'SEO description EN exceeds 170 characters.' });
-    if (seoDescArLen  > 170) errors.push({ tab: 'seo', msg: 'SEO description AR exceeds 170 characters.' });
+    const seoTitleEnLen = v('seoTitleEn').length;
+    const seoTitleArLen = v('seoTitleAr').length;
+    const seoDescEnLen = v('seoDescEn').length;
+    const seoDescArLen = v('seoDescAr').length;
+    if (seoTitleEnLen > 70) errors.push({ tab: 'seo', msg: 'SEO title EN exceeds 70 characters.' });
+    if (seoTitleArLen > 70) errors.push({ tab: 'seo', msg: 'SEO title AR exceeds 70 characters.' });
+    if (seoDescEnLen > 170) errors.push({ tab: 'seo', msg: 'SEO description EN exceeds 170 characters.' });
+    if (seoDescArLen > 170) errors.push({ tab: 'seo', msg: 'SEO description AR exceeds 170 characters.' });
 
     return errors;
   },
@@ -2020,7 +2020,7 @@ const PackageForm = {
 
     // Declared OUTSIDE the try block so the catch block can reference them
     // for rollback. (let inside try{} is block-scoped and invisible to catch{})
-    let packageId    = this.packageId;
+    let packageId = this.packageId;
     let isNewPackage = false;
 
     try {
@@ -2065,37 +2065,37 @@ const PackageForm = {
       await ImageManager.deleteRemoved();
 
       const packageData = {
-        slug_en:               slugEn,
-        slug_ar:               slugAr,
-        title_en:              v('titleEn'),
-        title_ar:              v('titleAr'),
-        short_description_en:  v('shortDescEn')  || null,
-        short_description_ar:  v('shortDescAr')  || null,
-        full_description_en:   v('fullDescEn')   || null,
-        full_description_ar:   v('fullDescAr')   || null,
-        duration_nights:       parseInt(v('durationNights'), 10),
-        duration_days:         parseInt(v('durationDays'),   10),
-        category:              v('category'),
-        price_type:            v('priceType')     || 'starting_from',
-        price_value:           parseFloat(v('priceValue')),
-        original_price_value:  v('originalPriceValue') ? parseFloat(v('originalPriceValue')) : null,
-        currency:              v('currency')      || 'SAR',
-        min_persons:           parseInt(v('minPersons'), 10) || 1,
-        max_persons:           v('maxPersons') ? parseInt(v('maxPersons'), 10) : null,
-        is_active:             document.getElementById('isActive')?.checked   ?? true,
-        is_featured:           document.getElementById('isFeatured')?.checked ?? false,
-        display_order:         parseInt(v('displayOrder'), 10) || 0,
-        hero_image_url:        ImageManager.heroUrl(),
-        seo_title_en:          v('seoTitleEn')   || null,
-        seo_title_ar:          v('seoTitleAr')   || null,
-        seo_description_en:    v('seoDescEn')    || null,
-        seo_description_ar:    v('seoDescAr')    || null,
-        seo_keywords:          this._collectKeywords(),
+        slug_en: slugEn,
+        slug_ar: slugAr,
+        title_en: v('titleEn'),
+        title_ar: v('titleAr'),
+        short_description_en: v('shortDescEn') || null,
+        short_description_ar: v('shortDescAr') || null,
+        full_description_en: v('fullDescEn') || null,
+        full_description_ar: v('fullDescAr') || null,
+        duration_nights: parseInt(v('durationNights'), 10),
+        duration_days: parseInt(v('durationDays'), 10),
+        category: v('category'),
+        price_type: v('priceType') || 'starting_from',
+        price_value: parseFloat(v('priceValue')),
+        original_price_value: v('originalPriceValue') ? parseFloat(v('originalPriceValue')) : null,
+        currency: v('currency') || 'SAR',
+        min_persons: parseInt(v('minPersons'), 10) || 1,
+        max_persons: v('maxPersons') ? parseInt(v('maxPersons'), 10) : null,
+        is_active: document.getElementById('isActive')?.checked ?? true,
+        is_featured: document.getElementById('isFeatured')?.checked ?? false,
+        display_order: parseInt(v('displayOrder'), 10) || 0,
+        hero_image_url: ImageManager.heroUrl(),
+        seo_title_en: v('seoTitleEn') || null,
+        seo_title_ar: v('seoTitleAr') || null,
+        seo_description_en: v('seoDescEn') || null,
+        seo_description_ar: v('seoDescAr') || null,
+        seo_keywords: this._collectKeywords(),
       };
 
       if (this.mode === 'create') {
         const result = await DB.createPackage(packageData);
-        packageId    = result.id;
+        packageId = result.id;
         isNewPackage = true;
       } else {
         await DB.updatePackage(packageId, packageData);
@@ -2130,7 +2130,7 @@ const PackageForm = {
       // Best-effort rollback: if we created a new package but subsequent operations failed,
       // delete the orphaned package record so the admin can retry cleanly.
       if (isNewPackage && packageId) {
-        DB.deletePackage(packageId).catch(() => {});
+        DB.deletePackage(packageId).catch(() => { });
       }
       // Clean up any images that were already uploaded to Storage this session
       // but whose DB records were never committed.
@@ -2139,7 +2139,7 @@ const PackageForm = {
         .map(x => x.url)
         .filter(Boolean);
       if (orphanedPaths.length) {
-        StorageManager.remove(orphanedPaths).catch(() => {});
+        StorageManager.remove(orphanedPaths).catch(() => { });
         // Reset status so they can be re-uploaded on retry
         ImageManager.items.forEach(x => { if (x.status === 'saved') x.status = 'new'; });
       }
@@ -2156,9 +2156,9 @@ const PackageForm = {
    13. TESTIMONIALS LIST
    ============================================================ */
 const TestimonialsList = {
-  all:          [],
+  all: [],
   destinations: [],
-  filtered:     [],
+  filtered: [],
 
   async load() {
     const el = document.getElementById('testimonialsList');
@@ -2185,9 +2185,9 @@ const TestimonialsList = {
   },
 
   renderStats() {
-    const total    = this.all.length;
+    const total = this.all.length;
     const approved = this.all.filter(t => t.is_approved).length;
-    const replied  = this.all.filter(t => t.reply_ar || t.reply_en).length;
+    const replied = this.all.filter(t => t.reply_ar || t.reply_en).length;
     document.getElementById('testiStatsRow').innerHTML = `
       <div class="stat-card stat-card--navy">
         <div class="stat-card__label">Total Reviews</div>
@@ -2206,21 +2206,21 @@ const TestimonialsList = {
   },
 
   applyFilters() {
-    const search   = (document.getElementById('testiSearch')?.value ?? '').toLowerCase().trim();
-    const status   = document.getElementById('testiFilterStatus')?.value ?? '';
+    const search = (document.getElementById('testiSearch')?.value ?? '').toLowerCase().trim();
+    const status = document.getElementById('testiFilterStatus')?.value ?? '';
     const category = document.getElementById('testiFilterCategory')?.value ?? '';
 
     this.filtered = this.all.filter(t => {
       if (search && !(
         t.reviewer_name_display?.toLowerCase().includes(search) ||
-        t.reviewer_city?.toLowerCase().includes(search)        ||
-        t.review_ar?.includes(search)                          ||
+        t.reviewer_city?.toLowerCase().includes(search) ||
+        t.review_ar?.includes(search) ||
         t.review_en?.toLowerCase().includes(search)
       )) return false;
-      if (status === 'approved'   &&  !t.is_approved)              return false;
-      if (status === 'unapproved' &&   t.is_approved)              return false;
-      if (status === 'replied'    && !t.reply_ar && !t.reply_en)  return false;
-      if (category && t.trip_category !== category)                return false;
+      if (status === 'approved' && !t.is_approved) return false;
+      if (status === 'unapproved' && t.is_approved) return false;
+      if (status === 'replied' && !t.reply_ar && !t.reply_en) return false;
+      if (category && t.trip_category !== category) return false;
       return true;
     });
     this.renderList();
@@ -2241,11 +2241,11 @@ const TestimonialsList = {
     }
 
     el.innerHTML = this.filtered.map(t => {
-      const filled   = '★'.repeat(Math.max(0, Math.min(5, t.rating ?? 5)));
-      const empty    = '☆'.repeat(5 - Math.max(0, Math.min(5, t.rating ?? 5)));
-      const excerpt  = (t.review_ar ?? '').slice(0, 90) + ((t.review_ar ?? '').length > 90 ? '…' : '');
+      const filled = '★'.repeat(Math.max(0, Math.min(5, t.rating ?? 5)));
+      const empty = '☆'.repeat(5 - Math.max(0, Math.min(5, t.rating ?? 5)));
+      const excerpt = (t.review_ar ?? '').slice(0, 90) + ((t.review_ar ?? '').length > 90 ? '…' : '');
       const catLabel = CATEGORY_LABELS[t.trip_category] ?? '';
-      const cityAr   = CITY_MAP[t.reviewer_city] ?? t.reviewer_city ?? '';
+      const cityAr = CITY_MAP[t.reviewer_city] ?? t.reviewer_city ?? '';
       const hasReply = !!(t.reply_ar || t.reply_en);
 
       return `
@@ -2257,7 +2257,7 @@ const TestimonialsList = {
             <div class="testi-row__meta">
               ${t.reviewer_city ? `<span title="${escHtml(cityAr)}">${escHtml(t.reviewer_city)}</span>` : ''}
               ${catLabel ? `<span class="badge badge--${t.trip_category}">${catLabel}</span>` : ''}
-              ${t.trip_year  ? `<span>${t.trip_year}</span>` : ''}
+              ${t.trip_year ? `<span>${t.trip_year}</span>` : ''}
             </div>
             <div class="testi-row__excerpt" dir="rtl">${escHtml(excerpt)}</div>
           </div>
@@ -2319,19 +2319,19 @@ const TestimonialsList = {
    14. TESTIMONIAL FORM
    ============================================================ */
 const TestimonialForm = {
-  mode:          null,
+  mode: null,
   testimonialId: null,
-  testi:         null,
-  destinations:  [],
-  _dirty:        false,
-  _rating:       5,
+  testi: null,
+  destinations: [],
+  _dirty: false,
+  _rating: 5,
 
   async open(mode, id = null) {
-    this.mode          = mode;
+    this.mode = mode;
     this.testimonialId = id;
-    this.testi         = null;
-    this._dirty        = false;
-    this._rating       = 5;
+    this.testi = null;
+    this._dirty = false;
+    this._rating = 5;
 
     App.showView('testimonialForm');
     document.getElementById('topbarTitle').textContent = mode === 'create' ? 'New Testimonial' : 'Edit Testimonial';
@@ -2342,7 +2342,7 @@ const TestimonialForm = {
 
     if (mode === 'edit' && id) {
       try {
-        this.testi   = await DB.getTestimonial(id);
+        this.testi = await DB.getTestimonial(id);
         this._rating = this.testi.rating ?? 5;
         this.render();  // re-render with data
       } catch (err) {
@@ -2352,15 +2352,15 @@ const TestimonialForm = {
   },
 
   render() {
-    const t      = this.testi;
+    const t = this.testi;
     const isEdit = this.mode === 'edit';
-    const dest   = document.getElementById('testimonialFormContainer');
+    const dest = document.getElementById('testimonialFormContainer');
     if (!dest) return;
 
     const NOW_YEAR = new Date().getFullYear();
 
     // Star buttons — rendered left-to-right (1→5) for simplicity
-    const starsHTML = [1,2,3,4,5].map(n => `
+    const starsHTML = [1, 2, 3, 4, 5].map(n => `
       <button class="star-btn ${this._rating >= n ? 'is-active' : ''}"
               data-star="${n}" type="button" aria-label="${n} star${n > 1 ? 's' : ''}">★</button>`
     ).join('');
@@ -2411,12 +2411,12 @@ const TestimonialForm = {
               <div class="form-group">
                 <label class="form-label form-label--optional">Country Flag</label>
                 <select class="form-select" id="testiFlag">
-                  ${[['🇸🇦','Saudi Arabia'],['🇦🇪','UAE'],['🇶🇦','Qatar'],
-                     ['🇰🇼','Kuwait'],['🇧🇭','Bahrain'],['🇴🇲','Oman'],
-                     ['🇯🇴','Jordan'],['🇪🇬','Egypt'],['🇮🇶','Iraq']
-                    ].map(([flag, label]) =>
-                    `<option value="${flag}" ${(t?.reviewer_flag ?? '🇸🇦') === flag ? 'selected' : ''}>${flag} ${label}</option>`
-                  ).join('')}
+                  ${[['🇸🇦', 'Saudi Arabia'], ['🇦🇪', 'UAE'], ['🇶🇦', 'Qatar'],
+      ['🇰🇼', 'Kuwait'], ['🇧🇭', 'Bahrain'], ['🇴🇲', 'Oman'],
+      ['🇯🇴', 'Jordan'], ['🇪🇬', 'Egypt'], ['🇮🇶', 'Iraq']
+      ].map(([flag, label]) =>
+        `<option value="${flag}" ${(t?.reviewer_flag ?? '🇸🇦') === flag ? 'selected' : ''}>${flag} ${label}</option>`
+      ).join('')}
                 </select>
               </div>
               <div class="form-group">
@@ -2464,15 +2464,15 @@ const TestimonialForm = {
                 <select class="form-select" id="testiCategory">
                   <option value="">— None —</option>
                   ${Object.entries(CATEGORY_LABELS).map(([v, l]) =>
-                    `<option value="${v}" ${t?.trip_category === v ? 'selected' : ''}>${l}</option>`
-                  ).join('')}
+        `<option value="${v}" ${t?.trip_category === v ? 'selected' : ''}>${l}</option>`
+      ).join('')}
                 </select>
               </div>
               <div class="form-group">
                 <label class="form-label form-label--optional">Trip Month &amp; Year</label>
                 <input class="form-input" type="month" id="testiTripDate"
                        min="2015-01" max="${NOW_YEAR}-12"
-                       value="${(t?.trip_year && t?.trip_month) ? `${t.trip_year}-${String(t.trip_month).padStart(2,'0')}` : ''}">
+                       value="${(t?.trip_year && t?.trip_month) ? `${t.trip_year}-${String(t.trip_month).padStart(2, '0')}` : ''}">
                 <p class="form-note">Pick the month and year of the trip.</p>
               </div>
             </div>
@@ -2581,10 +2581,10 @@ const TestimonialForm = {
     [
       ['testiReviewAr', 'testiReviewArCount', 600],
       ['testiReviewEn', 'testiReviewEnCount', 600],
-      ['testiReplyAr',  'testiReplyArCount',  400],
-      ['testiReplyEn',  'testiReplyEnCount',  400],
+      ['testiReplyAr', 'testiReplyArCount', 400],
+      ['testiReplyEn', 'testiReplyEnCount', 400],
     ].forEach(([inputId, countId, max]) => {
-      const input   = document.getElementById(inputId);
+      const input = document.getElementById(inputId);
       const counter = document.getElementById(countId);
       if (!input || !counter) return;
       const update = () => {
@@ -2602,9 +2602,9 @@ const TestimonialForm = {
     const errors = [];
     const v = (id) => document.getElementById(id)?.value?.trim() ?? '';
 
-    if (!v('testiName'))     errors.push('Reviewer name is required.');
+    if (!v('testiName')) errors.push('Reviewer name is required.');
     if (!v('testiReviewAr')) errors.push('Arabic review text is required.');
-    if (!this._rating)       errors.push('Please select a star rating.');
+    if (!this._rating) errors.push('Please select a star rating.');
 
     const tripDate = v('testiTripDate');
     if (tripDate) {
@@ -2634,28 +2634,28 @@ const TestimonialForm = {
     saveBtn.classList.add('btn--loading');
     saveBtn.disabled = true;
 
-    const v        = (id) => document.getElementById(id)?.value?.trim() ?? '';
+    const v = (id) => document.getElementById(id)?.value?.trim() ?? '';
     const hasReply = document.getElementById('testiHasReply')?.checked ?? false;
 
     // Parse combined month/year input ("YYYY-MM" → separate fields)
-    const tripDate   = v('testiTripDate');
-    const trip_year  = tripDate ? parseInt(tripDate.split('-')[0], 10) : null;
+    const tripDate = v('testiTripDate');
+    const trip_year = tripDate ? parseInt(tripDate.split('-')[0], 10) : null;
     const trip_month = tripDate ? parseInt(tripDate.split('-')[1], 10) : null;
 
     const data = {
       reviewer_name_display: v('testiName'),
-      reviewer_city:         v('testiCity')     || null,
-      reviewer_flag:         v('testiFlag')      || '🇸🇦',
-      rating:                this._rating,
-      review_ar:             v('testiReviewAr'),
-      review_en:             v('testiReviewEn') || null,
-      trip_category:         v('testiCategory') || null,
+      reviewer_city: v('testiCity') || null,
+      reviewer_flag: v('testiFlag') || '🇸🇦',
+      rating: this._rating,
+      review_ar: v('testiReviewAr'),
+      review_en: v('testiReviewEn') || null,
+      trip_category: v('testiCategory') || null,
       trip_month,
       trip_year,
-      is_approved:           document.getElementById('testiApproved')?.checked ?? false,
-      display_order:         parseInt(v('testiOrder'), 10) || 0,
-      reply_ar:              hasReply ? (v('testiReplyAr') || null) : null,
-      reply_en:              hasReply ? (v('testiReplyEn') || null) : null,
+      is_approved: document.getElementById('testiApproved')?.checked ?? false,
+      display_order: parseInt(v('testiOrder'), 10) || 0,
+      reply_ar: hasReply ? (v('testiReplyAr') || null) : null,
+      reply_en: hasReply ? (v('testiReplyEn') || null) : null,
     };
 
     try {
@@ -2728,8 +2728,8 @@ const HeroImages = {
 
         <div class="hero-img-grid" id="heroImgGrid">
           ${HERO_IMAGES.map(img => {
-            const isActive = this._active.includes(img.file);
-            return `
+      const isActive = this._active.includes(img.file);
+      return `
               <div class="hero-img-card ${isActive ? 'is-active' : ''}" data-file="${escHtml(img.file)}">
                 <div class="hero-img-card__thumb-wrap">
                   <img class="hero-img-card__thumb"
@@ -2750,7 +2750,7 @@ const HeroImages = {
                   </label>
                 </div>
               </div>`;
-          }).join('')}
+    }).join('')}
         </div>
 
       </div>`;
@@ -2762,9 +2762,9 @@ const HeroImages = {
     // Toggle card active state live
     document.querySelectorAll('.hero-img-toggle').forEach(chk => {
       chk.addEventListener('change', () => {
-        const card  = chk.closest('.hero-img-card');
+        const card = chk.closest('.hero-img-card');
         const badge = card.querySelector('.hero-img-card__badge');
-        const on    = chk.checked;
+        const on = chk.checked;
         card.classList.toggle('is-active', on);
         badge.textContent = on ? 'Active' : 'Inactive';
         badge.className = `hero-img-card__badge ${on ? 'hero-img-card__badge--on' : 'hero-img-card__badge--off'}`;
@@ -2918,16 +2918,16 @@ const App = {
   },
 
   showView(view) {
-    document.getElementById('viewPackages').hidden        = view !== 'packages';
-    document.getElementById('viewForm').hidden            = view !== 'form';
-    document.getElementById('viewTestimonials').hidden    = view !== 'testimonials';
+    document.getElementById('viewPackages').hidden = view !== 'packages';
+    document.getElementById('viewForm').hidden = view !== 'form';
+    document.getElementById('viewTestimonials').hidden = view !== 'testimonials';
     document.getElementById('viewTestimonialForm').hidden = view !== 'testimonialForm';
-    document.getElementById('viewHeroImages').hidden      = view !== 'heroImages';
+    document.getElementById('viewHeroImages').hidden = view !== 'heroImages';
 
     const sidebarActive =
-      (view === 'packages'        || view === 'form')            ? 'packages'      :
-      (view === 'testimonials'    || view === 'testimonialForm')  ? 'testimonials'  :
-      view === 'heroImages'                                       ? 'heroImages'    : '';
+      (view === 'packages' || view === 'form') ? 'packages' :
+        (view === 'testimonials' || view === 'testimonialForm') ? 'testimonials' :
+          view === 'heroImages' ? 'heroImages' : '';
     Sidebar.setActive(sidebarActive);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   },
