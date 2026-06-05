@@ -54,6 +54,8 @@ const Config = Object.freeze({
   WHATSAPP_NUMBER:   '+6281111826527',
   LANG_KEY:          'luxpath_lang',
   DEFAULT_LANG:      'ar',
+  CURRENCY_KEY:      'luxpath_currency',
+  DEFAULT_CURRENCY:  'SAR',
   PLACEHOLDER_IMG:   'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23F0EDE8" width="400" height="300"/%3E%3C/svg%3E',
 });
 
@@ -111,6 +113,7 @@ const T = {
 
     // Currency
     'currency.SAR': 'ريال',
+    'currency.IDR': 'روبية',
     'currency.USD': 'دولار',
     'currency.EUR': 'يورو',
 
@@ -223,6 +226,7 @@ const T = {
     'price.starting_from':'From',
     'price.approximate':  'Approx.',
     'currency.SAR': 'SAR',
+    'currency.IDR': 'IDR',
     'currency.USD': 'USD',
     'currency.EUR': 'EUR',
     'why.eyebrow':   'Our Advantage',
@@ -329,7 +333,11 @@ const DB = (() => {
         .select(`
           id, slug_en, slug_ar, title_ar, title_en,
           short_description_ar, short_description_en,
-          category, price_type, price_value, original_price_value, currency,
+          category, price_type,
+          price_value, original_price_value,
+          price_value_idr, original_price_value_idr,
+          price_value_usd, original_price_value_usd,
+          currency,
           duration_nights, duration_days, hero_image_url,
           package_destinations (
             is_primary,
@@ -458,7 +466,62 @@ const I18n = (() => {
 
 
 /* ============================================================
-   5. WA — WhatsApp URL builder
+   5. CURRENCY — visitor currency preference (SAR / IDR / USD)
+   ============================================================ */
+const Currency = (() => {
+  const ALL = ['SAR', 'IDR', 'USD'];
+  let curr = Config.DEFAULT_CURRENCY;
+
+  const applyDOM = () => {
+    document.querySelectorAll('.btn-currency').forEach(btn => {
+      btn.textContent = curr;
+      btn.setAttribute('aria-label', `Currency: ${curr}. Click to switch.`);
+    });
+  };
+
+  return {
+    init() {
+      const stored = localStorage.getItem(Config.CURRENCY_KEY);
+      if (ALL.includes(stored)) curr = stored;
+      applyDOM();
+    },
+
+    get() { return curr; },
+
+    cycle() {
+      curr = ALL[(ALL.indexOf(curr) + 1) % ALL.length];
+      localStorage.setItem(Config.CURRENCY_KEY, curr);
+      applyDOM();
+    },
+
+    // Returns { value, label, originalValue } for the current currency, falling back to SAR.
+    format(pkg) {
+      const fmt = (n) => new Intl.NumberFormat('en-US').format(n);
+      if (curr === 'IDR' && pkg.price_value_idr != null) {
+        return {
+          value:         fmt(pkg.price_value_idr),
+          label:         I18n.t('currency.IDR'),
+          originalValue: pkg.original_price_value_idr != null ? fmt(pkg.original_price_value_idr) : null,
+        };
+      }
+      if (curr === 'USD' && pkg.price_value_usd != null) {
+        return {
+          value:         fmt(pkg.price_value_usd),
+          label:         I18n.t('currency.USD'),
+          originalValue: pkg.original_price_value_usd != null ? fmt(pkg.original_price_value_usd) : null,
+        };
+      }
+      return {
+        value:         fmt(pkg.price_value ?? 0),
+        label:         I18n.t('currency.SAR'),
+        originalValue: pkg.original_price_value != null ? fmt(pkg.original_price_value) : null,
+      };
+    },
+  };
+})();
+
+/* ============================================================
+   6. WA — WhatsApp URL builder
    ============================================================ */
 const WA = {
   get phone() { return Config.WHATSAPP_NUMBER; },
@@ -532,6 +595,15 @@ const Navbar = {
       btn.addEventListener('click', () => I18n.toggle());
     });
 
+    // Currency toggle — cycles SAR → IDR → USD → SAR
+    document.querySelectorAll('.btn-currency').forEach(btn => {
+      btn.addEventListener('click', () => {
+        Currency.cycle();
+        // Re-render package grid with new currency if already loaded
+        if (App.cachedPackages?.length) Packages.render(App.cachedPackages);
+      });
+    });
+
     // Logo: scroll to top if already on homepage, otherwise navigate
     const isHomepage = () => {
       const p = window.location.pathname;
@@ -546,6 +618,14 @@ const Navbar = {
         }
         // On other pages: default href="/" navigation applies
       });
+    });
+
+    // Footer logo: same smooth-scroll-to-top behaviour on homepage
+    document.querySelector('.footer__logo-link')?.addEventListener('click', e => {
+      if (isHomepage()) {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     });
   },
 
@@ -776,18 +856,19 @@ const Packages = {
     const catLabel = I18n.t(`category.${cat}`);
     const nights  = pkg.duration_nights ?? 0;
     const days    = pkg.duration_days ?? 1;
-    const priceType = pkg.price_type ?? 'starting_from';
+    const priceType  = pkg.price_type ?? 'starting_from';
     const priceLabel = I18n.t(`price.${priceType}`);
-    const currLabel  = I18n.t(`currency.${pkg.currency ?? 'SAR'}`);
-    const price   = new Intl.NumberFormat('en-US').format(pkg.price_value ?? 0);
+    const priceInfo  = Currency.format(pkg);
+    const price      = priceInfo.value;
+    const currLabel  = priceInfo.label;
     const imgSrc  = pkg.hero_image_url
       ? `${Config.STORAGE_URL}${pkg.hero_image_url}`
       : Config.PLACEHOLDER_IMG;
     const slugKey = lang === 'ar' ? pkg.slug_ar : pkg.slug_en;
     const detailUrl = `بكج-سياحي-اندونيسيا?slug=${pkg.slug_en}`;
 
-    const origHTML = pkg.original_price_value
-      ? `<span class="pkg-card__price-original">${new Intl.NumberFormat('en-US').format(pkg.original_price_value)}</span>`
+    const origHTML = priceInfo.originalValue
+      ? `<span class="pkg-card__price-original">${priceInfo.originalValue}</span>`
       : '';
 
     return `
@@ -879,8 +960,13 @@ const DEST_DATA = [
     name_en: 'Bali',
     tagline_ar: 'جزيرة الرفاهية والروقان',
     tagline_en: 'Island of the Gods',
-    img: 'destination-image/bali.webp',
-    card_image_url: null,
+    images: [
+      'destination-image/bali/bali-1.webp',
+      'destination-image/bali/bali-2.webp',
+      'destination-image/bali/bali-3.webp',
+      'destination-image/bali/bali-4.webp',
+      'destination-image/bali/bali-5.webp',
+    ],
     hero_ar: 'جزيرة بالي هي جوهرة إندونيسيا السياحية — تجمع بين روحانية المعابد القديمة وسحر الطبيعة الخضراء وفخامة المنتجعات الحصرية في تجربة لا تُنسى.',
     hero_en: 'Bali is Indonesia\'s crown jewel — an island where ancient temple spirituality meets lush nature and world-class luxury resorts in an unforgettable experience.',
     attractions: [
@@ -910,9 +996,12 @@ const DEST_DATA = [
     name_en: 'Jakarta',
     tagline_ar: 'العاصمة النابضة بالحياة',
     tagline_en: 'The Vibrant Capital',
-    img: 'destination-image/jakarta.webp',
-    card_image_url: null,
-    card_image_url: null,
+    images: [
+      'destination-image/jakarta/jakarta-1.webp',
+      'destination-image/jakarta/jakarta-2.webp',
+      'destination-image/jakarta/jakarta-3.webp',
+      'destination-image/jakarta/jakarta-4.webp',
+    ],
     hero_ar: 'جاكرتا، عاصمة إندونيسيا، مدينة لا تنام — تمزج بين ناطحات السحاب الحديثة والأحياء التاريخية الأصيلة ومراكز التسوق الفاخرة في مشهد حضري استثنائي.',
     hero_en: 'Jakarta, Indonesia\'s capital, is a city that never sleeps — blending modern skyscrapers, authentic historic districts, and luxury shopping malls in an exceptional urban landscape.',
     attractions: [
@@ -942,8 +1031,11 @@ const DEST_DATA = [
     name_en: 'Puncak',
     tagline_ar: 'جبال الطبيعة الخضراء',
     tagline_en: 'A Magical Mountain Escape',
-    img: 'destination-image/puncak.webp',
-    card_image_url: null,
+    images: [
+      'destination-image/puncak/puncak-1.webp',
+      'destination-image/puncak/puncak-2.webp',
+      'destination-image/puncak/puncak-3.webp',
+    ],
     hero_ar: 'بونشاك هي منتجع الجبال المفضل لعائلات جاكرتا — تشتهر بمزارع الشاي الخضراء اللانهائية والهواء النقي المنعش والإطلالات الخلابة على القمم الجبلية.',
     hero_en: 'Puncak is Jakarta\'s favourite mountain resort — famous for endless green tea plantations, fresh mountain air, and stunning views of volcanic peaks.',
     attractions: [
@@ -975,8 +1067,13 @@ const DEST_DATA = [
     name_en: 'Lombok',
     tagline_ar: 'جزيرة الطبيعة الخام',
     tagline_en: 'Island of Raw Nature',
-    img: 'destination-image/lombok.webp',
-    card_image_url: null,
+    images: [
+      'destination-image/lombok/lombok-1.webp',
+      'destination-image/lombok/lombok-2.webp',
+      'destination-image/lombok/lombok-3.webp',
+      'destination-image/lombok/lombok-4.webp',
+      'destination-image/lombok/lombok-5.webp',
+    ],
     hero_ar: 'لومبوك هي جوهرة إندونيسيا الخفية — جزيرة بركانية خلابة بشواطئ بيضاء ناصعة ومياه فيروزية صافية وقمم جبلية شامخة.',
     hero_en: 'Lombok is Indonesia\'s hidden gem — a stunning volcanic island with pristine white beaches, turquoise waters, and majestic mountain peaks.',
     attractions: [
@@ -1008,8 +1105,12 @@ const DEST_DATA = [
     name_en: 'Bandung',
     tagline_ar: 'باريس جاوة',
     tagline_en: 'Paris of Java',
-    img: 'destination-image/bandung.webp',
-    card_image_url: null,
+    images: [
+      'destination-image/bandung/bandung-1.webp',
+      'destination-image/bandung/bandung-2.webp',
+      'destination-image/bandung/bandung-3.webp',
+      'destination-image/bandung/bandung-4.webp',
+    ],
     hero_ar: 'باندونج، باريس جاوة، مدينة جبلية ساحرة تجمع بين الهواء المنعش والعمارة الاستعمارية الهولندية الأنيقة وأسواق التسوق الحديثة والمصانع الحصرية.',
     hero_en: 'Bandung, the Paris of Java, is a charming mountain city that blends cool fresh air, elegant Dutch colonial architecture, modern shopping, and exclusive factory outlets.',
     attractions: [
@@ -1039,8 +1140,13 @@ const DEST_DATA = [
     name_en: 'Gili Islands',
     tagline_ar: 'جنة استوائية',
     tagline_en: 'Tropical Paradise',
-    img: 'destination-image/gili-islands.webp',
-    card_image_url: null,
+    images: [
+      'destination-image/gili-islands/gili-islands-1.webp',
+      'destination-image/gili-islands/gili-islands-2.webp',
+      'destination-image/gili-islands/gili-islands-3.webp',
+      'destination-image/gili-islands/gili-islands-4.webp',
+      'destination-image/gili-islands/gili-islands-5.webp',
+    ],
     hero_ar: 'جزر جيلي الثلاث — جيلي ترواينغان، جيلي مينو، وجيلي أير — أكثر وجهات إندونيسيا سحراً. بلا سيارات ولا ضجيج، فقط الرمال البيضاء والمياه الزرقاء الشفافة.',
     hero_en: 'The three Gili Islands — Gili Trawangan, Gili Meno, and Gili Air — are Indonesia\'s most enchanting destination. No cars, no noise — just white sand and crystal-clear water.',
     attractions: [
@@ -1070,6 +1176,11 @@ const DEST_DATA = [
 const DestPanel = {
   _panel: null,
   _scrollY: 0,
+  _slides: [],
+  _current: 0,
+  _dragStartX: 0,
+  _dragStartY: 0,
+  _dragging: false,
 
   _ensurePanel() {
     if (document.getElementById('destPanel')) return;
@@ -1081,7 +1192,20 @@ const DestPanel = {
     el.innerHTML = `
       <div class="dest-panel__sheet" id="destPanelSheet">
         <div class="dest-panel__hero" id="destPanelHero">
-          <img class="dest-panel__hero-img" id="destPanelImg" src="" alt="" width="520" height="240">
+          <!-- Slider track -->
+          <div class="dest-panel__slider" id="destPanelSlider">
+            <div class="dest-panel__slides" id="destPanelSlides"></div>
+          </div>
+          <!-- Nav arrows (hidden when only 1 image) -->
+          <button class="dest-panel__arrow dest-panel__arrow--prev" id="destPanelPrev" aria-label="Previous image" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+          <button class="dest-panel__arrow dest-panel__arrow--next" id="destPanelNext" aria-label="Next image" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <!-- Dot indicators -->
+          <div class="dest-panel__dots" id="destPanelDots" aria-hidden="true"></div>
+          <!-- Overlay + text -->
           <div class="dest-panel__hero-overlay" aria-hidden="true"></div>
           <div class="dest-panel__hero-text">
             <div class="dest-panel__hero-name" id="destPanelName"></div>
@@ -1109,6 +1233,126 @@ const DestPanel = {
       if (e.key === 'Escape' && el.classList.contains('dest-panel--open')) this.close();
     });
     document.getElementById('destPanelClose').addEventListener('click', () => this.close());
+
+    // Arrow buttons — pass explicit direction so wrap-around always animates correctly
+    document.getElementById('destPanelPrev').addEventListener('click', () => this._goTo(this._current - 1, -1));
+    document.getElementById('destPanelNext').addEventListener('click', () => this._goTo(this._current + 1,  1));
+
+    // ── Swipe on the hero area ───────────────────────────────────
+    // Listeners go on destPanelHero (the ancestor), not on destPanelSlider.
+    // The overlay div sits above the slider in the z-order, so touch events
+    // land on the overlay and bubble UP to the hero — they never reach the
+    // sibling slider element.
+    const heroEl = document.getElementById('destPanelHero');
+
+    heroEl.addEventListener('touchstart', (e) => {
+      this._dragStartX = e.touches[0].clientX;
+      this._dragStartY = e.touches[0].clientY;
+      this._dragging   = false;
+    }, { passive: true });
+
+    heroEl.addEventListener('touchmove', (e) => {
+      const dx = Math.abs(e.touches[0].clientX - this._dragStartX);
+      const dy = Math.abs(e.touches[0].clientY - this._dragStartY);
+      if (dx > dy && dx > 5) {
+        this._dragging = true;
+        e.preventDefault(); // claim the horizontal gesture; stops pointercancel
+      }
+    }, { passive: false });
+
+    heroEl.addEventListener('touchend', (e) => {
+      if (!this._dragging) return;
+      this._dragging = false;
+      const dx = e.changedTouches[0].clientX - this._dragStartX;
+      if (Math.abs(dx) > 40) {
+        // Swipe left → next, swipe right → previous
+        if (dx < 0) this._goTo(this._current + 1,  1);
+        else        this._goTo(this._current - 1, -1);
+      }
+    }, { passive: true });
+
+    // ── Mouse drag (desktop) ──────────────────────────────────────
+    heroEl.addEventListener('mousedown', (e) => {
+      this._dragStartX = e.clientX;
+      this._dragging   = true;
+      e.preventDefault(); // prevent native image drag
+    });
+
+    window.addEventListener('mouseup', (e) => {
+      if (!this._dragging) return;
+      this._dragging = false;
+      const dx = e.clientX - this._dragStartX;
+      if (Math.abs(dx) > 40) {
+        // Physical drag: drag left → previous, drag right → next
+        if (dx < 0) this._goTo(this._current - 1, -1);
+        else        this._goTo(this._current + 1,  1);
+      }
+    });
+  },
+
+  _buildSlider(images, altText) {
+    this._slides = images.length ? images : [Config.PLACEHOLDER_IMG];
+    this._current = 0;
+
+    const slidesEl = document.getElementById('destPanelSlides');
+    slidesEl.innerHTML = this._slides.map((src, i) =>
+      `<div class="dest-panel__slide ${i === 0 ? 'is-active' : ''}" aria-hidden="${i !== 0}">
+        <img src="${src}" alt="${altText}${this._slides.length > 1 ? ' ' + (i + 1) : ''}" width="520" height="240" loading="${i === 0 ? 'eager' : 'lazy'}">
+      </div>`
+    ).join('');
+
+    // Dots
+    const dotsEl = document.getElementById('destPanelDots');
+    const multi = this._slides.length > 1;
+    dotsEl.hidden = !multi;
+    dotsEl.innerHTML = multi
+      ? this._slides.map((_, i) =>
+          `<button class="dest-panel__dot ${i === 0 ? 'is-active' : ''}" data-idx="${i}" type="button" aria-label="Image ${i + 1}"></button>`
+        ).join('')
+      : '';
+    if (multi) {
+      dotsEl.querySelectorAll('.dest-panel__dot').forEach(dot => {
+        dot.addEventListener('click', () => this._goTo(+dot.dataset.idx));
+      });
+    }
+
+    // Arrows visibility
+    document.getElementById('destPanelPrev').hidden = !multi;
+    document.getElementById('destPanelNext').hidden = !multi;
+  },
+
+  // dir:  1 = forward/next (new slide enters from right)
+  //       -1 = backward/prev (new slide enters from left)
+  //        0 = auto-detect from index (safe for dot clicks; no wrapping involved)
+  _goTo(idx, dir = 0) {
+    const n = this._slides.length;
+    if (n <= 1) return;
+    const next = ((idx % n) + n) % n;
+    if (next === this._current) return;
+
+    const slidesEl = document.getElementById('destPanelSlides');
+    const slides = slidesEl.querySelectorAll('.dest-panel__slide');
+    const dots = document.querySelectorAll('#destPanelDots .dest-panel__dot');
+
+    // When dir is explicit (arrow / swipe), use it directly.
+    // When dir is 0 (dot click), fall back to index comparison — wrapping
+    // is not a concern since dots jump to a fixed target index.
+    const forward = dir !== 0 ? dir > 0 : next > this._current;
+
+    slides[this._current].classList.add(forward ? 'slide-out-left' : 'slide-out-right');
+    slides[next].classList.add(forward ? 'slide-in-right' : 'slide-in-left');
+    slides[next].classList.add('is-active');
+    slides[next].setAttribute('aria-hidden', 'false');
+
+    const leaving = this._current;
+    setTimeout(() => {
+      slides[leaving].classList.remove('is-active', 'slide-out-left', 'slide-out-right');
+      slides[leaving].setAttribute('aria-hidden', 'true');
+      slides[next].classList.remove('slide-in-right', 'slide-in-left');
+    }, 380);
+
+    dots.forEach((d, i) => d.classList.toggle('is-active', i === next));
+    this._current = next;
   },
 
   open(slug) {
@@ -1121,14 +1365,10 @@ const DestPanel = {
     const tagline = lang === 'ar' ? d.tagline_ar : d.tagline_en;
     const hero    = lang === 'ar' ? d.hero_ar    : d.hero_en;
     const luxpath = lang === 'ar' ? d.luxpath_ar : d.luxpath_en;
-    const imgSrc  = d.img
-      ? d.img
-      : d.card_image_url
-        ? `${Config.STORAGE_URL}${d.card_image_url}`
-        : Config.PLACEHOLDER_IMG;
 
-    document.getElementById('destPanelImg').src  = imgSrc;
-    document.getElementById('destPanelImg').alt  = name;
+    // Build image slider
+    this._buildSlider(d.images ?? [], name);
+
     document.getElementById('destPanelName').textContent    = name;
     document.getElementById('destPanelTagline').textContent = tagline;
     document.getElementById('destPanelClose').setAttribute('aria-label',
@@ -1278,11 +1518,7 @@ const Destinations = {
   cardHTML(d, lang) {
     const name    = lang === 'ar' ? d.name_ar    : d.name_en;
     const tagline = lang === 'ar' ? d.tagline_ar : d.tagline_en;
-    const imgSrc  = d.img
-      ? d.img
-      : d.card_image_url
-        ? `${Config.STORAGE_URL}${d.card_image_url}`
-        : Config.PLACEHOLDER_IMG;
+    const imgSrc  = d.images?.[0] ?? Config.PLACEHOLDER_IMG;
     const exploreLabel = lang === 'ar' ? 'اكتشف' : 'Explore';
 
     return `
@@ -1483,8 +1719,9 @@ const App = {
   cachedTestimonials: null,
 
   async init() {
-    // ── 1. Language (sync — no flash) ──────────────────────
+    // ── 1. Language + currency (sync — no flash) ───────────
     I18n.init();
+    Currency.init();
 
     // ── 2. Static UI components ────────────────────────────
     Navbar.init();

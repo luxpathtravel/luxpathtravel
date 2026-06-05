@@ -175,12 +175,6 @@ const DB = (() => {
           package_inclusions (
             type, icon, text_ar, text_en, display_order
           ),
-          package_itinerary (
-            day_number, title_ar, title_en,
-            description_ar, description_en,
-            location_ar, location_en,
-            meals_included, image_url
-          )
         `)
         .eq('slug_en', slug)
         .eq('is_active', true)
@@ -860,11 +854,6 @@ const PriceCard = {
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             ${nights} ${I18n.t('packages.nights')} / ${days} ${I18n.t('packages.days')}
           </span>
-          ${pkg.min_persons || pkg.max_persons ? `
-          <span class="pkg-header__stat">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            ${pkg.min_persons ?? 1}${pkg.max_persons ? '–' + pkg.max_persons : '+'} ${I18n.t('pkg.persons')}
-          </span>` : ''}
           <span class="pkg-header__stat">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
             ${destName}

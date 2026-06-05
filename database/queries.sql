@@ -151,26 +151,6 @@ SELECT
         AND    exc.type = 'excluded'
     ) AS exclusions,
 
-    -- Itinerary
-    (
-        SELECT json_agg(
-            json_build_object(
-                'day',           it.day_number,
-                'title_ar',      it.title_ar,
-                'title_en',      it.title_en,
-                'description_ar',it.description_ar,
-                'description_en',it.description_en,
-                'location_ar',   it.location_ar,
-                'location_en',   it.location_en,
-                'meals',         it.meals_included,
-                'image_url',     it.image_url
-            )
-            ORDER BY it.day_number
-        )
-        FROM   package_itinerary it
-        WHERE  it.package_id = pkg.id
-    ) AS itinerary
-
 FROM pkg;
 
 
@@ -340,8 +320,9 @@ FROM   packages
 WHERE  hero_image_url IS NULL
 AND    is_active = true;
 
--- ─── 15. Check schema integrity: packages with SEO fields missing ─────────────
-SELECT id, slug_en, title_en, seo_title_ar, seo_description_ar
+-- ─── 15. Check schema integrity: packages with hero image missing ─────────────
+-- SEO is now auto-generated from title/description; no manual check needed.
+SELECT id, slug_en, title_en
 FROM   packages
 WHERE  is_active = true
-AND    (seo_title_ar IS NULL OR seo_description_ar IS NULL);
+AND    hero_image_url IS NULL;

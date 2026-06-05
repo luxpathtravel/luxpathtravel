@@ -163,9 +163,13 @@ CREATE TABLE IF NOT EXISTS packages (
     price_type              text        NOT NULL DEFAULT 'starting_from'
                             CHECK (price_type IN ('exact', 'starting_from', 'approximate')),
 
-    price_value             numeric(10,2) NOT NULL CHECK (price_value >= 0),
+    price_value             numeric(10,2) NOT NULL CHECK (price_value >= 0),        -- SAR (primary)
+    price_value_idr          numeric(14,2) CHECK (price_value_idr IS NULL OR price_value_idr >= 0),
+    original_price_value_idr numeric(14,2) CHECK (original_price_value_idr IS NULL OR original_price_value_idr > price_value_idr),
+    price_value_usd          numeric(10,2) CHECK (price_value_usd IS NULL OR price_value_usd >= 0),
+    original_price_value_usd numeric(10,2) CHECK (original_price_value_usd IS NULL OR original_price_value_usd > price_value_usd),
 
-    -- Optional: original price to display a crossed-out "was" price.
+    -- Optional: original SAR price to display a crossed-out "was" price.
     -- Only populate when a genuine discount exists — never fabricate.
     original_price_value    numeric(10,2) CHECK (
                                 original_price_value IS NULL
@@ -174,10 +178,6 @@ CREATE TABLE IF NOT EXISTS packages (
 
     currency                text        NOT NULL DEFAULT 'SAR'
                             CHECK (currency IN ('SAR', 'USD', 'EUR')),
-
-    -- ─── Group Size ───────────────────────────────────────────────────────
-    min_persons             smallint    NOT NULL DEFAULT 1  CHECK (min_persons >= 1),
-    max_persons             smallint    CHECK (max_persons IS NULL OR max_persons >= min_persons),
 
     -- ─── Main Image ───────────────────────────────────────────────────────
     -- Denormalized for performance: avoids a join on every list page.
@@ -281,7 +281,7 @@ CREATE TABLE IF NOT EXISTS package_inclusions (
     id              uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
     package_id      uuid        NOT NULL REFERENCES packages(id) ON DELETE CASCADE,
 
-    type            text        NOT NULL CHECK (type IN ('included', 'excluded')),
+    type            text        NOT NULL DEFAULT 'included' CHECK (type IN ('included')),
 
     -- Icon key maps to a CSS/SVG icon in the frontend.
     -- Predefined set for consistency across packages.
@@ -314,35 +314,9 @@ COMMENT ON TABLE  package_inclusions      IS 'Included and excluded items for a 
 COMMENT ON COLUMN package_inclusions.icon IS 'Maps to a frontend icon component. Use custom for one-off items.';
 
 
--- =============================================================================
--- SECTION 9: PACKAGE ITINERARY TABLE
--- =============================================================================
-
-CREATE TABLE IF NOT EXISTS package_itinerary (
-    id              uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
-    package_id      uuid        NOT NULL REFERENCES packages(id) ON DELETE CASCADE,
-
-    day_number      smallint    NOT NULL CHECK (day_number >= 1),
-    title_ar        text        NOT NULL,   -- 'اليوم الأول — الوصول والاستقبال'
-    title_en        text        NOT NULL,   -- 'Day 1 — Arrival & Welcome'
-    description_ar  text,                  -- Full day narrative (Arabic)
-    description_en  text,                  -- Full day narrative (English)
-    location_ar     text,                  -- Which area: 'نوسا دوا'
-    location_en     text,                  -- Which area: 'Nusa Dua'
-
-    -- Array of meal codes for this day.
-    -- Values: 'breakfast', 'lunch', 'dinner'
-    meals_included  text[]      DEFAULT '{}',
-
-    -- Optional day-specific image (e.g. the temple visited that day).
-    image_url       text,
-
-    -- Each day number must be unique within a package.
-    CONSTRAINT unique_package_day UNIQUE (package_id, day_number)
-);
-
-COMMENT ON TABLE  package_itinerary                 IS 'Day-by-day program for each package. Each row = one day of travel.';
-COMMENT ON COLUMN package_itinerary.meals_included  IS 'Array of meals: breakfast, lunch, dinner. Empty array = no meals included.';
+-- SECTION 9: PACKAGE ITINERARY TABLE — REMOVED
+-- Day-by-day itinerary was removed from the admin form to keep package creation simple.
+-- Inclusions (what's included/excluded) cover the same need with much less friction.
 
 
 -- =============================================================================
@@ -679,9 +653,6 @@ CREATE INDEX idx_pkg_images_package        ON package_images (package_id, displa
 CREATE INDEX idx_pkg_inclusions_package    ON package_inclusions (package_id);
 CREATE INDEX idx_pkg_inclusions_type       ON package_inclusions (package_id, type);
 
--- ─── package_itinerary ────────────────────────────────────────────────────────
-CREATE INDEX idx_pkg_itinerary_package     ON package_itinerary (package_id, day_number);
-
 -- ─── inquiries ────────────────────────────────────────────────────────────────
 CREATE INDEX idx_inquiries_status          ON inquiries (status);
 CREATE INDEX idx_inquiries_status_date     ON inquiries (status, created_at DESC);
@@ -721,7 +692,6 @@ ALTER TABLE packages           ENABLE ROW LEVEL SECURITY;
 ALTER TABLE package_destinations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE package_images     ENABLE ROW LEVEL SECURITY;
 ALTER TABLE package_inclusions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE package_itinerary  ENABLE ROW LEVEL SECURITY;
 ALTER TABLE inquiries          ENABLE ROW LEVEL SECURITY;
 ALTER TABLE testimonials       ENABLE ROW LEVEL SECURITY;
 ALTER TABLE site_settings      ENABLE ROW LEVEL SECURITY;
@@ -820,16 +790,6 @@ CREATE POLICY rls_pkg_inclusions_admin_all
     WITH CHECK (is_admin());
 
 
--- ─── package_itinerary ────────────────────────────────────────────────────────
-
-CREATE POLICY rls_pkg_itinerary_public_select
-    ON package_itinerary FOR SELECT
-    USING (true);
-
-CREATE POLICY rls_pkg_itinerary_admin_all
-    ON package_itinerary FOR ALL
-    USING    (is_admin())
-    WITH CHECK (is_admin());
 
 
 -- ─── inquiries ────────────────────────────────────────────────────────────────
