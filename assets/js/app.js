@@ -1235,8 +1235,8 @@ const DestPanel = {
     document.getElementById('destPanelClose').addEventListener('click', () => this.close());
 
     // Arrow buttons — pass explicit direction so wrap-around always animates correctly
-    document.getElementById('destPanelPrev').addEventListener('click', () => this._goTo(this._current - 1, -1));
-    document.getElementById('destPanelNext').addEventListener('click', () => this._goTo(this._current + 1, 1));
+    document.getElementById('destPanelPrev').addEventListener('click', () => this._goTo(this._current - 1, 1));
+    document.getElementById('destPanelNext').addEventListener('click', () => this._goTo(this._current + 1, -1));
 
     // ── Swipe on the hero area ───────────────────────────────────
     // Listeners go on destPanelHero (the ancestor), not on destPanelSlider.
