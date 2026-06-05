@@ -966,6 +966,7 @@ const DEST_DATA = [
       'destination-image/bali/bali-3.webp',
       'destination-image/bali/bali-4.webp',
       'destination-image/bali/bali-5.webp',
+      'destination-image/bali/bali-6.webp',
     ],
     hero_ar: 'جزيرة بالي هي جوهرة إندونيسيا السياحية — تجمع بين روحانية المعابد القديمة وسحر الطبيعة الخضراء وفخامة المنتجعات الحصرية في تجربة لا تُنسى.',
     hero_en: 'Bali is Indonesia\'s crown jewel — an island where ancient temple spirituality meets lush nature and world-class luxury resorts in an unforgettable experience.',
