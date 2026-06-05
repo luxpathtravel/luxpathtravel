@@ -22,41 +22,41 @@
 'use strict';
 
 /* ── HTML escape helper (prevents XSS in rendered cards) ── */
-const escHtml = s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const escHtml = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 /* ── City map: English key → Arabic display ─────────────── */
 const CITY_MAP = {
   // Saudi Arabia
-  'Riyadh':'الرياض','Jeddah':'جدة','Mecca':'مكة المكرمة',
-  'Medina':'المدينة المنورة','Dammam':'الدمام','Khobar':'الخبر',
-  'Dhahran':'الظهران','Abha':'أبها','Taif':'الطائف','Tabuk':'تبوك',
-  'Buraydah':'بريدة','Khamis Mushait':'خميس مشيط','Jubail':'الجبيل',
-  'Yanbu':'ينبو','Najran':'نجران','Jizan':'جيزان','Hail':'حائل',
-  'Sakaka':'سكاكا','Arar':'عرعر',
+  'Riyadh': 'الرياض', 'Jeddah': 'جدة', 'Mecca': 'مكة المكرمة',
+  'Medina': 'المدينة المنورة', 'Dammam': 'الدمام', 'Khobar': 'الخبر',
+  'Dhahran': 'الظهران', 'Abha': 'أبها', 'Taif': 'الطائف', 'Tabuk': 'تبوك',
+  'Buraydah': 'بريدة', 'Khamis Mushait': 'خميس مشيط', 'Jubail': 'الجبيل',
+  'Yanbu': 'ينبو', 'Najran': 'نجران', 'Jizan': 'جيزان', 'Hail': 'حائل',
+  'Sakaka': 'سكاكا', 'Arar': 'عرعر',
   // UAE
-  'Dubai':'دبي','Abu Dhabi':'أبوظبي','Sharjah':'الشارقة',
-  'Ajman':'عجمان','Ras Al Khaimah':'رأس الخيمة',
+  'Dubai': 'دبي', 'Abu Dhabi': 'أبوظبي', 'Sharjah': 'الشارقة',
+  'Ajman': 'عجمان', 'Ras Al Khaimah': 'رأس الخيمة',
   // Other Gulf
-  'Doha':'الدوحة','Kuwait City':'مدينة الكويت',
-  'Manama':'المنامة','Muscat':'مسقط',
+  'Doha': 'الدوحة', 'Kuwait City': 'مدينة الكويت',
+  'Manama': 'المنامة', 'Muscat': 'مسقط',
   // Levant & beyond
-  'Amman':'عمّان','Cairo':'القاهرة','Alexandria':'الإسكندرية',
-  'Baghdad':'بغداد','Damascus':'دمشق',
+  'Amman': 'عمّان', 'Cairo': 'القاهرة', 'Alexandria': 'الإسكندرية',
+  'Baghdad': 'بغداد', 'Damascus': 'دمشق',
 };
 
 /* ============================================================
    1. CONFIG
    ============================================================ */
 const Config = Object.freeze({
-  SUPABASE_URL:      'https://fgeeysssiesdlryoygoa.supabase.co',        // ← replace
+  SUPABASE_URL: 'https://fgeeysssiesdlryoygoa.supabase.co',        // ← replace
   SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZnZWV5c3NzaWVzZGxyeW95Z29hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MTI0MzUsImV4cCI6MjA5NTk4ODQzNX0.Sa3vcq9U2BrzFobTqQS4sAmVpXkRH09_PGzol9-NCvw',   // ← replace
-  get STORAGE_URL()  { return this.SUPABASE_URL + '/storage/v1/object/public/luxpath-media/'; },
-  WHATSAPP_NUMBER:   '+6281111826527',
-  LANG_KEY:          'luxpath_lang',
-  DEFAULT_LANG:      'ar',
-  CURRENCY_KEY:      'luxpath_currency',
-  DEFAULT_CURRENCY:  'SAR',
-  PLACEHOLDER_IMG:   'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23F0EDE8" width="400" height="300"/%3E%3C/svg%3E',
+  get STORAGE_URL() { return this.SUPABASE_URL + '/storage/v1/object/public/luxpath-media/'; },
+  WHATSAPP_NUMBER: '+6281111826527',
+  LANG_KEY: 'luxpath_lang',
+  DEFAULT_LANG: 'ar',
+  CURRENCY_KEY: 'luxpath_currency',
+  DEFAULT_CURRENCY: 'SAR',
+  PLACEHOLDER_IMG: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23F0EDE8" width="400" height="300"/%3E%3C/svg%3E',
 });
 
 
@@ -69,47 +69,47 @@ const T = {
     'a11y.skip': 'تخطَّ إلى المحتوى',
 
     // Nav
-    'nav.home':         'الرئيسية',
+    'nav.home': 'الرئيسية',
     'nav.destinations': 'الوجهات',
-    'nav.packages':     'الباقات',
-    'nav.about':        'عن لوكس باث',
-    'nav.contact':      'تواصل معنا',
-    'nav.whatsapp':     'واتساب',
+    'nav.packages': 'الباقات',
+    'nav.about': 'عن لوكس باث',
+    'nav.contact': 'تواصل معنا',
+    'nav.whatsapp': 'واتساب',
 
     // Hero
-    'hero.badge':        'وجهة أكثر من 2,000 عائلة وعرسان سعوديين',
-    'hero.title':        'اكتشف سحر إندونيسيا',
-    'hero.subtitle':     'رحلات فاخرة مصممة لك من المملكة العربية السعودية',
+    'hero.badge': 'وجهة أكثر من 2,000 عائلة وعرسان سعوديين',
+    'hero.title': 'اكتشف سحر إندونيسيا',
+    'hero.subtitle': 'رحلات فاخرة مصممة لك من المملكة العربية السعودية',
     'hero.cta.whatsapp': 'احجز عبر واتساب الآن',
     'hero.cta.packages': 'تصفح باقاتنا',
 
     // Stats
-    'stats.trips':        'رحلة ناجحة',
-    'stats.families':     'عائلة وعرسان سعوديين',
+    'stats.trips': 'رحلة ناجحة',
+    'stats.families': 'عائلة وعرسان سعوديين',
     'stats.destinations': 'وجهات',
-    'stats.years':        'سنوات خبرة',
+    'stats.years': 'سنوات خبرة',
 
     // Packages
-    'packages.eyebrow':  'الأكثر طلباً',
-    'packages.title':    'باقاتنا المميزة',
+    'packages.eyebrow': 'الأكثر طلباً',
+    'packages.title': 'باقاتنا المميزة',
     'packages.subtitle': 'اختر من أفضل باقاتنا السياحية إلى إندونيسيا',
-    'packages.viewAll':  'عرض جميع الباقات',
-    'packages.bookNow':  'احجز الآن',
-    'packages.from':     'يبدأ من',
-    'packages.nights':   'ليالٍ',
-    'packages.days':     'أيام',
-    'packages.empty':    'لا توجد باقات متاحة حالياً. تواصل معنا مباشرة.',
+    'packages.viewAll': 'عرض جميع الباقات',
+    'packages.bookNow': 'احجز الآن',
+    'packages.from': 'يبدأ من',
+    'packages.nights': 'ليالٍ',
+    'packages.days': 'أيام',
+    'packages.empty': 'لا توجد باقات متاحة حالياً. تواصل معنا مباشرة.',
 
     // Category labels
     'category.honeymoon': 'شهر العسل',
-    'category.family':    'عائلي',
-    'category.luxury':    'فاخر',
+    'category.family': 'عائلي',
+    'category.luxury': 'فاخر',
     'category.adventure': 'مغامرة',
 
     // Price types
-    'price.exact':        '',
-    'price.starting_from':'يبدأ من',
-    'price.approximate':  'يقارب',
+    'price.exact': '',
+    'price.starting_from': 'يبدأ من',
+    'price.approximate': 'يقارب',
 
     // Currency
     'currency.SAR': 'ريال',
@@ -118,47 +118,47 @@ const T = {
     'currency.EUR': 'يورو',
 
     // Why
-    'why.eyebrow':   'ميزتنا',
-    'why.title':     'لماذا تختار لوكس باث؟',
-    'why.subtitle':  'نحن لسنا مجرد وكالة سياحية أخرى',
-    'why.1.title':   'تخصص كامل في إندونيسيا',
-    'why.1.body':    'نحن متخصصون في وجهة واحدة فقط لنقدم لك أعمق خبرة وأفضل تجربة ممكنة',
-    'why.2.title':   'خدمة واتساب 24/7',
-    'why.2.body':    'فريقنا متاح على واتساب قبل رحلتك وأثناءها وبعدها. أنت لست وحدك أبداً',
-    'why.3.title':   'أسعار شاملة وشفافة',
-    'why.3.body':    'لا رسوم مخفية. كل شيء واضح ومحدد من اليوم الأول قبل أن تدفع أي ريال',
-    'why.4.title':   'مرشدون يتحدثون العربية',
-    'why.4.body':    'جميع مرشدينا السياحيين في إندونيسيا يتحدثون العربية بطلاقة. رحلتك بلغتك',
+    'why.eyebrow': 'ميزتنا',
+    'why.title': 'لماذا تختار لوكس باث؟',
+    'why.subtitle': 'نحن لسنا مجرد وكالة سياحية أخرى',
+    'why.1.title': 'تخصص كامل في إندونيسيا',
+    'why.1.body': 'نحن متخصصون في وجهة واحدة فقط لنقدم لك أعمق خبرة وأفضل تجربة ممكنة',
+    'why.2.title': 'خدمة واتساب 24/7',
+    'why.2.body': 'فريقنا متاح على واتساب قبل رحلتك وأثناءها وبعدها. أنت لست وحدك أبداً',
+    'why.3.title': 'أسعار شاملة وشفافة',
+    'why.3.body': 'لا رسوم مخفية. كل شيء واضح ومحدد من اليوم الأول قبل أن تدفع أي ريال',
+    'why.4.title': 'مرشدون يتحدثون العربية',
+    'why.4.body': 'جميع مرشدينا السياحيين في إندونيسيا يتحدثون العربية بطلاقة. رحلتك بلغتك',
 
     // Destinations
-    'destinations.eyebrow':  'وجهاتنا',
-    'destinations.title':    'وجهاتنا في إندونيسيا',
+    'destinations.eyebrow': 'وجهاتنا',
+    'destinations.title': 'وجهاتنا في إندونيسيا',
     'destinations.subtitle': 'استكشف أجمل المناطق السياحية معنا',
-    'destinations.explore':  'اكتشف',
-    'dest.bali':    'بالي',
+    'destinations.explore': 'اكتشف',
+    'dest.bali': 'بالي',
     'dest.jakarta': 'جاكرتا',
     'dest.bandung': 'باندونغ',
-    'dest.lombok':  'لومبوك',
+    'dest.lombok': 'لومبوك',
 
     // Testimonials
-    'testimonials.eyebrow':   'آراء العملاء',
-    'testimonials.title':     'ماذا يقول عملاؤنا؟',
-    'testimonials.subtitle':  'تجارب حقيقية من مسافرين سعوديين',
-    'testimonials.empty':     'سيتم إضافة تجارب عملائنا قريباً.',
-    'testimonials.loadMore':  'عرض المزيد',
-    'testimonials.reply':     'رد',
-    'testimonials.replyBy':   'فريق لوكس باث',
+    'testimonials.eyebrow': 'آراء العملاء',
+    'testimonials.title': 'ماذا يقول عملاؤنا؟',
+    'testimonials.subtitle': 'تجارب حقيقية من مسافرين سعوديين',
+    'testimonials.empty': 'سيتم إضافة تجارب عملائنا قريباً.',
+    'testimonials.loadMore': 'عرض المزيد',
+    'testimonials.reply': 'رد',
+    'testimonials.replyBy': 'فريق لوكس باث',
     'testimonials.cat.honeymoon': 'شهر عسل',
-    'testimonials.cat.family':    'عائلي',
-    'testimonials.cat.luxury':    'فاخر',
+    'testimonials.cat.family': 'عائلي',
+    'testimonials.cat.luxury': 'فاخر',
     'testimonials.cat.adventure': 'مغامرة',
 
     // FAQ
-    'faq.eyebrow':  'مساعدة',
-    'faq.title':    'الأسئلة الشائعة',
+    'faq.eyebrow': 'مساعدة',
+    'faq.title': 'الأسئلة الشائعة',
     'faq.subtitle': 'إجابات على أكثر الأسئلة التي نتلقاها',
-    'faq.more':     'عندك سؤال آخر؟ اسألنا على واتساب',
-    'faq.cta':      'تواصل معنا الآن',
+    'faq.more': 'عندك سؤال آخر؟ اسألنا على واتساب',
+    'faq.cta': 'تواصل معنا الآن',
     'faq.q1': 'كيف أحجز رحلتي مع لوكس باث؟',
     'faq.a1': 'تواصل معنا عبر واتساب وأخبرنا بوجهتك وعدد المسافرين وتاريخ الرحلة المفضل. سنرسل لك عرضاً مخصصاً خلال ساعات قليلة.',
     'faq.q2': 'ما الذي تشمله الباقة؟',
@@ -173,97 +173,97 @@ const T = {
     'faq.a6': 'سياسة الإلغاء تختلف حسب الباقة وتواريخ الرحلة. تواصل معنا عبر واتساب للحصول على التفاصيل الكاملة لباقتك.',
 
     // Contact CTA
-    'cta.title':    'جاهز لتخطيط رحلتك الفاخرة؟',
+    'cta.title': 'جاهز لتخطيط رحلتك الفاخرة؟',
     'cta.subtitle': 'تواصل معنا الآن وسنصمم لك رحلة الأحلام في اقل من ساعة',
     'cta.whatsapp': 'تحدث معنا على واتساب',
-    'cta.phone':    'أو اتصل بنا:',
+    'cta.phone': 'أو اتصل بنا:',
 
     // Footer
-    'footer.tagline':      'وكالتك المتخصصة لرحلات إندونيسيا من المملكة العربية السعودية',
-    'footer.links':        'روابط سريعة',
+    'footer.tagline': 'وكالتك المتخصصة لرحلات إندونيسيا من المملكة العربية السعودية',
+    'footer.links': 'روابط سريعة',
     'footer.destinations': 'وجهاتنا',
-    'footer.contact':      'تواصل معنا',
-    'footer.copyright':    `© ${new Date().getFullYear()} لوكس باث للسياحة. جميع الحقوق محفوظة.`,
-    'footer.privacy':      'سياسة الخصوصية',
+    'footer.contact': 'تواصل معنا',
+    'footer.copyright': `© ${new Date().getFullYear()} لوكس باث للسياحة. جميع الحقوق محفوظة.`,
+    'footer.privacy': 'سياسة الخصوصية',
 
     // WhatsApp pre-fill messages
-    'wa.general':  'مرحباً، أود الاستفسار عن باقاتكم السياحية إلى إندونيسيا',
-    'wa.package':  'مرحباً، أود الاستفسار عن باقة "{title}" إلى {destination}',
-    'wa.dest':     'مرحباً، أود الاستفسار عن رحلات {destination}',
+    'wa.general': 'مرحباً، أود الاستفسار عن باقاتكم السياحية إلى إندونيسيا',
+    'wa.package': 'مرحباً، أود الاستفسار عن باقة "{title}" إلى {destination}',
+    'wa.dest': 'مرحباً، أود الاستفسار عن رحلات {destination}',
   },
 
   en: {
     'a11y.skip': 'Skip to content',
-    'nav.home':         'Home',
+    'nav.home': 'Home',
     'nav.destinations': 'Destinations',
-    'nav.packages':     'Packages',
-    'nav.about':        'About Us',
-    'nav.contact':      'Contact',
-    'nav.whatsapp':     'WhatsApp',
-    'hero.badge':        'Trusted by 2,000+ Saudi families & couples',
-    'hero.title':        'Discover the Magic of Indonesia',
-    'hero.subtitle':     'Luxury travel packages crafted for Saudi travelers',
+    'nav.packages': 'Packages',
+    'nav.about': 'About Us',
+    'nav.contact': 'Contact',
+    'nav.whatsapp': 'WhatsApp',
+    'hero.badge': 'Trusted by 2,000+ Saudi families & couples',
+    'hero.title': 'Discover the Magic of Indonesia',
+    'hero.subtitle': 'Luxury travel packages crafted for Saudi travelers',
     'hero.cta.whatsapp': 'Book Now via WhatsApp',
     'hero.cta.packages': 'Browse Our Packages',
-    'stats.trips':        'Successful Trips',
-    'stats.families':     'Saudi Families & couples',
+    'stats.trips': 'Successful Trips',
+    'stats.families': 'Saudi Families & couples',
     'stats.destinations': 'Destinations',
-    'stats.years':        'Years Experience',
-    'packages.eyebrow':  'Most Popular',
-    'packages.title':    'Featured Packages',
+    'stats.years': 'Years Experience',
+    'packages.eyebrow': 'Most Popular',
+    'packages.title': 'Featured Packages',
     'packages.subtitle': 'Explore our most popular Indonesia travel packages',
-    'packages.viewAll':  'View All Packages',
-    'packages.bookNow':  'Book Now',
-    'packages.from':     'From',
-    'packages.nights':   'Nights',
-    'packages.days':     'Days',
-    'packages.empty':    'No packages available right now. Contact us directly.',
+    'packages.viewAll': 'View All Packages',
+    'packages.bookNow': 'Book Now',
+    'packages.from': 'From',
+    'packages.nights': 'Nights',
+    'packages.days': 'Days',
+    'packages.empty': 'No packages available right now. Contact us directly.',
     'category.honeymoon': 'Honeymoon',
-    'category.family':    'Family',
-    'category.luxury':    'Luxury',
+    'category.family': 'Family',
+    'category.luxury': 'Luxury',
     'category.adventure': 'Adventure',
-    'price.exact':        '',
-    'price.starting_from':'From',
-    'price.approximate':  'Approx.',
+    'price.exact': '',
+    'price.starting_from': 'From',
+    'price.approximate': 'Approx.',
     'currency.SAR': 'SAR',
     'currency.IDR': 'IDR',
     'currency.USD': 'USD',
     'currency.EUR': 'EUR',
-    'why.eyebrow':   'Our Advantage',
-    'why.title':     'Why Choose Luxpath?',
-    'why.subtitle':  'We are not just another travel agency',
-    'why.1.title':   'Indonesia Specialists',
-    'why.1.body':    'We focus exclusively on Indonesia so you get expert-level planning and insider knowledge',
-    'why.2.title':   '24/7 WhatsApp Support',
-    'why.2.body':    'Our team is with you before, during, and after your trip — always one message away',
-    'why.3.title':   'Fully Inclusive Pricing',
-    'why.3.body':    'No hidden fees. Everything is clear and confirmed before you pay a single riyal',
-    'why.4.title':   'Arabic-Speaking Guides',
-    'why.4.body':    'All our guides in Indonesia speak fluent Arabic. Your trip, in your language',
-    'destinations.eyebrow':  'Our Destinations',
-    'destinations.title':    'Our Indonesia Destinations',
+    'why.eyebrow': 'Our Advantage',
+    'why.title': 'Why Choose Luxpath?',
+    'why.subtitle': 'We are not just another travel agency',
+    'why.1.title': 'Indonesia Specialists',
+    'why.1.body': 'We focus exclusively on Indonesia so you get expert-level planning and insider knowledge',
+    'why.2.title': '24/7 WhatsApp Support',
+    'why.2.body': 'Our team is with you before, during, and after your trip — always one message away',
+    'why.3.title': 'Fully Inclusive Pricing',
+    'why.3.body': 'No hidden fees. Everything is clear and confirmed before you pay a single riyal',
+    'why.4.title': 'Arabic-Speaking Guides',
+    'why.4.body': 'All our guides in Indonesia speak fluent Arabic. Your trip, in your language',
+    'destinations.eyebrow': 'Our Destinations',
+    'destinations.title': 'Our Indonesia Destinations',
     'destinations.subtitle': 'Explore the most beautiful regions with us',
-    'destinations.explore':  'Explore',
-    'dest.bali':    'Bali',
+    'destinations.explore': 'Explore',
+    'dest.bali': 'Bali',
     'dest.jakarta': 'Jakarta',
     'dest.bandung': 'Bandung',
-    'dest.lombok':  'Lombok',
-    'testimonials.eyebrow':   'Client Reviews',
-    'testimonials.title':     'What Our Clients Say',
-    'testimonials.subtitle':  'Real experiences from Saudi travelers',
-    'testimonials.empty':     'Client testimonials coming soon.',
-    'testimonials.loadMore':  'Load More',
-    'testimonials.reply':     'Reply',
-    'testimonials.replyBy':   'Luxpath Travel Team',
+    'dest.lombok': 'Lombok',
+    'testimonials.eyebrow': 'Client Reviews',
+    'testimonials.title': 'What Our Clients Say',
+    'testimonials.subtitle': 'Real experiences from Saudi travelers',
+    'testimonials.empty': 'Client testimonials coming soon.',
+    'testimonials.loadMore': 'Load More',
+    'testimonials.reply': 'Reply',
+    'testimonials.replyBy': 'Luxpath Travel Team',
     'testimonials.cat.honeymoon': 'Honeymoon',
-    'testimonials.cat.family':    'Family',
-    'testimonials.cat.luxury':    'Luxury',
+    'testimonials.cat.family': 'Family',
+    'testimonials.cat.luxury': 'Luxury',
     'testimonials.cat.adventure': 'Adventure',
-    'faq.eyebrow':  'Help',
-    'faq.title':    'Frequently Asked Questions',
+    'faq.eyebrow': 'Help',
+    'faq.title': 'Frequently Asked Questions',
     'faq.subtitle': 'Answers to the questions we hear most',
-    'faq.more':     'Have another question? Ask us on WhatsApp',
-    'faq.cta':      'Contact Us Now',
+    'faq.more': 'Have another question? Ask us on WhatsApp',
+    'faq.cta': 'Contact Us Now',
     'faq.q1': 'How do I book a trip with Luxpath?',
     'faq.a1': 'Contact us on WhatsApp with your destination, number of travelers, and preferred dates. We\'ll send you a custom quote within a few hours.',
     'faq.q2': 'What does the package include?',
@@ -276,19 +276,19 @@ const T = {
     'faq.a5': 'Our team is available on WhatsApp 24/7 for the entire duration of your trip. Someone will always reply within minutes.',
     'faq.q6': 'What is the cancellation policy?',
     'faq.a6': 'Cancellation policies vary by package and travel dates. Contact us on WhatsApp for the full details of your specific package.',
-    'cta.title':    'Ready to Plan Your Luxury Trip?',
+    'cta.title': 'Ready to Plan Your Luxury Trip?',
     'cta.subtitle': 'Contact us now and we\'ll design your dream trip in less than an hour',
     'cta.whatsapp': 'Chat with Us on WhatsApp',
-    'cta.phone':    'Or call us:',
-    'footer.tagline':      'Your specialist agency for Indonesia travel from Saudi Arabia',
-    'footer.links':        'Quick Links',
+    'cta.phone': 'Or call us:',
+    'footer.tagline': 'Your specialist agency for Indonesia travel from Saudi Arabia',
+    'footer.links': 'Quick Links',
     'footer.destinations': 'Destinations',
-    'footer.contact':      'Contact Us',
-    'footer.copyright':    `© ${new Date().getFullYear()} Luxpath Travel. All rights reserved.`,
-    'footer.privacy':      'Privacy Policy',
+    'footer.contact': 'Contact Us',
+    'footer.copyright': `© ${new Date().getFullYear()} Luxpath Travel. All rights reserved.`,
+    'footer.privacy': 'Privacy Policy',
     'wa.general': 'Hello, I\'d like to inquire about your Indonesia travel packages',
     'wa.package': 'Hello, I\'m interested in the "{title}" package to {destination}',
-    'wa.dest':    'Hello, I\'d like to inquire about trips to {destination}',
+    'wa.dest': 'Hello, I\'d like to inquire about trips to {destination}',
   },
 };
 
@@ -403,17 +403,17 @@ const I18n = (() => {
   const applyDOM = () => {
     const html = document.documentElement;
     html.lang = lang;
-    html.dir  = lang === 'ar' ? 'rtl' : 'ltr';
+    html.dir = lang === 'ar' ? 'rtl' : 'ltr';
 
     document.querySelectorAll('[data-i18n]').forEach(el => {
-      const key  = el.dataset.i18n;
+      const key = el.dataset.i18n;
       const text = T[lang][key];
       if (text !== undefined) el.textContent = text;
     });
 
     // Update lang toggle buttons
     document.querySelectorAll('.btn-lang').forEach(btn => {
-      btn.textContent   = lang === 'ar' ? 'EN' : 'ع';
+      btn.textContent = lang === 'ar' ? 'EN' : 'ع';
       btn.setAttribute('aria-label', lang === 'ar' ? 'Switch to English' : 'التبديل إلى العربية');
     });
   };
@@ -442,7 +442,7 @@ const I18n = (() => {
         applyDOM();
         WA.updateAll();
         // Re-render dynamic sections if data already loaded
-        if (App.cachedPackages)     Packages.render(App.cachedPackages);
+        if (App.cachedPackages) Packages.render(App.cachedPackages);
         if (App.cachedDestinations) Destinations.render(App.cachedDestinations);
         if (App.cachedTestimonials) Testimonials.render(App.cachedTestimonials);
         b.classList.remove('lang-switching');
@@ -499,21 +499,21 @@ const Currency = (() => {
       const fmt = (n) => new Intl.NumberFormat('en-US').format(n);
       if (curr === 'IDR' && pkg.price_value_idr != null) {
         return {
-          value:         fmt(pkg.price_value_idr),
-          label:         I18n.t('currency.IDR'),
+          value: fmt(pkg.price_value_idr),
+          label: I18n.t('currency.IDR'),
           originalValue: pkg.original_price_value_idr != null ? fmt(pkg.original_price_value_idr) : null,
         };
       }
       if (curr === 'USD' && pkg.price_value_usd != null) {
         return {
-          value:         fmt(pkg.price_value_usd),
-          label:         I18n.t('currency.USD'),
+          value: fmt(pkg.price_value_usd),
+          label: I18n.t('currency.USD'),
           originalValue: pkg.original_price_value_usd != null ? fmt(pkg.original_price_value_usd) : null,
         };
       }
       return {
-        value:         fmt(pkg.price_value ?? 0),
-        label:         I18n.t('currency.SAR'),
+        value: fmt(pkg.price_value ?? 0),
+        label: I18n.t('currency.SAR'),
         originalValue: pkg.original_price_value != null ? fmt(pkg.original_price_value) : null,
       };
     },
@@ -538,7 +538,7 @@ const WA = {
 
   packageUrl(titleAr, titleEn, destNameAr, destNameEn) {
     const title = I18n.get() === 'ar' ? titleAr : titleEn;
-    const dest  = I18n.get() === 'ar' ? destNameAr : destNameEn;
+    const dest = I18n.get() === 'ar' ? destNameAr : destNameEn;
     return this.url(I18n.t('wa.package', { title, destination: dest }));
   },
 
@@ -560,11 +560,11 @@ const WA = {
    ============================================================ */
 const Navbar = {
   init() {
-    const navbar   = document.getElementById('navbar');
-    const menuBtn  = document.getElementById('menuToggle');
+    const navbar = document.getElementById('navbar');
+    const menuBtn = document.getElementById('menuToggle');
     const closeBtn = document.getElementById('mobileMenuClose');
     const backdrop = document.getElementById('mobileMenuBackdrop');
-    const menu     = document.getElementById('mobileMenu');
+    const menu = document.getElementById('mobileMenu');
 
     if (!navbar) return;
 
@@ -630,9 +630,9 @@ const Navbar = {
   },
 
   openMenu() {
-    const menu     = document.getElementById('mobileMenu');
+    const menu = document.getElementById('mobileMenu');
     const backdrop = document.getElementById('mobileMenuBackdrop');
-    const btn      = document.getElementById('menuToggle');
+    const btn = document.getElementById('menuToggle');
     menu?.classList.add('is-open');
     backdrop?.classList.add('is-open');
     btn?.setAttribute('aria-expanded', 'true');
@@ -642,9 +642,9 @@ const Navbar = {
   },
 
   closeMenu() {
-    const menu     = document.getElementById('mobileMenu');
+    const menu = document.getElementById('mobileMenu');
     const backdrop = document.getElementById('mobileMenuBackdrop');
-    const btn      = document.getElementById('menuToggle');
+    const btn = document.getElementById('menuToggle');
     menu?.classList.remove('is-open');
     backdrop?.classList.remove('is-open');
     btn?.setAttribute('aria-expanded', 'false');
@@ -692,11 +692,11 @@ const Stats = {
     if (el.dataset.animated) return;
     el.dataset.animated = '1';
 
-    const target   = parseInt(el.dataset.target, 10);
-    const suffix   = el.dataset.suffix ?? '';
+    const target = parseInt(el.dataset.target, 10);
+    const suffix = el.dataset.suffix ?? '';
     const duration = 1400;
-    const step     = 16;
-    const steps    = duration / step;
+    const step = 16;
+    const steps = duration / step;
     const increment = target / steps;
     let current = 0;
 
@@ -735,9 +735,9 @@ const Stats = {
    9. HERO SLIDER
    ============================================================ */
 const HeroSlider = {
-  _slides:  [],
+  _slides: [],
   _current: 0,
-  _timer:   null,
+  _timer: null,
   INTERVAL: 5500,   // ms between transitions
 
   init() {
@@ -848,20 +848,20 @@ const Packages = {
   },
 
   cardHTML(pkg) {
-    const lang    = I18n.get();
-    const title   = lang === 'ar' ? pkg.title_ar    : pkg.title_en;
-    const dest    = this.getPrimaryDest(pkg);
+    const lang = I18n.get();
+    const title = lang === 'ar' ? pkg.title_ar : pkg.title_en;
+    const dest = this.getPrimaryDest(pkg);
     const destName = dest ? (lang === 'ar' ? dest.name_ar : dest.name_en) : '';
-    const cat     = pkg.category ?? 'luxury';
+    const cat = pkg.category ?? 'luxury';
     const catLabel = I18n.t(`category.${cat}`);
-    const nights  = pkg.duration_nights ?? 0;
-    const days    = pkg.duration_days ?? 1;
-    const priceType  = pkg.price_type ?? 'starting_from';
+    const nights = pkg.duration_nights ?? 0;
+    const days = pkg.duration_days ?? 1;
+    const priceType = pkg.price_type ?? 'starting_from';
     const priceLabel = I18n.t(`price.${priceType}`);
-    const priceInfo  = Currency.format(pkg);
-    const price      = priceInfo.value;
-    const currLabel  = priceInfo.label;
-    const imgSrc  = pkg.hero_image_url
+    const priceInfo = Currency.format(pkg);
+    const price = priceInfo.value;
+    const currLabel = priceInfo.label;
+    const imgSrc = pkg.hero_image_url
       ? `${Config.STORAGE_URL}${pkg.hero_image_url}`
       : Config.PLACEHOLDER_IMG;
     const slugKey = lang === 'ar' ? pkg.slug_ar : pkg.slug_en;
@@ -914,7 +914,7 @@ const Packages = {
 
   bindWALinks(grid, packages) {
     grid.querySelectorAll('[data-pkg-wa]').forEach(btn => {
-      const id  = btn.dataset.pkgWa;
+      const id = btn.dataset.pkgWa;
       const pkg = packages.find(p => p.id === id);
       if (!pkg) return;
       const dest = this.getPrimaryDest(pkg);
@@ -1236,7 +1236,7 @@ const DestPanel = {
 
     // Arrow buttons — pass explicit direction so wrap-around always animates correctly
     document.getElementById('destPanelPrev').addEventListener('click', () => this._goTo(this._current - 1, -1));
-    document.getElementById('destPanelNext').addEventListener('click', () => this._goTo(this._current + 1,  1));
+    document.getElementById('destPanelNext').addEventListener('click', () => this._goTo(this._current + 1, 1));
 
     // ── Swipe on the hero area ───────────────────────────────────
     // Listeners go on destPanelHero (the ancestor), not on destPanelSlider.
@@ -1248,7 +1248,7 @@ const DestPanel = {
     heroEl.addEventListener('touchstart', (e) => {
       this._dragStartX = e.touches[0].clientX;
       this._dragStartY = e.touches[0].clientY;
-      this._dragging   = false;
+      this._dragging = false;
     }, { passive: true });
 
     heroEl.addEventListener('touchmove', (e) => {
@@ -1265,16 +1265,17 @@ const DestPanel = {
       this._dragging = false;
       const dx = e.changedTouches[0].clientX - this._dragStartX;
       if (Math.abs(dx) > 40) {
-        // Swipe left → next, swipe right → previous
-        if (dx < 0) this._goTo(this._current + 1,  1);
-        else        this._goTo(this._current - 1, -1);
+        // Index: swipe left → prev, swipe right → next
+        // Animation dir matches physical gesture: swipe left → animate left (1), swipe right → animate right (-1)
+        if (dx < 0) this._goTo(this._current - 1, 1);
+        else this._goTo(this._current + 1, -1);
       }
     }, { passive: true });
 
     // ── Mouse drag (desktop) ──────────────────────────────────────
     heroEl.addEventListener('mousedown', (e) => {
       this._dragStartX = e.clientX;
-      this._dragging   = true;
+      this._dragging = true;
       e.preventDefault(); // prevent native image drag
     });
 
@@ -1283,9 +1284,8 @@ const DestPanel = {
       this._dragging = false;
       const dx = e.clientX - this._dragStartX;
       if (Math.abs(dx) > 40) {
-        // Physical drag: drag left → previous, drag right → next
-        if (dx < 0) this._goTo(this._current - 1, -1);
-        else        this._goTo(this._current + 1,  1);
+        if (dx < 0) this._goTo(this._current - 1, 1);
+        else this._goTo(this._current + 1, -1);
       }
     });
   },
@@ -1307,8 +1307,8 @@ const DestPanel = {
     dotsEl.hidden = !multi;
     dotsEl.innerHTML = multi
       ? this._slides.map((_, i) =>
-          `<button class="dest-panel__dot ${i === 0 ? 'is-active' : ''}" data-idx="${i}" type="button" aria-label="Image ${i + 1}"></button>`
-        ).join('')
+        `<button class="dest-panel__dot ${i === 0 ? 'is-active' : ''}" data-idx="${i}" type="button" aria-label="Image ${i + 1}"></button>`
+      ).join('')
       : '';
     if (multi) {
       dotsEl.querySelectorAll('.dest-panel__dot').forEach(dot => {
@@ -1358,18 +1358,18 @@ const DestPanel = {
   open(slug) {
     this._ensurePanel();
     const lang = I18n.get();
-    const d    = DEST_DATA.find(x => x.slug === slug);
+    const d = DEST_DATA.find(x => x.slug === slug);
     if (!d) return;
 
-    const name    = lang === 'ar' ? d.name_ar    : d.name_en;
+    const name = lang === 'ar' ? d.name_ar : d.name_en;
     const tagline = lang === 'ar' ? d.tagline_ar : d.tagline_en;
-    const hero    = lang === 'ar' ? d.hero_ar    : d.hero_en;
+    const hero = lang === 'ar' ? d.hero_ar : d.hero_en;
     const luxpath = lang === 'ar' ? d.luxpath_ar : d.luxpath_en;
 
     // Build image slider
     this._buildSlider(d.images ?? [], name);
 
-    document.getElementById('destPanelName').textContent    = name;
+    document.getElementById('destPanelName').textContent = name;
     document.getElementById('destPanelTagline').textContent = tagline;
     document.getElementById('destPanelClose').setAttribute('aria-label',
       lang === 'ar' ? 'إغلاق' : 'Close');
@@ -1443,11 +1443,11 @@ const Destinations = {
     const grid = document.getElementById('destGrid');
     if (!grid) return;
 
-    const lang    = I18n.get();
+    const lang = I18n.get();
     // data-show-all="true" on the dedicated destinations page → skip toggle
     const showAll = grid.dataset.showAll === 'true';
     const visible = showAll ? DEST_DATA : DEST_DATA.slice(0, this.VISIBLE_COUNT);
-    const extra   = showAll ? []         : DEST_DATA.slice(this.VISIBLE_COUNT);
+    const extra = showAll ? [] : DEST_DATA.slice(this.VISIBLE_COUNT);
 
     // ── Main grid (always visible) ──────────────────────────
     grid.innerHTML = visible.map(d => this.cardHTML(d, lang)).join('');
@@ -1457,7 +1457,7 @@ const Destinations = {
       let extrasEl = document.getElementById('destExtras');
       if (!extrasEl) {
         extrasEl = document.createElement('div');
-        extrasEl.id        = 'destExtras';
+        extrasEl.id = 'destExtras';
         extrasEl.className = 'dest-extras';
         grid.after(extrasEl);
       }
@@ -1467,7 +1467,7 @@ const Destinations = {
       if (!btnWrap) {
         btnWrap = document.createElement('div');
         btnWrap.className = 'dest-more';
-        btnWrap.id        = 'destMoreBtn';
+        btnWrap.id = 'destMoreBtn';
         extrasEl.after(btnWrap);
 
         btnWrap.innerHTML = `
@@ -1503,10 +1503,10 @@ const Destinations = {
 
   // Updates button text + aria + chevron — called on render & on click
   _syncToggleBtn(extrasEl) {
-    const lang   = I18n.get();
+    const lang = I18n.get();
     const isOpen = extrasEl.classList.contains('is-open');
-    const btn    = document.getElementById('destMoreToggle');
-    const label  = document.getElementById('destMoreLabel');
+    const btn = document.getElementById('destMoreToggle');
+    const label = document.getElementById('destMoreLabel');
     if (!btn || !label) return;
     label.textContent = isOpen
       ? (lang === 'ar' ? 'عرض أقل' : 'View Less')
@@ -1516,9 +1516,9 @@ const Destinations = {
   },
 
   cardHTML(d, lang) {
-    const name    = lang === 'ar' ? d.name_ar    : d.name_en;
+    const name = lang === 'ar' ? d.name_ar : d.name_en;
     const tagline = lang === 'ar' ? d.tagline_ar : d.tagline_en;
-    const imgSrc  = d.images?.[0] ?? Config.PLACEHOLDER_IMG;
+    const imgSrc = d.images?.[0] ?? Config.PLACEHOLDER_IMG;
     const exploreLabel = lang === 'ar' ? 'اكتشف' : 'Explore';
 
     return `
@@ -1540,8 +1540,8 @@ const Destinations = {
             ${exploreLabel}
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
               ${lang === 'ar'
-                ? '<polyline points="15 18 9 12 15 6"/>'
-                : '<polyline points="9 18 15 12 9 6"/>'}
+        ? '<polyline points="15 18 9 12 15 6"/>'
+        : '<polyline points="9 18 15 12 9 6"/>'}
             </svg>
           </span>
         </div>
@@ -1560,11 +1560,11 @@ const Destinations = {
    12. TESTIMONIALS
    ============================================================ */
 const Testimonials = {
-  _all:        [],
+  _all: [],
   _replyBound: false,
 
   render(testimonials) {
-    const track    = document.getElementById('testimonialsTrack');
+    const track = document.getElementById('testimonialsTrack');
     const moreWrap = document.getElementById('testiMoreWrap');
     if (!track) return;
 
@@ -1601,7 +1601,7 @@ const Testimonials = {
       document.addEventListener('click', (e) => {
         const toggle = e.target.closest('.testimonial-reply-toggle');
         if (!toggle) return;
-        const body   = toggle.nextElementSibling;
+        const body = toggle.nextElementSibling;
         const isOpen = toggle.getAttribute('aria-expanded') === 'true';
         toggle.setAttribute('aria-expanded', String(!isOpen));
         body.classList.toggle('is-open', !isOpen);
@@ -1611,28 +1611,28 @@ const Testimonials = {
   },
 
   cardHTML(t, lang) {
-    const review   = lang === 'ar' ? t.review_ar : (t.review_en ?? t.review_ar);
+    const review = lang === 'ar' ? t.review_ar : (t.review_en ?? t.review_ar);
     const replyTxt = lang === 'ar' ? (t.reply_ar ?? t.reply_en) : (t.reply_en ?? t.reply_ar);
     const hasReply = !!(t.reply_ar || t.reply_en);
 
-    const city     = t.reviewer_city ?? '';
+    const city = t.reviewer_city ?? '';
     const cityDisp = lang === 'ar' ? (CITY_MAP[city] ?? city) : city;
 
-    const catKey   = t.trip_category ? `testimonials.cat.${t.trip_category}` : '';
+    const catKey = t.trip_category ? `testimonials.cat.${t.trip_category}` : '';
     const catLabel = catKey ? I18n.t(catKey) : '';
 
-    const AR_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو',
-                       'يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
-    const EN_MONTHS = ['Jan','Feb','Mar','Apr','May','Jun',
-                       'Jul','Aug','Sep','Oct','Nov','Dec'];
-    const monthStr  = t.trip_month
+    const AR_MONTHS = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+      'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+    const EN_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthStr = t.trip_month
       ? (lang === 'ar' ? AR_MONTHS[t.trip_month - 1] : EN_MONTHS[t.trip_month - 1])
       : '';
-    const dateStr   = [monthStr, t.trip_year].filter(Boolean).join(' ');
+    const dateStr = [monthStr, t.trip_year].filter(Boolean).join(' ');
 
-    const detail    = [cityDisp, catLabel, dateStr].filter(Boolean).join(' · ');
-    const initial   = (t.reviewer_name_display?.[0] ?? '؟').toUpperCase();
-    const stars     = '★'.repeat(Math.min(5, t.rating ?? 5));
+    const detail = [cityDisp, catLabel, dateStr].filter(Boolean).join(' · ');
+    const initial = (t.reviewer_name_display?.[0] ?? '؟').toUpperCase();
+    const stars = '★'.repeat(Math.min(5, t.rating ?? 5));
 
     const replyHTML = hasReply ? `
       <div class="testimonial-reply">
@@ -1689,7 +1689,7 @@ const FAQ = {
   init() {
     document.querySelectorAll('.faq-question').forEach(btn => {
       btn.addEventListener('click', () => {
-        const item   = btn.closest('.faq-item');
+        const item = btn.closest('.faq-item');
         const isOpen = item.classList.contains('is-open');
 
         // Close all
@@ -1714,7 +1714,7 @@ const FAQ = {
    ============================================================ */
 const App = {
   whatsappNumber: Config.WHATSAPP_NUMBER,
-  cachedPackages:     null,
+  cachedPackages: null,
   cachedDestinations: null,
   cachedTestimonials: null,
 
@@ -1758,12 +1758,12 @@ const App = {
     }
 
     // ── 5. Render sections ─────────────────────────────────
-    const packages     = packagesRes.status     === 'fulfilled' ? packagesRes.value     : null;
+    const packages = packagesRes.status === 'fulfilled' ? packagesRes.value : null;
     const destinations = destinationsRes.status === 'fulfilled' ? destinationsRes.value : null;
     const testimonials = testimonialsRes.status === 'fulfilled' ? testimonialsRes.value : null;
 
     // Cache for language re-render
-    this.cachedPackages     = packages;
+    this.cachedPackages = packages;
     this.cachedDestinations = destinations;
     this.cachedTestimonials = testimonials;
 
@@ -1787,7 +1787,7 @@ const App = {
 
     // Update phone link
     const phoneEl = document.getElementById('ctaPhone');
-    const phone   = settings['company_phone']?.value;
+    const phone = settings['company_phone']?.value;
     if (phoneEl && phone) {
       phoneEl.textContent = phone;
       phoneEl.href = `tel:${phone.replace(/\s/g, '')}`;
@@ -1807,7 +1807,7 @@ const App = {
             HeroSlider.reinit();
           }
         }
-      } catch (_) {}
+      } catch (_) { }
     }
   },
 

@@ -562,7 +562,8 @@ html {
   background: var(--color-surface-alt);
 }
 
-.navbar--scrolled .btn-lang {
+.navbar--scrolled .btn-lang,
+.navbar--scrolled .btn-currency {
   border-color: var(--color-border-dark);
 }
 
@@ -779,12 +780,14 @@ html {
 }
 
 /* Navbar on hero: transparent. Text white. */
-.navbar:not(.navbar--scrolled) .btn-lang {
+.navbar:not(.navbar--scrolled) .btn-lang,
+.navbar:not(.navbar--scrolled) .btn-currency {
   border-color: rgba(255, 255, 255, 0.5);
   color: rgba(255, 255, 255, 0.85);
 }
 
-.navbar:not(.navbar--scrolled) .btn-lang:hover {
+.navbar:not(.navbar--scrolled) .btn-lang:hover,
+.navbar:not(.navbar--scrolled) .btn-currency:hover {
   border-color: var(--color-white);
   color: var(--color-white);
   background: rgba(255, 255, 255, 0.1);
