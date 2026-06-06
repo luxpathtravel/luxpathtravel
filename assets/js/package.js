@@ -695,6 +695,11 @@ const Lightbox = {
     lb.classList.add('is-open');
     lb.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
+    // Clear any leftover animation classes from previous session
+    const film = document.getElementById('lightboxFilm');
+    film?.classList.remove('lb-slide-in-right', 'lb-slide-in-left', 'lb-slide-out-left', 'lb-slide-out-right');
+    // Remove any ghost films from a previous aborted animation
+    document.querySelectorAll('.lightbox__stage .lightbox__film:not(#lightboxFilm)').forEach(g => g.remove());
     this.show();
     this.bindKeys();
   },
@@ -728,10 +733,42 @@ const Lightbox = {
   },
 
   navigate(dir) {
-    const next = this.current + dir;
-    if (next < 0 || next >= Gallery.images.length) return;
-    this.current = next;
-    this.show();
+    // Route through _goTo so animation direction matches the nav direction
+    if (dir > 0) this._goTo(this.current + 1, -1); // next
+    else         this._goTo(this.current - 1,  1);  // prev
+  },
+
+  _goTo(idx, dir = 0) {
+    const imgs = Gallery.images;
+    if (idx < 0 || idx >= imgs.length) return;
+    const stage = document.querySelector('.lightbox__stage');
+    const film  = document.getElementById('lightboxFilm');
+    if (!stage || !film) return;
+
+    const forward = dir !== 0 ? dir > 0 : idx > this.current;
+
+    // Clone the current film as the outgoing ghost (placed behind real film)
+    const ghost = film.cloneNode(true);
+    ghost.removeAttribute('id');
+    ghost.querySelector('img')?.removeAttribute('id'); // avoid duplicate id
+    stage.insertBefore(ghost, film);
+    ghost.classList.add(forward ? 'lb-slide-out-left' : 'lb-slide-out-right');
+    setTimeout(() => ghost.remove(), 400);
+
+    // Update real film with new image and slide it in
+    this.current = idx;
+    const { url, alt_ar, alt_en } = imgs[idx];
+    const img = document.getElementById('lightboxImg');
+    img.src = url;
+    img.alt = I18n.get() === 'ar' ? (alt_ar || '') : (alt_en || '');
+    film.classList.add(forward ? 'lb-slide-in-right' : 'lb-slide-in-left');
+    setTimeout(() => film.classList.remove('lb-slide-in-right', 'lb-slide-in-left', 'lb-slide-out-left', 'lb-slide-out-right'), 400);
+
+    // Update counter + button state
+    const counter = document.getElementById('lightboxCounter');
+    if (counter) counter.textContent = I18n.t('pkg.imgCounter', { current: idx + 1, total: imgs.length });
+    document.getElementById('lightboxPrev').disabled = idx === 0;
+    document.getElementById('lightboxNext').disabled = idx === imgs.length - 1;
   },
 
   bindKeys() {
@@ -745,24 +782,38 @@ const Lightbox = {
 
   initUI() {
     document.getElementById('lightboxClose')?.addEventListener('click', () => this.close());
-    document.getElementById('lightboxPrev')?.addEventListener('click',  () => this.navigate(-1));
-    document.getElementById('lightboxNext')?.addEventListener('click',  () => this.navigate(1));
+    // Explicit direction mirrors gallery-mobile convention: prev = forward anim, next = backward anim
+    document.getElementById('lightboxPrev')?.addEventListener('click', () => this._goTo(this.current - 1,  1));
+    document.getElementById('lightboxNext')?.addEventListener('click', () => this._goTo(this.current + 1, -1));
 
-    // Click backdrop to close
+    // Click anywhere outside the image to close
     document.getElementById('lightbox')?.addEventListener('click', e => {
-      if (e.target === document.getElementById('lightbox') ||
-          e.target === document.getElementById('lightbox').querySelector('.lightbox__stage')) {
-        this.close();
-      }
+      if (e.target.closest('#lightboxImg')) return; // clicked the image itself — keep open
+      if (e.target.closest('button')) return;        // clicked a nav/close button — let it handle
+      this.close();
     });
 
-    // Touch swipe in lightbox
-    let startX = 0;
+    // Touch swipe — non-passive touchmove to claim horizontal gesture; direction matches galleryMobile
+    let _lbStartX = 0, _lbStartY = 0, _lbDragging = false;
     const stage = document.querySelector('.lightbox__stage');
-    stage?.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
-    stage?.addEventListener('touchend',   e => {
-      const dx = startX - e.changedTouches[0].clientX;
-      if (Math.abs(dx) > 40) this.navigate(dx > 0 ? 1 : -1);
+    stage?.addEventListener('touchstart', e => {
+      _lbStartX = e.touches[0].clientX;
+      _lbStartY = e.touches[0].clientY;
+      _lbDragging = false;
+    }, { passive: true });
+    stage?.addEventListener('touchmove', e => {
+      const dx = Math.abs(e.touches[0].clientX - _lbStartX);
+      const dy = Math.abs(e.touches[0].clientY - _lbStartY);
+      if (dx > dy && dx > 5) { _lbDragging = true; e.preventDefault(); }
+    }, { passive: false });
+    stage?.addEventListener('touchend', e => {
+      if (!_lbDragging) return;
+      _lbDragging = false;
+      const dx = e.changedTouches[0].clientX - _lbStartX;
+      if (Math.abs(dx) > 40) {
+        if (dx < 0) this._goTo(this.current - 1,  1);  // swipe left  = prev
+        else        this._goTo(this.current + 1, -1);  // swipe right = next
+      }
     }, { passive: true });
   },
 };

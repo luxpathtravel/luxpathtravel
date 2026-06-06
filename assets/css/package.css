@@ -839,13 +839,31 @@ html[dir="ltr"] .itinerary-body__content {
 }
 
 .lightbox__stage {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+
+/* Film: the animatable slide container — slides in/out as a unit */
+.lightbox__film {
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  height: 100%;
   padding: 60px 72px;
 }
+
+.lightbox__film.lb-slide-in-right  { animation: lb-slide-in-right  0.38s ease forwards; }
+.lightbox__film.lb-slide-in-left   { animation: lb-slide-in-left   0.38s ease forwards; }
+.lightbox__film.lb-slide-out-left  { animation: lb-slide-out-left  0.38s ease forwards; }
+.lightbox__film.lb-slide-out-right { animation: lb-slide-out-right 0.38s ease forwards; }
+
+@keyframes lb-slide-in-right  { from { transform: translateX(100%);  opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes lb-slide-in-left   { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes lb-slide-out-left  { from { transform: translateX(0); opacity: 1; } to { transform: translateX(-100%); opacity: 0; } }
+@keyframes lb-slide-out-right { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%);  opacity: 0; } }
 
 .lightbox__img {
   max-width: 100%;
@@ -912,7 +930,7 @@ html[dir="ltr"] .itinerary-body__content {
 }
 
 @media (max-width: 767px) {
-  .lightbox__stage { padding: 56px 8px 48px; }
+  .lightbox__film { padding: 56px 8px 48px; }
   .lightbox__nav { width: 44px; height: 44px; }
   .lightbox__prev { inset-inline-start: var(--sp-2); }
   .lightbox__next { inset-inline-end:  var(--sp-2); }
