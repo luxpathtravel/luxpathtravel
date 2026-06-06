@@ -144,7 +144,7 @@ const DB = (() => {
           is_featured, is_active, display_order, inquiry_count,
           hero_image_url, created_at,
           package_destinations (
-            destination_id, is_primary,
+            destination_id,
             destinations ( slug, name_ar, name_en )
           )
         `)
@@ -158,7 +158,7 @@ const DB = (() => {
         .select(`
           *,
           package_destinations (
-            destination_id, is_primary, display_order,
+            destination_id, display_order,
             destinations ( id, slug, name_ar, name_en )
           ),
           package_images (
@@ -628,7 +628,7 @@ function parsePriceInput(id) {
 
 function getPrimaryDest(pkg) {
   const dests = pkg.package_destinations ?? [];
-  return (dests.find(d => d.is_primary) ?? dests[0])?.destinations ?? null;
+  return dests[0]?.destinations ?? null;
 }
 
 /* ============================================================
@@ -1271,18 +1271,12 @@ const PackageForm = {
     const dests = this.destinations;
 
     const destRows = dests.map(d => {
-      const isPrimary = pkg?.package_destinations?.find(pd => pd.destination_id === d.id && pd.is_primary);
       const isSelected = pkg?.package_destinations?.some(pd => pd.destination_id === d.id);
       return `
         <div class="dest-selector__item">
           <input type="checkbox" class="dest-selector__check" name="dest_check" id="dc_${d.id}" value="${d.id}" ${isSelected ? 'checked' : ''}>
           <div class="dest-selector__name">
             <label for="dc_${d.id}">${escHtml(d.name_en)}</label>
-            <span class="dest-selector__name-ar">${escHtml(d.name_ar)}</span>
-          </div>
-          <div class="dest-selector__primary">
-            <input type="radio" name="dest_primary" id="dp_${d.id}" value="${d.id}" ${isPrimary ? 'checked' : ''}>
-            <label class="dest-selector__primary-label" for="dp_${d.id}">Primary</label>
           </div>
         </div>`;
     }).join('');
@@ -1335,7 +1329,7 @@ const PackageForm = {
         <div class="dest-selector" id="destSelector">
           ${destRows || '<p style="padding:var(--sp-4);color:var(--text-light)">Loading destinations…</p>'}
         </div>
-        <p class="form-note">Select one or more destinations and mark one as Primary.</p>
+        <p class="form-note">Select one or more destinations for this package.</p>
 
         <div class="form-section-title" style="margin-top:var(--sp-4)">Package Settings</div>
         <div class="field-row">
@@ -1620,25 +1614,7 @@ const PackageForm = {
     this._syncDestChecks();
   },
 
-  _syncDestChecks() {
-    // Update disabled states only — no event listeners here.
-    // Destination change events are handled via delegation in _bindFormEvents()
-    // to prevent duplicate listener accumulation on repeated calls.
-    document.querySelectorAll('#destSelector input[name="dest_check"]').forEach(chk => {
-      const primeRadio = document.querySelector(`#destSelector input[name="dest_primary"][value="${chk.value}"]`);
-      if (!primeRadio) return;
-      primeRadio.disabled = !chk.checked;
-      // If this destination is deselected but was primary, clear primary + promote next checked
-      if (!chk.checked && primeRadio.checked) {
-        primeRadio.checked = false;
-        const first = document.querySelector('#destSelector input[name="dest_check"]:checked');
-        if (first) {
-          const r = document.querySelector(`#destSelector input[name="dest_primary"][value="${first.value}"]`);
-          if (r) r.checked = true;
-        }
-      }
-    });
-  },
+  _syncDestChecks() { /* no-op — primary destination removed */ },
 
   _updateCharCount(inputId, countId, max) {
     const input = document.getElementById(inputId);
@@ -1687,10 +1663,22 @@ const PackageForm = {
     document.getElementById('titleEn')?.addEventListener('input', () => { this._dirty = true; });
     document.getElementById('titleAr')?.addEventListener('input', () => { this._dirty = true; });
 
-    // Destination change → sync primary state
+    // Destination change → mark dirty
     document.getElementById('destSelector')?.addEventListener('change', () => {
-      this._syncDestChecks();
       this._dirty = true;
+    });
+
+    // Clicking anywhere on a dest-selector__item toggles its checkbox
+    document.getElementById('destSelector')?.addEventListener('click', (e) => {
+      const item = e.target.closest('.dest-selector__item');
+      if (!item) return;
+      // Let native checkbox/label behaviour handle itself — only intercept clicks on the rest of the row
+      if (e.target.closest('input') || e.target.closest('label')) return;
+      const chk = item.querySelector('input[name="dest_check"]');
+      if (chk) {
+        chk.checked = !chk.checked;
+        chk.dispatchEvent(new Event('change', { bubbles: true }));
+      }
     });
 
     // Duration nights → auto-calculate days (nights + 1)
@@ -1750,9 +1738,7 @@ const PackageForm = {
     if (!v('durationNights') && v('durationNights') !== '0') errors.push({ tab: 'basic', msg: 'Duration nights is required.' });
 
     const checkedDests = document.querySelectorAll('#destSelector input[name="dest_check"]:checked');
-    const primaryDest = document.querySelector('#destSelector input[name="dest_primary"]:checked');
     if (!checkedDests.length) errors.push({ tab: 'basic', msg: 'Select at least one destination.' });
-    if (checkedDests.length && !primaryDest) errors.push({ tab: 'basic', msg: 'Mark one destination as primary.' });
 
     const price    = parsePriceInput('priceValueSAR');
     const orig     = parsePriceInput('originalPriceValue');
@@ -1808,8 +1794,7 @@ const PackageForm = {
       // Build destinations array
       const destRows = [];
       document.querySelectorAll('#destSelector input[name="dest_check"]:checked').forEach((chk, i) => {
-        const isPrimary = document.querySelector(`#destSelector input[name="dest_primary"][value="${chk.value}"]`)?.checked ?? false;
-        destRows.push({ destination_id: chk.value, is_primary: isPrimary, display_order: i });
+        destRows.push({ destination_id: chk.value, display_order: i });
       });
 
       // Slug: keep existing on edit; auto-generate from title on create

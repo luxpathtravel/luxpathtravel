@@ -15,6 +15,8 @@ const Config = Object.freeze({
   WHATSAPP_NUMBER:   '+6281111826527',
   LANG_KEY:          'luxpath_lang',
   DEFAULT_LANG:      'ar',
+  CURRENCY_KEY:      'luxpath_currency',
+  DEFAULT_CURRENCY:  'SAR',
   PLACEHOLDER_IMG:   'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23F0EDE8" width="400" height="300"/%3E%3C/svg%3E',
 });
 
@@ -49,7 +51,7 @@ const T = {
     'category.luxury':    'فاخر',
     'category.adventure': 'مغامرة',
     'price.exact': '', 'price.starting_from': 'يبدأ من', 'price.approximate': 'يقارب',
-    'currency.SAR': 'ريال', 'currency.USD': 'دولار', 'currency.EUR': 'يورو',
+    'currency.SAR': 'ريال', 'currency.IDR': 'روبية', 'currency.USD': 'دولار', 'currency.EUR': 'يورو',
     'wa.general':  'مرحباً، أود الاستفسار عن باقاتكم السياحية إلى إندونيسيا',
     'wa.package':  'مرحباً، أود الاستفسار عن باقة "{title}" إلى {destination}',
 
@@ -93,7 +95,7 @@ const T = {
     'category.luxury':    'Luxury',
     'category.adventure': 'Adventure',
     'price.exact': '', 'price.starting_from': 'From', 'price.approximate': 'Approx.',
-    'currency.SAR': 'SAR', 'currency.USD': 'USD', 'currency.EUR': 'EUR',
+    'currency.SAR': 'SAR', 'currency.IDR': 'IDR', 'currency.USD': 'USD', 'currency.EUR': 'EUR',
     'wa.general':  'Hello, I\'d like to inquire about your Indonesia travel packages',
     'wa.package':  'Hello, I\'m interested in the "{title}" package to {destination}',
 
@@ -142,11 +144,14 @@ const DB = (() => {
       db.from('packages')
         .select(`
           id, slug_en, slug_ar, title_ar, title_en,
-          category, price_type, price_value, original_price_value, currency,
-          duration_nights, duration_days, hero_image_url,
+          category, price_type,
+          price_value, original_price_value,
+          price_value_idr, original_price_value_idr,
+          price_value_usd, original_price_value_usd,
+          currency, duration_nights, duration_days, hero_image_url,
           is_active, is_featured, display_order,
           package_destinations (
-            destination_id, is_primary,
+            destination_id,
             destinations ( slug, name_ar, name_en )
           )
         `)
@@ -241,7 +246,58 @@ const WA = {
 };
 
 /* ============================================================
-   6. NAVBAR
+   6. CURRENCY
+   ============================================================ */
+const Currency = (() => {
+  const ALL = ['SAR', 'IDR', 'USD'];
+  let curr = Config.DEFAULT_CURRENCY;
+
+  const applyDOM = () => {
+    document.querySelectorAll('.btn-currency').forEach(btn => {
+      btn.textContent = curr;
+      btn.setAttribute('aria-label', `Currency: ${curr}. Click to switch.`);
+    });
+  };
+
+  return {
+    init() {
+      const stored = localStorage.getItem(Config.CURRENCY_KEY);
+      if (ALL.includes(stored)) curr = stored;
+      applyDOM();
+    },
+    get() { return curr; },
+    cycle() {
+      curr = ALL[(ALL.indexOf(curr) + 1) % ALL.length];
+      localStorage.setItem(Config.CURRENCY_KEY, curr);
+      applyDOM();
+    },
+    format(pkg) {
+      const fmt = (n) => new Intl.NumberFormat('en-US').format(n);
+      if (curr === 'IDR' && pkg.price_value_idr != null) {
+        return {
+          value: fmt(pkg.price_value_idr),
+          label: I18n.t('currency.IDR'),
+          originalValue: pkg.original_price_value_idr != null ? fmt(pkg.original_price_value_idr) : null,
+        };
+      }
+      if (curr === 'USD' && pkg.price_value_usd != null) {
+        return {
+          value: fmt(pkg.price_value_usd),
+          label: I18n.t('currency.USD'),
+          originalValue: pkg.original_price_value_usd != null ? fmt(pkg.original_price_value_usd) : null,
+        };
+      }
+      return {
+        value: fmt(pkg.price_value ?? 0),
+        label: I18n.t('currency.SAR'),
+        originalValue: pkg.original_price_value != null ? fmt(pkg.original_price_value) : null,
+      };
+    },
+  };
+})();
+
+/* ============================================================
+   7. NAVBAR
    ============================================================ */
 const Navbar = {
   init() {
@@ -258,6 +314,10 @@ const Navbar = {
     menu?.querySelectorAll('a').forEach(a => a.addEventListener('click', () => this.closeMenu()));
     document.addEventListener('keydown', e => { if (e.key === 'Escape') this.closeMenu(); });
     document.querySelectorAll('.btn-lang').forEach(btn => btn.addEventListener('click', () => I18n.toggle()));
+    document.querySelectorAll('.btn-currency').forEach(btn => btn.addEventListener('click', () => {
+      Currency.cycle();
+      PackageList.rerender();
+    }));
   },
   openMenu() {
     document.getElementById('mobileMenu')?.classList.add('is-open');
@@ -407,7 +467,7 @@ const PackageList = {
 
   _getPrimaryDest(pkg) {
     const dests = pkg.package_destinations ?? [];
-    return (dests.find(d => d.is_primary) ?? dests[0])?.destinations ?? null;
+    return dests[0]?.destinations ?? null;
   },
 
   _cardHTML(pkg) {
@@ -419,11 +479,12 @@ const PackageList = {
     const nights   = pkg.duration_nights ?? 0;
     const days     = pkg.duration_days ?? 1;
     const priceLabel = I18n.t(`price.${pkg.price_type ?? 'starting_from'}`);
-    const currLabel  = I18n.t(`currency.${pkg.currency ?? 'SAR'}`);
-    const price    = new Intl.NumberFormat('en-US').format(pkg.price_value ?? 0);
-    const imgSrc   = pkg.hero_image_url ? `${Config.STORAGE_URL}${pkg.hero_image_url}` : Config.PLACEHOLDER_IMG;
-    const origHTML = pkg.original_price_value
-      ? `<span class="pkg-card__price-original">${new Intl.NumberFormat('en-US').format(pkg.original_price_value)}</span>`
+    const priceInfo  = Currency.format(pkg);
+    const price      = priceInfo.value;
+    const currLabel  = priceInfo.label;
+    const imgSrc     = pkg.hero_image_url ? `${Config.STORAGE_URL}${pkg.hero_image_url}` : Config.PLACEHOLDER_IMG;
+    const origHTML   = priceInfo.originalValue
+      ? `<span class="pkg-card__price-original">${priceInfo.originalValue}</span>`
       : '';
 
     return `
@@ -501,6 +562,7 @@ const App = {
 
   async init() {
     I18n.init();
+    Currency.init();
     Navbar.init();
     ScrollReveal.init();
     WA.updateAll();

@@ -224,25 +224,16 @@ CREATE TRIGGER trg_packages_updated_at
 -- =============================================================================
 
 -- A package can cover multiple destinations (e.g. Bali + Bandung).
--- Exactly one destination per package must be marked is_primary = true.
 CREATE TABLE IF NOT EXISTS package_destinations (
     id              uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
     package_id      uuid        NOT NULL REFERENCES packages(id)     ON DELETE CASCADE,
     destination_id  uuid        NOT NULL REFERENCES destinations(id) ON DELETE RESTRICT,
-    is_primary      boolean     NOT NULL DEFAULT false,
     display_order   smallint    NOT NULL DEFAULT 0,
 
     CONSTRAINT unique_package_destination UNIQUE (package_id, destination_id)
 );
 
-COMMENT ON TABLE  package_destinations            IS 'Many-to-many join: a package can span multiple destinations.';
-COMMENT ON COLUMN package_destinations.is_primary IS 'Exactly one row per package_id must be true. Enforced by partial unique index.';
-
--- Database-level guarantee: at most one primary destination per package.
--- (Minimum one is enforced by the application on save.)
-CREATE UNIQUE INDEX uidx_package_destinations_one_primary
-    ON package_destinations (package_id)
-    WHERE is_primary = true;
+COMMENT ON TABLE package_destinations IS 'Many-to-many join: a package can span multiple destinations.';
 
 
 -- =============================================================================
@@ -860,10 +851,12 @@ CREATE POLICY rls_blog_admin_all
 
 INSERT INTO destinations (slug, name_ar, name_en, tagline_ar, tagline_en, display_order)
 VALUES
-    ('bali',    'بالي',    'Bali',    'جنة الآلهة',     'Island of the Gods',   1),
-    ('jakarta', 'جاكرتا',  'Jakarta', 'قلب إندونيسيا',  'Heart of Indonesia',   2),
-    ('bandung', 'باندونغ', 'Bandung', 'مدينة الأزهار',  'City of Flowers',      3),
-    ('lombok',  'لومبوك',  'Lombok',  'الجنة الخفية',   'Hidden Paradise',      4)
+    ('bali',         'بالي',       'Bali',         'جنة الآلهة',            'Island of the Gods',      1),
+    ('jakarta',      'جاكرتا',     'Jakarta',      'قلب إندونيسيا',         'Heart of Indonesia',      2),
+    ('puncak',       'بونشاك',     'Puncak',       'جبال الطبيعة الخضراء',  'A Magical Mountain Escape', 3),
+    ('bandung',      'باندونغ',    'Bandung',      'مدينة الأزهار',         'City of Flowers',         4),
+    ('lombok',       'لومبوك',     'Lombok',       'الجنة الخفية',          'Hidden Paradise',         5),
+    ('gili',         'جزر جيلي',   'Gili Islands', 'جنة استوائية',          'Tropical Paradise',       6)
 ON CONFLICT (slug) DO NOTHING;
 
 
@@ -893,10 +886,10 @@ VALUES
     ('hero_cta_packages_en',  NULL, NULL,                                               'Browse Our Packages',                     'English secondary CTA button text on hero.'),
 
     -- Stats bar
-    ('stat_trips_count',      '500+',  NULL, NULL,  'Number displayed in homepage stats bar — trips completed.'),
-    ('stat_families_count',   '2,000+',NULL, NULL,  'Number displayed in homepage stats bar — families served.'),
-    ('stat_destinations',     '4',     NULL, NULL,  'Number displayed in homepage stats bar — destinations.'),
-    ('stat_years',            '5+',    NULL, NULL,  'Number displayed in homepage stats bar — years of experience.'),
+    ('stat_trips_count',      '527+',  NULL, NULL,  'Number displayed in homepage stats bar — trips completed.'),
+    ('stat_families_count',   '643+',  NULL, NULL,  'Number displayed in homepage stats bar — families served.'),
+    ('stat_destinations',     '6+',    NULL, NULL,  'Number displayed in homepage stats bar — destinations.'),
+    ('stat_years',            '4+',    NULL, NULL,  'Number displayed in homepage stats bar — years of experience.'),
 
     -- Contact CTA section
     ('contact_cta_title',     NULL, 'جاهز لتخطيط رحلتك الفاخرة؟',                    'Ready to Plan Your Luxury Trip?',         'H2 on the full-width contact CTA section.'),

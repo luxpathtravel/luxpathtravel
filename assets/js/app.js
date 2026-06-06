@@ -340,7 +340,6 @@ const DB = (() => {
           currency,
           duration_nights, duration_days, hero_image_url,
           package_destinations (
-            is_primary,
             destinations ( slug, name_ar, name_en )
           )
         `)
