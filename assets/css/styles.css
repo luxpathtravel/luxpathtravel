@@ -1210,6 +1210,7 @@ html[dir="ltr"] .hero__overlay {
   transition: box-shadow var(--trans-base), transform var(--trans-base);
   display: flex;
   flex-direction: column;
+  cursor: pointer;
 }
 
 .pkg-card:hover {

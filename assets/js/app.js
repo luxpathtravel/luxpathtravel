@@ -837,13 +837,23 @@ const Packages = {
     grid.innerHTML = packages.map(pkg => this.cardHTML(pkg)).join('');
     this.bindWALinks(grid, packages);
     this.lazyLoadImages(grid);
+    this.bindCardClicks(grid);
+  },
+
+  bindCardClicks(grid) {
+    grid.addEventListener('click', (e) => {
+      if (e.target.closest('.btn--whatsapp')) return;
+      const card = e.target.closest('.pkg-card');
+      if (!card) return;
+      const link = card.querySelector('.pkg-card__title a');
+      if (link?.href) window.location.href = link.href;
+    });
   },
 
   // Get the primary destination from nested package_destinations
   getPrimaryDest(pkg) {
     const dests = pkg.package_destinations ?? [];
-    const primary = dests.find(d => d.is_primary) ?? dests[0];
-    return primary?.destinations ?? null;
+    return dests[0]?.destinations ?? null;
   },
 
   cardHTML(pkg) {
@@ -864,7 +874,7 @@ const Packages = {
       ? `${Config.STORAGE_URL}${pkg.hero_image_url}`
       : Config.PLACEHOLDER_IMG;
     const slugKey = lang === 'ar' ? pkg.slug_ar : pkg.slug_en;
-    const detailUrl = `بكج-سياحي-اندونيسيا?slug=${pkg.slug_en}`;
+    const detailUrl = `بكج-سياحي-اندونيسيا.html?slug=${pkg.slug_en}`;
 
     const origHTML = priceInfo.originalValue
       ? `<span class="pkg-card__price-original">${priceInfo.originalValue}</span>`

@@ -166,7 +166,6 @@ const DB = (() => {
           *,
           package_destinations (
             destination_id,
-            is_primary,
             destinations ( slug, name_ar, name_en, tagline_ar, tagline_en )
           ),
           package_images (
@@ -186,10 +185,12 @@ const DB = (() => {
         .select(`
           id, slug_en, slug_ar, title_ar, title_en,
           short_description_ar, short_description_en,
-          category, price_type, price_value, original_price_value, currency,
-          duration_nights, duration_days, hero_image_url,
+          category, price_type,
+          price_value, original_price_value,
+          price_value_idr, original_price_value_idr,
+          price_value_usd, original_price_value_usd,
+          currency, duration_nights, duration_days, hero_image_url,
           package_destinations!inner (
-            is_primary,
             destinations ( slug, name_ar, name_en )
           )
         `)
@@ -288,8 +289,7 @@ const WA = {
 /* Shared helper: get primary destination from package */
 function getPrimaryDest(pkg) {
   const dests = pkg.package_destinations ?? [];
-  const primary = dests.find(d => d.is_primary) ?? dests[0];
-  return primary?.destinations ?? null;
+  return dests[0]?.destinations ?? null;
 }
 
 /* URL slug from path or query param */
@@ -954,9 +954,7 @@ const RelatedPackages = {
     const dest = getPrimaryDest(pkg);
     if (!dest) return;
 
-    const primaryPkgDest = pkg.package_destinations?.find(d => d.is_primary)
-                        ?? pkg.package_destinations?.[0];
-    const destId = primaryPkgDest?.destination_id ?? null;
+    const destId = pkg.package_destinations?.[0]?.destination_id ?? null;
     const related = await DB.getRelated(destId, pkg.category, pkg.id);
 
     if (!related?.length) {
@@ -975,15 +973,14 @@ const RelatedPackages = {
     grid.innerHTML = packages.map(pkg => {
       const title    = lang === 'ar' ? pkg.title_ar : pkg.title_en;
       const dests    = pkg.package_destinations ?? [];
-      const primary  = dests.find(d => d.is_primary) ?? dests[0];
-      const dest     = primary?.destinations;
+      const dest     = dests[0]?.destinations;
       const destName = dest ? (lang === 'ar' ? dest.name_ar : dest.name_en) : '';
       const cat      = pkg.category ?? 'luxury';
       const nights   = pkg.duration_nights ?? 0;
       const days     = pkg.duration_days   ?? 1;
       const price    = fmtPrice(pkg.price_value);
       const currency = I18n.t(`currency.${pkg.currency ?? 'SAR'}`);
-      const href     = `/package/${pkg.slug_en}`;
+      const href     = `بكج-سياحي-اندونيسيا.html?slug=${pkg.slug_en}`;
       const imgSrc   = imgUrl(pkg.hero_image_url);
 
       return `
@@ -1237,7 +1234,6 @@ const PackageApp = {
       seo_description_ar: 'استمتع بشهر عسل لا يُنسى في بالي مع لوكس باث. 7 ليالٍ شاملة الطيران والفندق والجولات. يبدأ من 3,500 ريال.',
       seo_description_en: 'Enjoy an unforgettable honeymoon in Bali with Luxpath Travel. 7 nights including flights, hotel, and tours. From SAR 3,500.',
       package_destinations: [{
-        is_primary: true,
         destinations: { slug: 'bali', name_ar: 'بالي', name_en: 'Bali', tagline_ar: 'جنة الآلهة', tagline_en: 'Island of the Gods' },
       }],
       package_images: [],

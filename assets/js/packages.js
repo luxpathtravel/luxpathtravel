@@ -489,13 +489,13 @@ const PackageList = {
 
     return `
       <article class="pkg-card reveal" data-pkg-id="${pkg.id}">
-        <a href="بكج-سياحي-اندونيسيا?slug=${pkg.slug_en}" class="pkg-card__img" aria-label="${title}">
+        <a href="بكج-سياحي-اندونيسيا.html?slug=${pkg.slug_en}" class="pkg-card__img" aria-label="${title}">
           <img data-src="${imgSrc}" src="${Config.PLACEHOLDER_IMG}" alt="${title} — ${destName}" width="400" height="300" loading="lazy">
           <div class="pkg-card__badge"><span class="badge badge--${cat}">${I18n.t('category.' + cat)}</span></div>
         </a>
         <div class="pkg-card__body">
           <p class="pkg-card__destination">${destName}</p>
-          <h3 class="pkg-card__title"><a href="بكج-سياحي-اندونيسيا?slug=${pkg.slug_en}">${title}</a></h3>
+          <h3 class="pkg-card__title"><a href="بكج-سياحي-اندونيسيا.html?slug=${pkg.slug_en}">${title}</a></h3>
           <p class="pkg-card__duration">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             ${nights} ${I18n.t('packages.nights')} / ${days} ${I18n.t('packages.days')}
@@ -525,6 +525,16 @@ const PackageList = {
     });
   },
 
+  _bindCardClicks() {
+    this.grid?.addEventListener('click', (e) => {
+      if (e.target.closest('.btn--whatsapp')) return;
+      const card = e.target.closest('.pkg-card');
+      if (!card) return;
+      const link = card.querySelector('.pkg-card__title a');
+      if (link?.href) window.location.href = link.href;
+    });
+  },
+
   _render(allPkgs) {
     const filtered = this._filter(allPkgs);
     if (!this.grid) return;
@@ -539,6 +549,7 @@ const PackageList = {
     } else {
       this.grid.innerHTML = filtered.map(p => this._cardHTML(p)).join('');
       this._bindWALinks(allPkgs);
+      this._bindCardClicks();
       lazyLoadImages(this.grid);
       ScrollReveal.observe(this.grid);
     }
