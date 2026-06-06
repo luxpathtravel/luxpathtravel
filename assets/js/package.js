@@ -173,7 +173,7 @@ const DB = (() => {
           ),
           package_inclusions (
             type, icon, text_ar, text_en, display_order
-          ),
+          )
         `)
         .eq('slug_en', slug)
         .eq('is_active', true)
