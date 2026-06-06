@@ -23,20 +23,52 @@
    18. Responsive
    ============================================================ */
 
-/* Body needs bottom padding on mobile for sticky bar */
-@media (max-width: 1023px) {
-  body { padding-bottom: 72px; }
+
+
+/* ============================================================
+   0. PACKAGE HERO — push content below the fixed navbar
+   ============================================================ */
+.pkg-hero {
+  position: relative;
+  padding-top: var(--navbar-h);
 }
 
-/* Navbar: package page starts scrolled (no transparent phase) */
-.navbar { background: rgba(255,255,255,0.97); backdrop-filter: blur(12px); }
-.navbar .navbar__link { color: var(--color-text-muted); }
-.navbar .navbar__link:hover { color: var(--color-navy); background: var(--color-surface-alt); }
-.navbar .navbar__link.active { color: var(--color-navy); font-weight: 600; }
-.navbar .navbar__hamburger span { background: var(--color-navy); }
-.navbar .btn-lang { border-color: var(--color-border-dark); color: var(--color-text-muted); }
-.navbar .btn-lang:hover { border-color: var(--color-navy); color: var(--color-navy); background: var(--color-surface-alt); }
+.pkg-hero__inner {
+  position: relative;
+  z-index: 1;
+  padding-block: var(--sp-10) var(--sp-12);
+  text-align: center;
+}
 
+.pkg-hero__bg {
+  position: absolute;
+  inset: 0;
+  background: #21323C;
+}
+
+.pkg-hero__label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: var(--sp-3);
+}
+
+.pkg-hero__static-title {
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-weight: 700;
+  color: var(--color-white);
+  line-height: 1.25;
+  margin-bottom: var(--sp-3);
+}
+
+.pkg-hero__static-sub {
+  font-size: var(--text-base);
+  color: rgba(255,255,255,0.65);
+  max-width: 480px;
+  margin-inline: auto;
+}
 
 /* ============================================================
    1. BREADCRUMBS
@@ -206,18 +238,35 @@ html[dir="rtl"] .breadcrumbs__item::after { content: '\\'; }
 }
 
 .gallery-mobile__track {
-  display: flex;
-  overflow-x: hidden;   /* JS controls scrollLeft */
-  scroll-snap-type: x mandatory;
+  position: relative;
+  overflow: hidden;
   aspect-ratio: 4/3;
 }
 
 .gallery-mobile__slide {
-  flex: 0 0 100%;
-  scroll-snap-align: start;
-  position: relative;
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
   overflow: hidden;
+  transition: opacity 0.38s ease, transform 0.38s ease;
+  transform: translateX(0);
 }
+
+.gallery-mobile__slide.is-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.gallery-mobile__slide.slide-in-right  { transform: translateX(100%);  animation: gm-slide-in-right  0.38s ease forwards; }
+.gallery-mobile__slide.slide-in-left   { transform: translateX(-100%); animation: gm-slide-in-left   0.38s ease forwards; }
+.gallery-mobile__slide.slide-out-left  {                                animation: gm-slide-out-left  0.38s ease forwards; }
+.gallery-mobile__slide.slide-out-right {                                animation: gm-slide-out-right 0.38s ease forwards; }
+
+@keyframes gm-slide-in-right  { from { transform: translateX(100%);  opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes gm-slide-in-left   { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes gm-slide-out-left  { from { transform: translateX(0); opacity: 1; } to { transform: translateX(-100%); opacity: 0; } }
+@keyframes gm-slide-out-right { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%);  opacity: 0; } }
 
 .gallery-mobile__slide img {
   width: 100%;
@@ -833,8 +882,8 @@ html[dir="ltr"] .itinerary-body__content {
   width: 52px;
   height: 52px;
   border-radius: var(--radius-full);
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(0,0,0,0.55);
+  border: 1px solid rgba(255,255,255,0.35);
   color: var(--color-white);
   display: flex;
   align-items: center;
@@ -843,7 +892,7 @@ html[dir="ltr"] .itinerary-body__content {
   transition: background var(--trans-fast);
   z-index: 1;
 }
-.lightbox__nav:hover { background: rgba(255,255,255,0.22); }
+.lightbox__nav:hover { background: rgba(0,0,0,0.78); }
 .lightbox__nav:disabled { opacity: 0.3; cursor: default; }
 
 .lightbox__prev { inset-inline-start: var(--sp-4); }
@@ -862,9 +911,17 @@ html[dir="ltr"] .itinerary-body__content {
   white-space: nowrap;
 }
 
+@media (max-width: 767px) {
+  .lightbox__stage { padding: 56px 8px 48px; }
+  .lightbox__nav { width: 44px; height: 44px; }
+  .lightbox__prev { inset-inline-start: var(--sp-2); }
+  .lightbox__next { inset-inline-end:  var(--sp-2); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .lightbox { transition: none; }
   .lightbox__img { transition: none; }
+  .gallery-mobile__slide { transition: none; animation: none; }
 }
 
 
@@ -938,8 +995,8 @@ html[dir="ltr"] .itinerary-body__content {
   .gallery-grid     { display: grid; }
   .gallery-mobile   { display: none !important; }
 
-  /* Inclusions: 2 columns */
-  .inclusions-grid { grid-template-columns: 1fr 1fr; }
+  /* Inclusions: 2 columns only when two cols are present */
+  .inclusions-grid:not(.inclusions-grid--single) { grid-template-columns: 1fr 1fr; }
 
   /* Itinerary content padding matches badge width */
   .itinerary-body__content { padding-inline-start: calc(var(--sp-5) + 44px + var(--sp-4)); }

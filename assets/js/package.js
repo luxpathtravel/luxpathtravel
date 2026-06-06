@@ -34,6 +34,8 @@ const Config = Object.freeze({
   get STORAGE_URL()  { return this.SUPABASE_URL + '/storage/v1/object/public/luxpath-media/'; },
   WHATSAPP_NUMBER:   '+6281111826527',
   LANG_KEY:          'luxpath_lang',
+  CURRENCY_KEY:      'luxpath_currency',
+  DEFAULT_CURRENCY:  'SAR',
   PLACEHOLDER_IMG:   'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="800" height="600"%3E%3Crect fill="%23F0EDE8" width="800" height="600"/%3E%3C/svg%3E',
 });
 
@@ -54,7 +56,7 @@ const T = {
     'category.honeymoon': 'شهر العسل', 'category.family': 'عائلي',
     'category.luxury': 'فاخر', 'category.adventure': 'مغامرة',
     'price.exact': '', 'price.starting_from': 'يبدأ من', 'price.approximate': 'يقارب',
-    'currency.SAR': 'ريال', 'currency.USD': 'دولار', 'currency.EUR': 'يورو',
+    'currency.SAR': 'ريال', 'currency.IDR': 'روبية', 'currency.USD': 'دولار', 'currency.EUR': 'يورو',
     'pkg.notFound.title': 'الباقة غير موجودة',
     'pkg.notFound.body':  'لم نتمكن من العثور على هذه الباقة. ربما تم تغيير الرابط أو إزالة الباقة.',
     'pkg.notFound.browse':  'تصفح جميع الباقات',
@@ -85,6 +87,9 @@ const T = {
     'wa.package': 'مرحباً، أود الاستفسار عن باقة "{title}" إلى {destination}',
     'breadcrumb.home': 'الرئيسية',
     'breadcrumb.packages': 'الباقات',
+    'pkg.heroLabel': 'الباقات السياحية',
+    'pkg.heroTitle': 'رحلتك الفاخرة إلى إندونيسيا',
+    'pkg.heroSub':   'اكتشف تفاصيل الباقة واحجز رحلتك معنا',
   },
   en: {
     'a11y.skip': 'Skip to content',
@@ -99,7 +104,7 @@ const T = {
     'category.honeymoon': 'Honeymoon', 'category.family': 'Family',
     'category.luxury': 'Luxury', 'category.adventure': 'Adventure',
     'price.exact': '', 'price.starting_from': 'From', 'price.approximate': 'Approx.',
-    'currency.SAR': 'SAR', 'currency.USD': 'USD', 'currency.EUR': 'EUR',
+    'currency.SAR': 'SAR', 'currency.IDR': 'IDR', 'currency.USD': 'USD', 'currency.EUR': 'EUR',
     'pkg.notFound.title': 'Package Not Found',
     'pkg.notFound.body':  'We could not find this package. The link may have changed or the package was removed.',
     'pkg.notFound.browse':  'Browse All Packages',
@@ -130,6 +135,9 @@ const T = {
     'wa.package': 'Hello, I\'m interested in the "{title}" package to {destination}',
     'breadcrumb.home': 'Home',
     'breadcrumb.packages': 'Packages',
+    'pkg.heroLabel': 'Tour Packages',
+    'pkg.heroTitle': 'Your Luxury Journey to Indonesia',
+    'pkg.heroSub':   'Explore the package details and book your trip with us',
   },
 };
 
@@ -310,15 +318,64 @@ function imgUrl(path) {
 function fmtPrice(n) { return new Intl.NumberFormat('en-US').format(n ?? 0); }
 
 /* ============================================================
-   6. NAVBAR
+   6. CURRENCY
+   ============================================================ */
+const Currency = (() => {
+  const ALL = ['SAR', 'IDR', 'USD'];
+  let curr = Config.DEFAULT_CURRENCY;
+
+  const applyDOM = () => {
+    document.querySelectorAll('.btn-currency').forEach(btn => {
+      btn.textContent = curr;
+      btn.setAttribute('aria-label', `Currency: ${curr}. Click to switch.`);
+    });
+  };
+
+  return {
+    init() {
+      const stored = localStorage.getItem(Config.CURRENCY_KEY);
+      if (ALL.includes(stored)) curr = stored;
+      applyDOM();
+    },
+    get() { return curr; },
+    cycle() {
+      curr = ALL[(ALL.indexOf(curr) + 1) % ALL.length];
+      localStorage.setItem(Config.CURRENCY_KEY, curr);
+      applyDOM();
+    },
+    format(pkg) {
+      const fmt = (n) => new Intl.NumberFormat('en-US').format(n);
+      if (curr === 'IDR' && pkg.price_value_idr != null) {
+        return { value: fmt(pkg.price_value_idr), label: I18n.t('currency.IDR'), originalValue: pkg.original_price_value_idr != null ? fmt(pkg.original_price_value_idr) : null };
+      }
+      if (curr === 'USD' && pkg.price_value_usd != null) {
+        return { value: fmt(pkg.price_value_usd), label: I18n.t('currency.USD'), originalValue: pkg.original_price_value_usd != null ? fmt(pkg.original_price_value_usd) : null };
+      }
+      return { value: fmt(pkg.price_value ?? 0), label: I18n.t('currency.SAR'), originalValue: pkg.original_price_value != null ? fmt(pkg.original_price_value) : null };
+    },
+  };
+})();
+
+/* ============================================================
+   7. NAVBAR
    ============================================================ */
 const Navbar = {
   init() {
+    const navbar = document.getElementById('navbar');
+    if (navbar) {
+      const onScroll = () => { navbar.classList.toggle('navbar--scrolled', window.scrollY > 60); };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    }
     document.getElementById('menuToggle')?.addEventListener('click',  () => this.open());
     document.getElementById('mobileMenuClose')?.addEventListener('click', () => this.close());
     document.getElementById('mobileMenuBackdrop')?.addEventListener('click', () => this.close());
     document.addEventListener('keydown', e => { if (e.key === 'Escape') this.close(); });
     document.querySelectorAll('.btn-lang').forEach(btn => btn.addEventListener('click', () => I18n.toggle()));
+    document.querySelectorAll('.btn-currency').forEach(btn => btn.addEventListener('click', () => {
+      Currency.cycle();
+      if (PackageApp.pkg) PriceCard.render(PackageApp.pkg);
+    }));
     document.getElementById('mobileMenu')?.querySelectorAll('a').forEach(a => a.addEventListener('click', () => this.close()));
   },
   open() {
@@ -538,7 +595,7 @@ const Gallery = {
     const mobile = document.getElementById('galleryMobile');
 
     track.innerHTML = this.images.map((img, i) => `
-      <div class="gallery-mobile__slide" data-index="${i}">
+      <div class="gallery-mobile__slide${i === 0 ? ' is-active' : ''}" data-index="${i}">
         <img src="${img.url}"
              alt="${I18n.get() === 'ar' ? (img.alt_ar || '') : (img.alt_en || '')}"
              loading="${i === 0 ? 'eager' : 'lazy'}"
@@ -559,8 +616,8 @@ const Gallery = {
     const prevBtn = document.getElementById('galleryPrev');
     const nextBtn = document.getElementById('galleryNext');
 
-    prevBtn?.addEventListener('click', () => this.mobileNav(-1));
-    nextBtn?.addEventListener('click', () => this.mobileNav(1));
+    prevBtn?.addEventListener('click', () => this.mobileGoTo(this.mobileIdx - 1, 1));
+    nextBtn?.addEventListener('click', () => this.mobileGoTo(this.mobileIdx + 1, -1));
 
     document.querySelectorAll('.gallery-mobile__dot').forEach(dot => {
       dot.addEventListener('click', () => this.mobileGoTo(parseInt(dot.dataset.index)));
@@ -572,35 +629,53 @@ const Gallery = {
       if (slide) Lightbox.open(parseInt(slide.dataset.index));
     });
 
-    // Touch swipe
-    let startX = 0;
-    const track = document.getElementById('galleryTrack');
-    track?.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
-    track?.addEventListener('touchend', e => {
-      const dx = startX - e.changedTouches[0].clientX;
-      if (Math.abs(dx) > 40) this.mobileNav(dx > 0 ? 1 : -1);
+    // Touch swipe — non-passive touchmove to claim horizontal gesture
+    let _startX = 0, _startY = 0, _dragging = false;
+    const trackEl = document.getElementById('galleryTrack');
+    trackEl?.addEventListener('touchstart', e => {
+      _startX = e.touches[0].clientX;
+      _startY = e.touches[0].clientY;
+      _dragging = false;
+    }, { passive: true });
+    trackEl?.addEventListener('touchmove', e => {
+      const dx = Math.abs(e.touches[0].clientX - _startX);
+      const dy = Math.abs(e.touches[0].clientY - _startY);
+      if (dx > dy && dx > 5) { _dragging = true; e.preventDefault(); }
+    }, { passive: false });
+    trackEl?.addEventListener('touchend', e => {
+      if (!_dragging) return;
+      _dragging = false;
+      const dx = e.changedTouches[0].clientX - _startX;
+      if (Math.abs(dx) > 40) {
+        if (dx < 0) this.mobileGoTo(this.mobileIdx - 1, 1);
+        else        this.mobileGoTo(this.mobileIdx + 1, -1);
+      }
     }, { passive: true });
   },
 
-  mobileNav(dir) { this.mobileGoTo(this.mobileIdx + dir); },
-
-  mobileGoTo(idx) {
+  mobileGoTo(idx, dir = 0) {
     const total = this.images.length;
     if (idx < 0 || idx >= total) return;
+
+    const slides = Array.from(document.querySelectorAll('.gallery-mobile__slide'));
+    const forward = dir !== 0 ? dir > 0 : idx > this.mobileIdx;
+    const leaving = this.mobileIdx;
+
+    slides[leaving].classList.add(forward ? 'slide-out-left' : 'slide-out-right');
+    slides[idx].classList.add(forward ? 'slide-in-right' : 'slide-in-left');
+    slides[idx].classList.add('is-active');
+
+    setTimeout(() => {
+      slides[leaving].classList.remove('is-active', 'slide-out-left', 'slide-out-right');
+      slides[idx].classList.remove('slide-in-right', 'slide-in-left');
+    }, 380);
+
     this.mobileIdx = idx;
 
-    // Scroll slide
-    const slides = document.querySelectorAll('.gallery-mobile__slide');
-    slides.forEach((s, i) => {
-      s.style.display = i === idx ? 'block' : 'none';
-    });
-
-    // Update dots
     document.querySelectorAll('.gallery-mobile__dot').forEach((d, i) => {
       d.classList.toggle('is-active', i === idx);
     });
 
-    // Update button state
     const prev = document.getElementById('galleryPrev');
     const next = document.getElementById('galleryNext');
     if (prev) prev.disabled = idx === 0;
@@ -815,7 +890,8 @@ const Inclusions = {
       }).join('');
 
     document.getElementById('includedList').innerHTML = renderList(included, 'in');
-    document.getElementById('excludedList').innerHTML = renderList(excluded, 'ex');
+    const exEl = document.getElementById('excludedList');
+    if (exEl) exEl.innerHTML = renderList(excluded, 'ex');
 
     section.hidden = false;
   },
@@ -828,15 +904,15 @@ const PriceCard = {
   render(pkg) {
     const lang      = I18n.get();
     const title     = lang === 'ar' ? pkg.title_ar : pkg.title_en;
-    const dest      = getPrimaryDest(pkg);
-    const destName  = dest ? (lang === 'ar' ? dest.name_ar : dest.name_en) : '';
+    const allDests  = (pkg.package_destinations ?? []).map(pd => pd.destinations).filter(Boolean);
+    const destNames = allDests.map(d => lang === 'ar' ? d.name_ar : d.name_en).join(' & ');
     const cat       = pkg.category ?? 'luxury';
     const catLabel  = I18n.t(`category.${cat}`);
     const nights    = pkg.duration_nights ?? 0;
     const days      = pkg.duration_days   ?? 1;
     const priceType = pkg.price_type      ?? 'starting_from';
     const priceLabel = I18n.t(`price.${priceType}`);
-    const currency  = I18n.t(`currency.${pkg.currency ?? 'SAR'}`);
+    const priceInfo = Currency.format(pkg);
     const waUrl     = WA.packageUrl(pkg);
     const phoneNum  = PackageApp.whatsappNumber;
 
@@ -846,7 +922,6 @@ const PriceCard = {
       header.innerHTML = `
         <div class="pkg-header__top">
           <span class="badge badge--${cat}">${catLabel}</span>
-          <span class="pkg-header__dest">${destName}</span>
         </div>
         <h1 class="pkg-header__title">${title}</h1>
         <div class="pkg-header__stats">
@@ -854,10 +929,10 @@ const PriceCard = {
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             ${nights} ${I18n.t('packages.nights')} / ${days} ${I18n.t('packages.days')}
           </span>
-          <span class="pkg-header__stat">
+          ${destNames ? `<span class="pkg-header__stat">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            ${destName}
-          </span>
+            ${destNames}
+          </span>` : ''}
         </div>`;
     }
 
@@ -865,16 +940,16 @@ const PriceCard = {
     const card = document.getElementById('priceCard');
     if (!card) return;
 
-    const origHTML = pkg.original_price_value
-      ? `<span class="price-card__original">${fmtPrice(pkg.original_price_value)}</span>` : '';
+    const origHTML = priceInfo.originalValue
+      ? `<span class="price-card__original">${priceInfo.originalValue}</span>` : '';
 
     card.innerHTML = `
       <span class="price-card__label">${I18n.t('pkg.bookTitle')}</span>
 
       <div class="price-card__price-row">
         ${priceLabel ? `<span style="font-size:var(--text-sm);color:var(--color-text-muted)">${priceLabel}</span>` : ''}
-        <span class="price-card__value">${fmtPrice(pkg.price_value)}</span>
-        <span class="price-card__currency">${currency}</span>
+        <span class="price-card__value">${priceInfo.value}</span>
+        <span class="price-card__currency">${priceInfo.label}</span>
         ${origHTML}
       </div>
 
@@ -883,10 +958,10 @@ const PriceCard = {
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           ${nights} ${I18n.t('packages.nights')} / ${days} ${I18n.t('packages.days')}
         </div>
-        ${destName ? `
+        ${destNames ? `
         <div class="price-card__meta-item">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          ${I18n.t('pkg.to')} ${destName}
+          ${I18n.t('pkg.to')} ${destNames}
         </div>` : ''}
       </div>
 
@@ -1088,8 +1163,9 @@ const PackageApp = {
   whatsappNumber: Config.WHATSAPP_NUMBER,
 
   async init() {
-    // 1. Language
+    // 1. Language + currency
     I18n.init();
+    Currency.init();
 
     // 2. Static UI
     Navbar.init();
@@ -1123,43 +1199,7 @@ const PackageApp = {
     // SEO + schema
     Meta.set(pkg);
 
-    // ── Hero: set background image + populate title / badge / meta ──
     const lang = I18n.get();
-    const heroBg = document.getElementById('pkgHeroBg');
-    if (heroBg && pkg.hero_image_url) {
-      heroBg.style.backgroundImage  = `url('${imgUrl(pkg.hero_image_url)}')`;
-      heroBg.style.backgroundSize   = 'cover';
-      heroBg.style.backgroundPosition = 'center';
-    }
-    const pkgTitleEl = document.getElementById('pkgTitle');
-    if (pkgTitleEl) {
-      pkgTitleEl.textContent = lang === 'ar' ? pkg.title_ar : pkg.title_en;
-      pkgTitleEl.removeAttribute('aria-hidden');
-    }
-    const pkgCatBadge = document.getElementById('pkgCategoryBadge');
-    if (pkgCatBadge) {
-      const cat = pkg.category ?? 'luxury';
-      pkgCatBadge.innerHTML = `<span class="badge badge--${cat}">${I18n.t('category.' + cat)}</span>`;
-      pkgCatBadge.removeAttribute('aria-hidden');
-    }
-    const pkgHeroMetaEl = document.getElementById('pkgHeroMeta');
-    if (pkgHeroMetaEl) {
-      const dest = getPrimaryDest(pkg);
-      const destName = dest ? (lang === 'ar' ? dest.name_ar : dest.name_en) : '';
-      pkgHeroMetaEl.innerHTML = `
-        <span style="display:flex;align-items:center;gap:6px">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          ${pkg.duration_nights} ${I18n.t('packages.nights')} / ${pkg.duration_days} ${I18n.t('packages.days')}
-        </span>
-        ${destName ? `<span style="display:flex;align-items:center;gap:6px">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          ${destName}
-        </span>` : ''}`;
-      pkgHeroMetaEl.removeAttribute('aria-hidden');
-    }
-
-    // Breadcrumbs
-    Breadcrumbs.render(pkg);
 
     // Gallery
     Gallery.init(pkg);
@@ -1176,8 +1216,6 @@ const PackageApp = {
     // Inclusions
     Inclusions.render(pkg);
 
-    // Sticky bar (mobile)
-    StickyBar.init(pkg);
 
     // Floating WA
     FloatingWA.init(pkg);
@@ -1192,7 +1230,6 @@ const PackageApp = {
   // Re-render after language change
   rerender() {
     if (!this.pkg) return;
-    Breadcrumbs.render(this.pkg);
     PriceCard.render(this.pkg);
     Description.render(this.pkg);
     Itinerary.render(this.pkg);
