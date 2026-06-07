@@ -603,6 +603,13 @@ html {
   color: var(--color-adventure-text);
 }
 
+.badge--discount {
+  background: #e53e3e;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
 
 /* ============================================================
    8. SKELETON LOADERS

@@ -8,14 +8,15 @@
    3.  StorageManager
    4.  Auth
    5.  Toast
-   6.  Modal
-   7.  Sidebar
-   8.  ImageManager
-   9.  ItineraryBuilder
-   10. InclusionsBuilder
-   11. PackageList
-   12. PackageForm
-   13. App
+   6.  DashLightbox
+   7.  Modal
+   8.  Sidebar
+   9.  ImageManager
+   10. ItineraryBuilder
+   11. InclusionsBuilder
+   12. PackageList
+   13. PackageForm
+   14. App
    ============================================================ */
 
 'use strict';
@@ -67,8 +68,7 @@ const MEAL_LABELS = { breakfast: 'Breakfast 🍳', lunch: 'Lunch 🥗', dinner: 
 
 const INCLUSION_ICONS = [
   ['flight', '✈️ Flight'], ['hotel', '🏨 Hotel'], ['transfer', '🚌 Transfer'],
-  ['guide_arabic', '🗣️ Arabic Guide'], ['guide_local', '👤 Local Guide'],
-  ['tour', '🗺️ Tour'], ['meal_breakfast', '🍳 Breakfast'],
+  ['guide_arabic', '🗣️ Private Driver'],
   ['meal_lunch', '🥗 Lunch'], ['meal_dinner', '🍽️ Dinner'], ['meals_all', '🍽️ All Meals'],
   ['visa', '📋 Visa'], ['insurance', '🛡️ Insurance'], ['sim_card', '📱 SIM Card'],
   ['photo_session', '📸 Photo Session'], ['water_activities', '🤿 Water Activities'],
@@ -78,22 +78,19 @@ const INCLUSION_ICONS = [
 // Pre-defined inclusion options shown as quick-pick checkboxes in the admin form.
 // Each entry maps directly to a DB row when checked.
 const QUICK_INCLUSIONS = [
-  { icon: 'flight',          emoji: '✈️', text_en: 'Flights',                 text_ar: 'تذاكر الطيران' },
-  { icon: 'hotel',           emoji: '🏨', text_en: 'Hotel Accommodation',     text_ar: 'إقامة فندقية' },
-  { icon: 'transfer',        emoji: '🚌', text_en: 'Airport Transfers',       text_ar: 'انتقالات المطار' },
-  { icon: 'guide_arabic',    emoji: '🗣️', text_en: 'Arabic-Speaking Guide',   text_ar: 'مرشد سياحي عربي' },
-  { icon: 'guide_local',     emoji: '👤', text_en: 'Local Guide',             text_ar: 'مرشد محلي' },
-  { icon: 'tour',            emoji: '🗺️', text_en: 'City Tours',              text_ar: 'جولات سياحية' },
-  { icon: 'meal_breakfast',  emoji: '🍳', text_en: 'Breakfast',               text_ar: 'وجبة الإفطار' },
-  { icon: 'meal_lunch',      emoji: '🥗', text_en: 'Lunch',                   text_ar: 'وجبة الغداء' },
-  { icon: 'meal_dinner',     emoji: '🍽️', text_en: 'Dinner',                  text_ar: 'وجبة العشاء' },
-  { icon: 'meals_all',       emoji: '🍽️', text_en: 'All Meals',               text_ar: 'جميع الوجبات' },
-  { icon: 'visa',            emoji: '📋', text_en: 'Visa Assistance',         text_ar: 'مساعدة في التأشيرة' },
-  { icon: 'insurance',       emoji: '🛡️', text_en: 'Travel Insurance',        text_ar: 'تأمين سفر' },
-  { icon: 'sim_card',        emoji: '📱', text_en: 'SIM Card',                text_ar: 'شريحة اتصال' },
-  { icon: 'photo_session',   emoji: '📸', text_en: 'Photo Session',           text_ar: 'جلسة تصوير' },
-  { icon: 'water_activities',emoji: '🤿', text_en: 'Water Activities',        text_ar: 'أنشطة مائية' },
-  { icon: 'spa',             emoji: '💆', text_en: 'Spa Treatment',           text_ar: 'جلسة سبا' },
+  { icon: 'flight', emoji: '✈️', text_en: 'Domestic Flights', text_ar: 'تذاكر الطيران' },
+  { icon: 'hotel', emoji: '🏨', text_en: 'Hotels Including Breakfast', text_ar: 'فنادق مع افطار', text_ar_detail: 'اقامة مريحة في فنادق ومنتجعات مختارة تشمل إفطار يومي' },
+  { icon: 'transfer', emoji: '🚌', text_en: 'Airport Transfers', text_ar: 'استقبال وتوديع من المطار', text_ar_detail: 'الإستقبال والتوديع والتوصيل من المطار للفنادق والجولات السياحية' },
+  { icon: 'guide_arabic', emoji: '🗣️', text_en: 'Private Driver', text_ar: 'جولات يومية مع سائق خاص يتحدث العربية', text_ar_detail: 'سيارة خاصة مريحة مع سائق خاص طوال الرحلة مع برنامج يومي منظم مناسب لكم.' },
+  { icon: 'sim_card', emoji: '📱', text_en: 'SIM Card', text_ar: 'شرائح إنترنت' },
+  { icon: 'meal_lunch', emoji: '🥗', text_en: 'Lunch', text_ar: 'وجبة الغداء' },
+  { icon: 'meal_dinner', emoji: '🍽️', text_en: 'Dinner', text_ar: 'وجبة العشاء' },
+  { icon: 'meals_all', emoji: '🍽️', text_en: 'All Meals', text_ar: 'جميع الوجبات' },
+  { icon: 'visa', emoji: '📋', text_en: 'Visa Assistance', text_ar: 'مساعدة في التأشيرة' },
+  { icon: 'insurance', emoji: '🛡️', text_en: 'Travel Insurance', text_ar: 'تأمين سفر' },
+  { icon: 'photo_session', emoji: '📸', text_en: 'Photo Session', text_ar: 'جلسة تصوير' },
+  { icon: 'water_activities', emoji: '🤿', text_en: 'Water Activities', text_ar: 'أنشطة مائية' },
+  { icon: 'spa', emoji: '💆', text_en: 'Spa Treatment', text_ar: 'جلسة سبا' },
 ];
 
 /* ============================================================
@@ -471,7 +468,49 @@ const Toast = {
 };
 
 /* ============================================================
-   6. MODAL
+   6. DASH IMAGE LIGHTBOX
+   ============================================================ */
+const DashLightbox = (() => {
+  let box, img;
+
+  const _onKey = (e) => { if (e.key === 'Escape') close(); };
+
+  const open = (src, alt) => {
+    if (!box) return;
+    img.src = src;
+    img.alt = alt ?? '';
+    box.style.display = 'flex';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => box.classList.add('is-open'));
+    });
+    document.addEventListener('keydown', _onKey);
+    document.body.style.overflow = 'hidden';
+  };
+
+  const close = () => {
+    if (!box) return;
+    box.classList.remove('is-open');
+    box.addEventListener('transitionend', () => {
+      if (!box.classList.contains('is-open')) box.style.display = 'none';
+    }, { once: true });
+    document.removeEventListener('keydown', _onKey);
+    document.body.style.overflow = '';
+  };
+
+  const init = () => {
+    box = document.getElementById('dashImgLightbox');
+    img = document.getElementById('dashLightboxImg');
+    if (!box) return;
+    box.style.display = 'none';
+    document.getElementById('dashLightboxClose')?.addEventListener('click', close);
+    box.addEventListener('click', (e) => { if (e.target === box) close(); });
+  };
+
+  return { init, open, close };
+})();
+
+/* ============================================================
+   7. MODAL
    ============================================================ */
 const Modal = {
   _resolve: null,
@@ -605,10 +644,10 @@ function bindPriceInput(id) {
   if (!el) return;
   if (el.value) el.value = fmtInputNumber(el.value);
   el.addEventListener('input', () => {
-    const start  = el.selectionStart;
+    const start = el.selectionStart;
     const before = el.value.slice(0, start).replace(/,/g, '').length;
-    const raw    = el.value.replace(/[^0-9.]/g, '');
-    el.value     = fmtInputNumber(raw);
+    const raw = el.value.replace(/[^0-9.]/g, '');
+    el.value = fmtInputNumber(raw);
     // Restore cursor: count forward 'before' non-comma characters
     let count = 0, pos = 0;
     for (; pos < el.value.length && count < before; pos++) {
@@ -938,7 +977,7 @@ const InclusionsBuilder = {
     // Quick-pick items first (in QUICK_INCLUSIONS definition order)
     QUICK_INCLUSIONS.forEach(qp => {
       if (!this.quickChecked.has(qp.icon)) return;
-      rows.push({ package_id: packageId, type: 'included', icon: qp.icon, text_ar: qp.text_ar, text_en: qp.text_en, display_order: order++ });
+      rows.push({ package_id: packageId, type: 'included', icon: qp.icon, text_ar: qp.text_ar_detail ?? qp.text_ar, text_en: qp.text_en, display_order: order++ });
     });
     // Then custom items
     this.custom.forEach(item => {
@@ -1114,6 +1153,10 @@ const PackageList = {
         this.style.display = 'none';
         if (this.nextElementSibling) this.nextElementSibling.style.display = 'flex';
       }, { once: true });
+      img.addEventListener('click', function () {
+        if (this.style.display === 'none') return; // placeholder visible — no image to show
+        DashLightbox.open(this.src, this.alt);
+      });
     });
   },
 
@@ -1442,7 +1485,7 @@ const PackageForm = {
 
   _renderPanelPricing() {
     const pkg = this.pkg;
-    const fv  = (n) => (n != null && n !== '') ? fmtInputNumber(n) : '';
+    const fv = (n) => (n != null && n !== '') ? fmtInputNumber(n) : '';
 
     // IDR / USD blocks auto-expand when the package already has prices set
     const idrOpen = pkg?.price_value_idr != null;
@@ -1474,6 +1517,7 @@ const PackageForm = {
           <div class="price-block__header price-block__header--static">
             <span class="price-block__flag">🇸🇦</span>
             <span class="price-block__name">SAR — Saudi Riyal <span style="color:var(--error)">*</span></span>
+            <span id="sarDiscountBadge" class="badge badge--discount" style="display:none;margin-right:auto;margin-left:var(--sp-3)"></span>
           </div>
           <div class="price-block__body">
             <div class="field-row">
@@ -1553,8 +1597,8 @@ const PackageForm = {
   _bindPriceBlockToggles() {
     document.querySelectorAll('[data-toggle]').forEach(btn => {
       btn.addEventListener('click', () => {
-        const block    = document.getElementById(btn.dataset.toggle);
-        const status   = block?.querySelector('.price-block__status');
+        const block = document.getElementById(btn.dataset.toggle);
+        const status = block?.querySelector('.price-block__status');
         const currency = btn.dataset.toggle === 'priceBlockIDR' ? 'IDR' : 'USD';
         if (!block) return;
 
@@ -1588,7 +1632,7 @@ const PackageForm = {
     document.querySelectorAll('.form-tab-panel').forEach(panel => {
       panel.classList.toggle('is-active', panel.dataset.panel === tabId);
     });
-    if (tabId === 'media')   ImageManager.render();
+    if (tabId === 'media') ImageManager.render();
     if (tabId === 'includes') InclusionsBuilder.render();
     if (tabId === 'pricing') {
       ['priceValueSAR', 'priceValueIDR', 'priceValueUSD', 'originalPriceValue']
@@ -1726,6 +1770,24 @@ const PackageForm = {
     ['priceValueSAR', 'originalPriceValue', 'priceValueIDR', 'originalPriceValueIDR', 'priceValueUSD', 'originalPriceValueUSD']
       .forEach(id => bindPriceInput(id));
     this._bindPriceBlockToggles();
+
+    // SAR discount badge — auto-calculate when price or original price changes
+    const _updateSarBadge = () => {
+      const badge = document.getElementById('sarDiscountBadge');
+      if (!badge) return;
+      const price = parsePriceInput('priceValueSAR');
+      const orig = parsePriceInput('originalPriceValue');
+      if (price && orig && orig > price) {
+        const pct = Math.round((1 - price / orig) * 100);
+        badge.textContent = `-${pct}%`;
+        badge.style.display = '';
+      } else {
+        badge.style.display = 'none';
+      }
+    };
+    document.getElementById('priceValueSAR')?.addEventListener('input', _updateSarBadge);
+    document.getElementById('originalPriceValue')?.addEventListener('input', _updateSarBadge);
+    _updateSarBadge();
   },
 
   validate() {
@@ -1740,12 +1802,12 @@ const PackageForm = {
     const checkedDests = document.querySelectorAll('#destSelector input[name="dest_check"]:checked');
     if (!checkedDests.length) errors.push({ tab: 'basic', msg: 'Select at least one destination.' });
 
-    const price    = parsePriceInput('priceValueSAR');
-    const orig     = parsePriceInput('originalPriceValue');
+    const price = parsePriceInput('priceValueSAR');
+    const orig = parsePriceInput('originalPriceValue');
     const priceIDR = parsePriceInput('priceValueIDR');
-    const origIDR  = parsePriceInput('originalPriceValueIDR');
+    const origIDR = parsePriceInput('originalPriceValueIDR');
     const priceUSD = parsePriceInput('priceValueUSD');
-    const origUSD  = parsePriceInput('originalPriceValueUSD');
+    const origUSD = parsePriceInput('originalPriceValueUSD');
 
     if (!price) errors.push({ tab: 'pricing', msg: 'SAR price is required.' });
     if (price && orig && orig <= price)
@@ -1826,7 +1888,7 @@ const PackageForm = {
       await ImageManager.deleteRemoved();
 
       const titleEn = v('titleEn');
-      const titleAr  = v('titleAr');
+      const titleAr = v('titleAr');
       const shortDescEn = v('shortDescEn');
       const shortDescAr = v('shortDescAr');
 
@@ -1843,11 +1905,11 @@ const PackageForm = {
         duration_days: parseInt(v('durationDays'), 10),
         category: v('category'),
         price_type: v('priceType') || 'starting_from',
-        price_value:              parsePriceInput('priceValueSAR') ?? 0,
-        original_price_value:     parsePriceInput('originalPriceValue'),
-        price_value_idr:          parsePriceInput('priceValueIDR'),
+        price_value: parsePriceInput('priceValueSAR') ?? 0,
+        original_price_value: parsePriceInput('originalPriceValue'),
+        price_value_idr: parsePriceInput('priceValueIDR'),
         original_price_value_idr: parsePriceInput('originalPriceValueIDR'),
-        price_value_usd:          parsePriceInput('priceValueUSD'),
+        price_value_usd: parsePriceInput('priceValueUSD'),
         original_price_value_usd: parsePriceInput('originalPriceValueUSD'),
         currency: 'SAR',
         is_active: document.getElementById('isActive')?.checked ?? true,
@@ -2239,13 +2301,13 @@ const TestimonialForm = {
                 <div style="display:flex;gap:var(--sp-2)">
                   <select class="form-select" id="testiTripMonth">
                     <option value="">— Month —</option>
-                    ${['January','February','March','April','May','June','July','August','September','October','November','December']
-                      .map((m, i) => `<option value="${i + 1}" ${t?.trip_month === i + 1 ? 'selected' : ''}>${m}</option>`).join('')}
+                    ${['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+        .map((m, i) => `<option value="${i + 1}" ${t?.trip_month === i + 1 ? 'selected' : ''}>${m}</option>`).join('')}
                   </select>
                   <select class="form-select" id="testiTripYear">
                     <option value="">— Year —</option>
                     ${Array.from({ length: NOW_YEAR - 2015 + 1 }, (_, i) => NOW_YEAR - i)
-                      .map(y => `<option value="${y}" ${t?.trip_year === y ? 'selected' : ''}>${y}</option>`).join('')}
+        .map(y => `<option value="${y}" ${t?.trip_year === y ? 'selected' : ''}>${y}</option>`).join('')}
                   </select>
                 </div>
                 <p class="form-note">Select the month and year of the trip.</p>
@@ -2412,7 +2474,7 @@ const TestimonialForm = {
     const v = (id) => document.getElementById(id)?.value?.trim() ?? '';
     const hasReply = document.getElementById('testiHasReply')?.checked ?? false;
 
-    const trip_year  = v('testiTripYear')  ? parseInt(v('testiTripYear'),  10) : null;
+    const trip_year = v('testiTripYear') ? parseInt(v('testiTripYear'), 10) : null;
     const trip_month = v('testiTripMonth') ? parseInt(v('testiTripMonth'), 10) : null;
 
     const data = {
@@ -2623,6 +2685,7 @@ const App = {
     document.getElementById('dashboard').hidden = false;
 
     Modal.init();
+    DashLightbox.init();
     Sidebar.init();
     PackageList.bindControls();
     TestimonialsList.bindControls();

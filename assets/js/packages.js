@@ -53,7 +53,7 @@ const T = {
     'price.exact': '', 'price.starting_from': 'يبدأ من', 'price.approximate': 'يقارب',
     'currency.SAR': 'ريال', 'currency.IDR': 'روبية', 'currency.USD': 'دولار', 'currency.EUR': 'يورو',
     'wa.general':  'مرحباً، أود الاستفسار عن باقاتكم السياحية إلى إندونيسيا',
-    'wa.package':  'مرحباً، أود الاستفسار عن باقة "{title}" إلى {destination}',
+    'wa.package':  'مرحباً، حاب استفسر عن باقة "{title}"',
 
     /* Page-specific */
     'pkgs.eyebrow':     'اكتشف وجهتك',
@@ -97,7 +97,7 @@ const T = {
     'price.exact': '', 'price.starting_from': 'From', 'price.approximate': 'Approx.',
     'currency.SAR': 'SAR', 'currency.IDR': 'IDR', 'currency.USD': 'USD', 'currency.EUR': 'EUR',
     'wa.general':  'Hello, I\'d like to inquire about your Indonesia travel packages',
-    'wa.package':  'Hello, I\'m interested in the "{title}" package to {destination}',
+    'wa.package':  'Hello, I\'m interested in the "{title}" package',
 
     /* Page-specific */
     'pkgs.eyebrow':     'Explore & Discover',
@@ -487,11 +487,15 @@ const PackageList = {
       ? `<span class="pkg-card__price-original">${priceInfo.originalValue}</span>`
       : '';
 
+    const discountPct = (pkg.price_value && pkg.original_price_value && pkg.original_price_value > pkg.price_value)
+      ? Math.round((1 - pkg.price_value / pkg.original_price_value) * 100) : 0;
+    const discountBadge = discountPct > 0 ? `<span class="badge badge--discount">-${discountPct}%</span>` : '';
+
     return `
       <article class="pkg-card reveal" data-pkg-id="${pkg.id}">
         <a href="بكج-سياحي-اندونيسيا.html?slug=${pkg.slug_en}" class="pkg-card__img" aria-label="${title}">
           <img data-src="${imgSrc}" src="${Config.PLACEHOLDER_IMG}" alt="${title} — ${destName}" width="400" height="300" loading="lazy">
-          <div class="pkg-card__badge"><span class="badge badge--${cat}">${I18n.t('category.' + cat)}</span></div>
+          <div class="pkg-card__badge"><span class="badge badge--${cat}">${I18n.t('category.' + cat)}</span>${discountBadge}</div>
         </a>
         <div class="pkg-card__body">
           <p class="pkg-card__destination">${destName}</p>

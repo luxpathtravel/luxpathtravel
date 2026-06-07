@@ -84,7 +84,7 @@ const T = {
     'pkg.meal.dinner':    'عشاء',
     'pkg.imgCounter': '{current} / {total}',
     'wa.general': 'مرحباً، أود الاستفسار عن باقاتكم السياحية إلى إندونيسيا',
-    'wa.package': 'مرحباً، أود الاستفسار عن باقة "{title}" إلى {destination}',
+    'wa.package': 'مرحباً، حاب استفسر عن باقة "{title}"',
     'breadcrumb.home': 'الرئيسية',
     'breadcrumb.packages': 'الباقات',
     'pkg.heroLabel': 'الباقات السياحية',
@@ -132,7 +132,7 @@ const T = {
     'pkg.meal.dinner':    'Dinner',
     'pkg.imgCounter': '{current} of {total}',
     'wa.general': 'Hello, I\'d like to inquire about your Indonesia travel packages',
-    'wa.package': 'Hello, I\'m interested in the "{title}" package to {destination}',
+    'wa.package': 'Hello, I\'m interested in the "{title}" package',
     'breadcrumb.home': 'Home',
     'breadcrumb.packages': 'Packages',
     'pkg.heroLabel': 'Tour Packages',
@@ -994,6 +994,10 @@ const PriceCard = {
     const origHTML = priceInfo.originalValue
       ? `<span class="price-card__original">${priceInfo.originalValue}</span>` : '';
 
+    const discountPct = (pkg.price_value && pkg.original_price_value && pkg.original_price_value > pkg.price_value)
+      ? Math.round((1 - pkg.price_value / pkg.original_price_value) * 100) : 0;
+    const discountBadge = discountPct > 0 ? `<span class="badge badge--discount" style="align-self:center">-${discountPct}%</span>` : '';
+
     card.innerHTML = `
       <span class="price-card__label">${I18n.t('pkg.bookTitle')}</span>
 
@@ -1002,6 +1006,7 @@ const PriceCard = {
         <span class="price-card__value">${priceInfo.value}</span>
         <span class="price-card__currency">${priceInfo.label}</span>
         ${origHTML}
+        ${discountBadge}
       </div>
 
       <div class="price-card__meta">

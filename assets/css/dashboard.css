@@ -1169,6 +1169,12 @@ h4 {
   object-fit: cover;
   background: var(--bg);
   flex-shrink: 0;
+  cursor: zoom-in;
+  transition: opacity 0.15s ease;
+}
+
+.pkg-row__thumb:hover {
+  opacity: 0.88;
 }
 
 .pkg-row__thumb-placeholder {
@@ -2529,24 +2535,29 @@ h4 {
     top: calc(var(--topbar-h) + 83px);
   }
 
-  /* Package rows */
+  /* Package rows — card layout on mobile */
   .pkg-row {
-    grid-template-columns: 56px 1fr auto;
-    grid-template-rows: auto auto;
-    row-gap: var(--sp-2);
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto auto;
+    gap: 0;
+    padding: 0;
+    overflow: hidden;
   }
 
   .pkg-row__thumb,
   .pkg-row__thumb-placeholder {
-    width: 56px;
-    height: 42px;
-    grid-row: 1 / 3;
-    align-self: start;
+    width: 100%;
+    height: 160px;
+    grid-column: 1 / 3;
+    grid-row: 1;
+    border-radius: 0;
+    cursor: zoom-in;
   }
 
   .pkg-row__info {
-    grid-column: 2;
-    grid-row: 1;
+    grid-column: 1;
+    grid-row: 2;
+    padding: var(--sp-3) var(--sp-3) var(--sp-2);
   }
 
   .pkg-row__price {
@@ -2554,20 +2565,23 @@ h4 {
   }
 
   .pkg-row__status {
-    grid-column: 2;
-    grid-row: 2;
+    grid-column: 1 / 3;
+    grid-row: 3;
     display: flex;
     flex-wrap: wrap;
     gap: var(--sp-2);
     align-items: center;
+    padding: var(--sp-2) var(--sp-3) var(--sp-3);
+    border-top: 1px solid var(--border);
   }
 
   .pkg-row__actions {
-    grid-column: 3;
-    grid-row: 1;
+    grid-column: 2;
+    grid-row: 2;
     align-self: start;
     flex-direction: column;
     gap: var(--sp-1);
+    padding: var(--sp-3) var(--sp-3) var(--sp-2) var(--sp-2);
   }
 
   /* Stats + controls */
@@ -2724,10 +2738,10 @@ h4 {
     padding: var(--sp-4);
   }
 
-  /* Package list rows: tighten */
-  .pkg-row {
-    padding: var(--sp-3);
-    gap: var(--sp-2);
+  /* Package list rows: already card-layout from ≤767px; taller image on tiny screens */
+  .pkg-row__thumb,
+  .pkg-row__thumb-placeholder {
+    height: 190px;
   }
 
   .pkg-row__title {
@@ -3163,5 +3177,79 @@ h4 {
   .hero-img-shell__header .btn {
     width: 100%;
     justify-content: center;
+  }
+}
+
+/* ============================================================
+   DASHBOARD IMAGE LIGHTBOX
+   Opens when clicking a pkg-row thumbnail
+   ============================================================ */
+.dash-lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+  cursor: zoom-out;
+}
+
+.dash-lightbox.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.dash-lightbox__img {
+  max-width: min(88vw, 820px);
+  max-height: 82vh;
+  object-fit: contain;
+  border-radius: var(--r-lg);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
+  cursor: default;
+  transform: scale(0.92);
+  transition: transform 0.22s ease;
+  user-select: none;
+}
+
+.dash-lightbox.is-open .dash-lightbox__img {
+  transform: scale(1);
+}
+
+.dash-lightbox__close {
+  position: absolute;
+  top: var(--sp-5);
+  right: var(--sp-5);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, transform 0.15s ease;
+  flex-shrink: 0;
+}
+
+.dash-lightbox__close:hover {
+  background: rgba(255, 255, 255, 0.26);
+  transform: scale(1.08);
+}
+
+@media (max-width: 480px) {
+  .dash-lightbox__img {
+    max-width: 96vw;
+    border-radius: var(--r-md);
+  }
+
+  .dash-lightbox__close {
+    top: var(--sp-3);
+    right: var(--sp-3);
   }
 }

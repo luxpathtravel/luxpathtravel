@@ -240,7 +240,7 @@ html[dir="rtl"] .breadcrumbs__item::after { content: '\\'; }
 .gallery-mobile__track {
   position: relative;
   overflow: hidden;
-  aspect-ratio: 4/3;
+  aspect-ratio: 1/1;
 }
 
 .gallery-mobile__slide {

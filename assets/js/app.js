@@ -188,7 +188,7 @@ const T = {
 
     // WhatsApp pre-fill messages
     'wa.general': 'مرحباً، أود الاستفسار عن باقاتكم السياحية إلى إندونيسيا',
-    'wa.package': 'مرحباً، أود الاستفسار عن باقة "{title}" إلى {destination}',
+    'wa.package': 'مرحباً، حاب استفسر عن باقة "{title}"',
     'wa.dest': 'مرحباً، أود الاستفسار عن رحلات {destination}',
   },
 
@@ -287,7 +287,7 @@ const T = {
     'footer.copyright': `© ${new Date().getFullYear()} Luxpath Travel. All rights reserved.`,
     'footer.privacy': 'Privacy Policy',
     'wa.general': 'Hello, I\'d like to inquire about your Indonesia travel packages',
-    'wa.package': 'Hello, I\'m interested in the "{title}" package to {destination}',
+    'wa.package': 'Hello, I\'m interested in the "{title}" package',
     'wa.dest': 'Hello, I\'d like to inquire about trips to {destination}',
   },
 };
@@ -880,6 +880,10 @@ const Packages = {
       ? `<span class="pkg-card__price-original">${priceInfo.originalValue}</span>`
       : '';
 
+    const discountPct = (pkg.price_value && pkg.original_price_value && pkg.original_price_value > pkg.price_value)
+      ? Math.round((1 - pkg.price_value / pkg.original_price_value) * 100) : 0;
+    const discountBadge = discountPct > 0 ? `<span class="badge badge--discount">-${discountPct}%</span>` : '';
+
     return `
       <article class="pkg-card" data-package-id="${pkg.id}" role="listitem">
         <a href="${detailUrl}" class="pkg-card__img" aria-label="${title}">
@@ -891,6 +895,7 @@ const Packages = {
             loading="lazy">
           <div class="pkg-card__badge">
             <span class="badge badge--${cat}">${catLabel}</span>
+            ${discountBadge}
           </div>
         </a>
         <div class="pkg-card__body">
@@ -1665,7 +1670,7 @@ const Testimonials = {
       </div>` : '';
 
     return `
-      <div class="testimonial-card reveal" role="listitem">
+      <div class="testimonial-card" role="listitem">
         <div class="testimonial-header">
           <div class="testimonial-avatar" aria-hidden="true">${escHtml(initial)}</div>
           <div class="testimonial-header__info">
