@@ -53,7 +53,7 @@ const T = {
     'price.exact': '', 'price.starting_from': 'يبدأ من', 'price.approximate': 'يقارب',
     'currency.SAR': 'ريال', 'currency.IDR': 'روبية', 'currency.USD': 'دولار', 'currency.EUR': 'يورو',
     'wa.general':  'مرحباً، أود الاستفسار عن باقاتكم السياحية إلى إندونيسيا',
-    'wa.package':  'مرحباً، حاب استفسر عن باقة "{title}"',
+    'wa.package':  'مرحباً، حاب استفسر عن باقة {title}',
 
     /* Page-specific */
     'pkgs.eyebrow':     'اكتشف وجهتك',
@@ -97,7 +97,7 @@ const T = {
     'price.exact': '', 'price.starting_from': 'From', 'price.approximate': 'Approx.',
     'currency.SAR': 'SAR', 'currency.IDR': 'IDR', 'currency.USD': 'USD', 'currency.EUR': 'EUR',
     'wa.general':  'Hello, I\'d like to inquire about your Indonesia travel packages',
-    'wa.package':  'Hello, I\'m interested in the "{title}" package',
+    'wa.package':  'Hello, I\'m interested in the {title} package',
 
     /* Page-specific */
     'pkgs.eyebrow':     'Explore & Discover',

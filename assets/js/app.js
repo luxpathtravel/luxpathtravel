@@ -188,7 +188,7 @@ const T = {
 
     // WhatsApp pre-fill messages
     'wa.general': 'مرحباً، أود الاستفسار عن باقاتكم السياحية إلى إندونيسيا',
-    'wa.package': 'مرحباً، حاب استفسر عن باقة "{title}"',
+    'wa.package': 'مرحباً، حاب استفسر عن باقة {title}',
     'wa.dest': 'مرحباً، أود الاستفسار عن رحلات {destination}',
   },
 
@@ -287,7 +287,7 @@ const T = {
     'footer.copyright': `© ${new Date().getFullYear()} Luxpath Travel. All rights reserved.`,
     'footer.privacy': 'Privacy Policy',
     'wa.general': 'Hello, I\'d like to inquire about your Indonesia travel packages',
-    'wa.package': 'Hello, I\'m interested in the "{title}" package',
+    'wa.package': 'Hello, I\'m interested in the {title} package',
     'wa.dest': 'Hello, I\'d like to inquire about trips to {destination}',
   },
 };
