@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Admin pages — noindex already set in HTML, also disallow crawling here
+Disallow: /dashboard.html
+Disallow: /login.html
+
+# Sitemap
+Sitemap: https://luxpathtravel.com/sitemap.xml

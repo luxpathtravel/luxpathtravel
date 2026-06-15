@@ -1,0 +1,25 @@
+{
+  "name": "لوكس باث للسياحة",
+  "short_name": "لوكس باث",
+  "description": "بكجات سياحية فاخرة إلى إندونيسيا من المملكة العربية السعودية",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A2540",
+  "theme_color": "#0A2540",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "/web-app-manifest-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
