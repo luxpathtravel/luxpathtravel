@@ -2563,24 +2563,26 @@ const HeroImages = {
 
         <div class="hero-img-grid" id="heroImgGrid">
           ${HERO_IMAGES.map(img => {
-      const isActive = this._active.includes(img.file);
+      const isPinned = img.file === 'image-1.webp';
+      const isActive = isPinned || this._active.includes(img.file);
       return `
-              <div class="hero-img-card ${isActive ? 'is-active' : ''}" data-file="${escHtml(img.file)}">
+              <div class="hero-img-card ${isActive ? 'is-active' : ''}${isPinned ? ' hero-img-card--pinned' : ''}" data-file="${escHtml(img.file)}">
                 <div class="hero-img-card__thumb-wrap">
                   <img class="hero-img-card__thumb"
                        src="hero-images/${escHtml(img.file)}"
                        alt="${escHtml(img.label)}"
                        loading="lazy">
                   <div class="hero-img-card__badge ${isActive ? 'hero-img-card__badge--on' : 'hero-img-card__badge--off'}">
-                    ${isActive ? 'Active' : 'Inactive'}
+                    ${isPinned ? 'Always First' : isActive ? 'Active' : 'Inactive'}
                   </div>
                 </div>
                 <div class="hero-img-card__body">
-                  <span class="hero-img-card__label">${escHtml(img.label)}</span>
-                  <label class="toggle-switch" title="Toggle image">
+                  <span class="hero-img-card__label">${escHtml(img.label)}${isPinned ? ' <span class="hero-img-card__pin-tag">&#128204; First</span>' : ''}</span>
+                  <label class="toggle-switch${isPinned ? ' toggle-switch--pinned' : ''}" title="${isPinned ? 'This image always appears first and cannot be deactivated' : 'Toggle image'}">
                     <input type="checkbox" class="hero-img-toggle"
                            data-file="${escHtml(img.file)}"
-                           ${isActive ? 'checked' : ''}>
+                           ${isActive ? 'checked' : ''}
+                           ${isPinned ? 'disabled' : ''}>
                     <span class="toggle-switch__track"></span>
                   </label>
                 </div>
@@ -2615,10 +2617,11 @@ const HeroImages = {
     saveBtn.classList.add('btn--loading');
     saveBtn.disabled = true;
 
-    // Collect enabled files in HERO_IMAGES order
+    // Collect enabled files in HERO_IMAGES order; image-1.webp is always included
     const activeFiles = HERO_IMAGES
       .map(h => h.file)
       .filter(file => {
+        if (file === 'image-1.webp') return true;
         const chk = document.querySelector(`.hero-img-toggle[data-file="${CSS.escape(file)}"]`);
         return chk?.checked ?? false;
       });

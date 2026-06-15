@@ -77,7 +77,7 @@ const T = {
     'nav.whatsapp': 'واتساب',
 
     // Hero
-    'hero.badge': 'وجهة أكثر من 2,000 عائلة وعرسان سعوديين',
+    'hero.badge': 'وجهة أكثر من 643+ عائلة وعرسان سعوديين',
     'hero.title': 'اكتشف سحر إندونيسيا',
     'hero.subtitle': 'رحلات فاخرة مصممة لك من المملكة العربية السعودية',
     'hero.cta.whatsapp': 'احجز عبر واتساب الآن',
@@ -200,7 +200,7 @@ const T = {
     'nav.about': 'About Us',
     'nav.contact': 'Contact',
     'nav.whatsapp': 'WhatsApp',
-    'hero.badge': 'Trusted by 2,000+ Saudi families & couples',
+    'hero.badge': 'Trusted by 643+ Saudi families & couples',
     'hero.title': 'Discover the Magic of Indonesia',
     'hero.subtitle': 'Luxury travel packages crafted for Saudi travelers',
     'hero.cta.whatsapp': 'Book Now via WhatsApp',

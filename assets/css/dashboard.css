@@ -3162,6 +3162,30 @@ h4 {
   font-size: var(--text-sm);
   font-weight: 600;
   color: var(--navy);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.hero-img-card__pin-tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  color: var(--gold);
+  background: rgba(201, 168, 76, 0.12);
+  border: 1px solid rgba(201, 168, 76, 0.35);
+  border-radius: var(--r-sm);
+  padding: 1px 5px;
+  white-space: nowrap;
+}
+
+.toggle-switch--pinned {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.toggle-switch--pinned input:checked + .toggle-switch__track {
+  background: var(--success);
 }
 
 @media (max-width: 767px) {
