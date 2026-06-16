@@ -27,10 +27,9 @@
 const Config = Object.freeze({
   SUPABASE_URL: 'https://fgeeysssiesdlryoygoa.supabase.co',
   SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZnZWV5c3NzaWVzZGxyeW95Z29hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MTI0MzUsImV4cCI6MjA5NTk4ODQzNX0.Sa3vcq9U2BrzFobTqQS4sAmVpXkRH09_PGzol9-NCvw',
-  // Service role key — used ONLY on localhost to bypass RLS during development.
-  // Get it from: Supabase Dashboard → Project Settings → API → service_role (secret).
-  // ⚠️  Never deploy this to a public server. On production the anon key + RLS is used.
-  SUPABASE_SERVICE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZnZWV5c3NzaWVzZGxyeW95Z29hIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDQxMjQzNSwiZXhwIjoyMDk1OTg4NDM1fQ.3M6qJ2nLr9f1UFHIhKK3QMILN2InPma3O4Zc11dpj7c',   // ← paste your service_role key here for local dev
+  // ⚠️  SECURITY: The service_role key must NEVER appear in client-side code.
+  // It bypasses all RLS and grants full database access to anyone who reads it.
+  // The dashboard uses the anon key + Supabase Auth for all operations.
   get STORAGE_URL() { return this.SUPABASE_URL + '/storage/v1/object/public/luxpath-media/'; },
   STORAGE_BUCKET: 'luxpath-media',
   WHATSAPP_NUMBER: '+6281111826527',
@@ -105,11 +104,7 @@ const DB = (() => {
   const client = () => {
     if (!isConfigured()) return null;
     if (!_client) {
-      const isLocal = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
-      const key = (isLocal && Config.SUPABASE_SERVICE_KEY)
-        ? Config.SUPABASE_SERVICE_KEY
-        : Config.SUPABASE_ANON_KEY;
-      _client = supabase.createClient(Config.SUPABASE_URL, key);
+      _client = supabase.createClient(Config.SUPABASE_URL, Config.SUPABASE_ANON_KEY);
     }
     return _client;
   };
