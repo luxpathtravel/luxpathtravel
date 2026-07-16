@@ -59,22 +59,24 @@ COMMENT ON COLUMN user_roles.role     IS 'admin: full content management. super_
 
 -- Security-definer function: runs as the table owner, bypassing caller RLS.
 -- Used in all RLS policies to check admin status without direct table access.
-CREATE OR REPLACE FUNCTION is_admin()
+CREATE OR REPLACE FUNCTION public.is_admin()
 RETURNS boolean
-LANGUAGE sql
+LANGUAGE plpgsql
 STABLE
 SECURITY DEFINER
 SET search_path = public
 AS $$
-    SELECT EXISTS (
+BEGIN
+    RETURN EXISTS (
         SELECT 1
-        FROM   user_roles
+        FROM   public.user_roles
         WHERE  user_id = auth.uid()
         AND    role    IN ('admin', 'super_admin')
     );
+END;
 $$;
 
-COMMENT ON FUNCTION is_admin() IS 'Returns true if the currently authenticated user has admin or super_admin role.';
+COMMENT ON FUNCTION public.is_admin() IS 'Returns true if the currently authenticated user has admin or super_admin role.';
 
 
 -- =============================================================================

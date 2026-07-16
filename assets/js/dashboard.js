@@ -82,6 +82,7 @@ const QUICK_INCLUSIONS = [
   { icon: 'transfer', emoji: '🚌', text_en: 'Airport Transfers', text_ar: 'استقبال وتوديع من المطار', text_ar_detail: 'الإستقبال والتوديع والتوصيل من المطار للفنادق والجولات السياحية' },
   { icon: 'guide_arabic', emoji: '🗣️', text_en: 'Private Driver', text_ar: 'جولات يومية مع سائق خاص يتحدث العربية', text_ar_detail: 'سيارة خاصة مريحة مع سائق خاص طوال الرحلة مع برنامج يومي منظم مناسب لكم.' },
   { icon: 'sim_card', emoji: '📱', text_en: 'SIM Card', text_ar: 'شرائح إنترنت' },
+  { icon: 'flowers_arrival', emoji: '💐', text_en: 'Flowers on Arrival', text_ar: 'استقبال ورد' },
   { icon: 'meal_lunch', emoji: '🥗', text_en: 'Lunch', text_ar: 'وجبة الغداء' },
   { icon: 'meal_dinner', emoji: '🍽️', text_en: 'Dinner', text_ar: 'وجبة العشاء' },
   { icon: 'meals_all', emoji: '🍽️', text_en: 'All Meals', text_ar: 'جميع الوجبات' },
