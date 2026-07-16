@@ -290,9 +290,10 @@ CREATE TABLE IF NOT EXISTS package_inclusions (
                                     'guide_local',
                                     'tour',
                                     'visa',
-                                    'insurance',
-                                    'sim_card',
-                                    'photo_session',
+                                     'insurance',
+                                     'sim_card',
+                                     'flowers_arrival',
+                                     'photo_session',
                                     'water_activities',
                                     'spa',
                                     'custom'          -- fallback for anything else
