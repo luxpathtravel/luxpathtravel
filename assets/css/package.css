@@ -327,9 +327,15 @@ html[dir="rtl"] .breadcrumbs__item::after { content: '\\'; }
   padding-block: var(--sp-8);
   background: var(--color-bg);
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--sp-6);
   align-items: start;
+}
+
+/* Allow package content and the related-packages carousel to shrink on small screens. */
+.pkg-main,
+.pkg-sidebar {
+  min-width: 0;
 }
 
 
@@ -1025,7 +1031,7 @@ html[dir="ltr"] .itinerary-body__content {
 
   /* Two-column layout: content + sidebar */
   .pkg-layout {
-    grid-template-columns: 1fr 360px;
+    grid-template-columns: minmax(0, 1fr) 360px;
     gap: var(--sp-10);
   }
 
@@ -1048,5 +1054,5 @@ html[dir="ltr"] .itinerary-body__content {
 @media (min-width: 1280px) {
   .gallery-grid     { grid-template-rows: 340px 240px; }
   .gallery-skeleton { grid-template-rows: 340px 240px; }
-  .pkg-layout { grid-template-columns: 1fr 400px; }
+  .pkg-layout { grid-template-columns: minmax(0, 1fr) 400px; }
 }
