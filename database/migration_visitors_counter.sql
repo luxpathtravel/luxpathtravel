@@ -34,6 +34,8 @@ insert into public.visitors_counter (id) values (1) on conflict (id) do nothing;
 --  Called by the public website on every page load.
 --  The month is decided SERVER-SIDE so the client cannot spoof it.
 -- ============================================================
+--  Returns full before/after detail so the website can log the whole
+--  operation to the browser console.
 create or replace function public.increment_visitor_counter()
 returns jsonb
 language plpgsql
@@ -41,12 +43,14 @@ security definer
 set search_path = public
 as $$
 declare
+  v_tz      text := 'Asia/Riyadh';
   v_month   text;
   v_current jsonb;
-  v_count   bigint;
+  v_before  bigint;
+  v_after   bigint;
 begin
   -- Month name in the business timezone, e.g. 'july'
-  v_month := lower(to_char(timezone('Asia/Riyadh', now()), 'FMMonth'));
+  v_month := lower(to_char(timezone(v_tz, now()), 'FMMonth'));
 
   insert into public.visitors_counter (id) values (1) on conflict (id) do nothing;
 
@@ -56,21 +60,35 @@ begin
   ) into v_current;
 
   -- Pull the digits out of "Visitors N" and add one
-  v_count := coalesce(
-               nullif(regexp_replace(coalesce(v_current ->> 0, ''), '\D', '', 'g'), ''),
-               '0'
-             )::bigint + 1;
+  v_before := coalesce(
+                nullif(regexp_replace(coalesce(v_current ->> 0, ''), '\D', '', 'g'), ''),
+                '0'
+              )::bigint;
+  v_after  := v_before + 1;
 
   execute format(
     'update public.visitors_counter set %I = $1, updated_at = now() where id = 1', v_month
-  ) using jsonb_build_array('Visitors ' || v_count);
+  ) using jsonb_build_array('Visitors ' || v_after);
 
-  return jsonb_build_object('month', v_month, 'count', v_count);
+  return jsonb_build_object(
+    'ok',            true,
+    'month',         v_month,
+    'month_label',   to_char(timezone(v_tz, now()), 'FMMonth'),
+    'before',        v_before,
+    'added',         1,
+    'after',         v_after,
+    'before_value',  jsonb_build_array('Visitors ' || v_before),
+    'after_value',   jsonb_build_array('Visitors ' || v_after),
+    'table',         'public.visitors_counter',
+    'timezone',      v_tz,
+    'server_time',   to_char(timezone(v_tz, now()), 'YYYY-MM-DD HH24:MI:SS'),
+    'year',          to_char(timezone(v_tz, now()), 'YYYY')
+  );
 end;
 $$;
 
 comment on function public.increment_visitor_counter() is
-  'Adds 1 to the current month column of visitors_counter and returns {month, count}.';
+  'Adds 1 to the current month column of visitors_counter and returns the full before/after detail.';
 
 
 -- ============================================================
