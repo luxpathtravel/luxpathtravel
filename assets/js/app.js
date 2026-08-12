@@ -78,7 +78,7 @@ const T = {
 
     // Hero
     'hero.badge': 'وجهة أكثر من 643+ عائلة وعرسان سعوديين',
-    'hero.title': 'بكجات سياحية إلى بالي وإندونيسيا',
+    'hero.title': 'اكتشف سحر إندونيسيا',
     'hero.subtitle': 'رحلات فاخرة للعرسان والعائلات من الرياض وجدة وجميع مدن المملكة — شهر عسل، بكجات عائلية، وبرامج مصممة لك',
     'hero.cta.whatsapp': 'احجز عبر واتساب الآن',
     'hero.cta.packages': 'تصفح باقاتنا',
@@ -91,7 +91,7 @@ const T = {
 
     // Packages
     'packages.eyebrow': 'الأكثر طلباً',
-    'packages.title': 'أفضل البكجات السياحية إلى بالي وإندونيسيا',
+    'packages.title': 'بكجات سياحية الى اندونيسيا',
     'packages.subtitle': 'اختر من أفضل باقاتنا السياحية إلى إندونيسيا',
     'packages.viewAll': 'عرض جميع الباقات',
     'packages.bookNow': 'احجز الآن',
@@ -201,7 +201,7 @@ const T = {
     'nav.contact': 'Contact',
     'nav.whatsapp': 'WhatsApp',
     'hero.badge': 'Trusted by 643+ Saudi families & couples',
-    'hero.title': 'Bali & Indonesia Tour Packages',
+    'hero.title': 'Discover the Magic of Indonesia',
     'hero.subtitle': 'Luxury honeymoon and family trips to Bali, Jakarta and Lombok — Arabic-speaking guides, all-inclusive pricing',
     'hero.cta.whatsapp': 'Book Now via WhatsApp',
     'hero.cta.packages': 'Browse Our Packages',
@@ -210,7 +210,7 @@ const T = {
     'stats.destinations': 'Destinations',
     'stats.years': 'Years Experience',
     'packages.eyebrow': 'Most Popular',
-    'packages.title': 'Best Bali & Indonesia Tour Packages',
+    'packages.title': 'Indonesia Tour Packages',
     'packages.subtitle': 'Explore our most popular Indonesia travel packages',
     'packages.viewAll': 'View All Packages',
     'packages.bookNow': 'Book Now',

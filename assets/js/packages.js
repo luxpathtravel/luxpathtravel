@@ -57,7 +57,7 @@ const T = {
 
     /* Page-specific */
     'pkgs.eyebrow':     'اكتشف وجهتك',
-    'pkgs.title':       'بكجات سياحية إلى إندونيسيا وبالي',
+    'pkgs.title':       'جميع الباقات السياحية',
     'pkgs.subtitle':    'بكجات شهر عسل، عائلية وفاخرة بأسعار شاملة من الرياض وجدة — اختر باقتك واحجز عبر واتساب',
     'pkgs.breadcrumb':  'الباقات',
     'pkgs.filter.all':  'الكل',
@@ -101,7 +101,7 @@ const T = {
 
     /* Page-specific */
     'pkgs.eyebrow':     'Explore & Discover',
-    'pkgs.title':       'Indonesia & Bali Tour Packages',
+    'pkgs.title':       'All Travel Packages',
     'pkgs.subtitle':    'Honeymoon, family and luxury packages with all-inclusive pricing — browse and book on WhatsApp',
     'pkgs.breadcrumb':  'Packages',
     'pkgs.filter.all':  'All',
