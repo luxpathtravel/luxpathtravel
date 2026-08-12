@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 
 <head>
@@ -11,24 +11,25 @@
     content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net 'sha256-vvt4KWwuNr51XfE5m+hzeNEGhiOfZzG97ccfqGsPwvE='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co; img-src 'self' data: blob: https://*.supabase.co">
 
   <!-- Primary SEO -->
-  <title>لوكس باث للسياحة | بكجات سياحية فاخرة إلى إندونيسيا</title>
+  <title>بكجات سياحية إلى بالي وإندونيسيا من السعودية | لوكس باث</title>
   <meta name="description"
-    content="احجز بكجات سياحية فاخرة إلى إندونيسيا مع لوكس باث — بالي، جاكرتا، لومبوك وباندونغ. باقات شهر العسل والعائلية والفاخرة من المملكة العربية السعودية. تواصل عبر واتساب.">
-  <meta name="keywords"
-    content="بكجات سياحية اندونيسيا, بكج سياحي بالي, بكجات عرسان بالي, سياحة اندونيسيا, رحلات بالي, باقات فاخرة بالي, لوكس باث">
+    content="بكجات سياحية فاخرة إلى بالي وإندونيسيا من الرياض وجدة وجميع مدن المملكة. عروض شهر العسل للعرسان، بكجات عائلية، أسعار شاملة بدون رسوم مخفية، ومرشدون يتحدثون العربية. احجز عبر واتساب.">
 
-  <!-- Canonical & hreflang -->
+  <!-- Canonical & hreflang.
+       No hreflang="en" is declared: English is a client-side toggle on the
+       same URL, not a separate document. Declaring /en/ (which 404s) was
+       feeding Google a dead alternate. Re-add this only when real English
+       URLs exist. -->
   <link rel="canonical" href="https://luxpathtravel.com/">
   <link rel="alternate" hreflang="ar" href="https://luxpathtravel.com/">
-  <link rel="alternate" hreflang="en" href="https://luxpathtravel.com/en/">
   <link rel="alternate" hreflang="x-default" href="https://luxpathtravel.com/">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="لوكس باث للسياحة">
-  <meta property="og:title" content="لوكس باث للسياحة | بكجات سياحية فاخرة إلى إندونيسيا">
+  <meta property="og:title" content="بكجات سياحية إلى بالي وإندونيسيا من السعودية | لوكس باث">
   <meta property="og:description"
-    content="بكجات سياحية فاخرة إلى بالي وإندونيسيا من المملكة العربية السعودية. شهر العسل، العائلات، والرحلات الفاخرة.">
+    content="بكجات شهر عسل وعائلية وفاخرة إلى بالي وإندونيسيا من الرياض وجدة. أسعار شاملة ومرشدون عرب.">
   <meta property="og:image" content="https://luxpathtravel.com/assets/images/og-default.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -38,8 +39,8 @@
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="لوكس باث | بكجات سياحية إلى إندونيسيا">
-  <meta name="twitter:description" content="رحلات فاخرة إلى بالي وإندونيسيا من السعودية">
+  <meta name="twitter:title" content="بكجات سياحية إلى بالي وإندونيسيا من السعودية">
+  <meta name="twitter:description" content="بكجات شهر عسل وعائلية إلى بالي — أسعار شاملة ومرشدون عرب">
   <meta name="twitter:image" content="https://luxpathtravel.com/assets/images/og-default.jpg">
 
   <!-- Favicons -->
@@ -73,11 +74,19 @@
       "name": "لوكس باث للسياحة",
       "alternateName": "Luxpath Travel",
       "url": "https://luxpathtravel.com",
-      "logo": "https://luxpathtravel.com/assets/images/logo.webp",
+      "logo": "https://luxpathtravel.com/luxpath-logo.webp",
       "description": "وكالة سياحية متخصصة في رحلات إندونيسيا الفاخرة من المملكة العربية السعودية",
       "telephone": "+6281111826527",
       "email": "info@luxpathtravel.com",
-      "areaServed": { "@type": "Country", "name": "Saudi Arabia" },
+      "areaServed": [
+        { "@type": "Country", "name": "Saudi Arabia" },
+        { "@type": "City", "name": "الرياض", "alternateName": "Riyadh" },
+        { "@type": "City", "name": "جدة", "alternateName": "Jeddah" },
+        { "@type": "City", "name": "الدمام", "alternateName": "Dammam" },
+        { "@type": "Country", "name": "Kuwait" },
+        { "@type": "Country", "name": "United Arab Emirates" }
+      ],
+      "knowsLanguage": ["ar", "en", "id"],
       "sameAs": [
         "https://instagram.com/luxpathtravel",
         "https://www.tiktok.com/@luxpathtravel"
@@ -231,11 +240,10 @@
           </div>
 
           <!-- H1 -->
-          <h1 class="hero__title reveal" data-i18n="hero.title">اكتشف سحر إندونيسيا</h1>
+          <h1 class="hero__title reveal" data-i18n="hero.title">بكجات سياحية إلى بالي وإندونيسيا</h1>
 
           <!-- Subtitle -->
-          <p class="hero__subtitle reveal" data-i18n="hero.subtitle">رحلات فاخرة مصممة لك من المملكة العربية السعودية
-          </p>
+          <p class="hero__subtitle reveal" data-i18n="hero.subtitle">رحلات فاخرة للعرسان والعائلات من الرياض وجدة وجميع مدن المملكة — شهر عسل، بكجات عائلية، وبرامج مصممة لك</p>
 
           <!-- CTAs -->
           <div class="hero__actions reveal">
@@ -287,7 +295,7 @@
       <div class="container">
         <header class="section-header reveal">
           <span class="section-eyebrow" data-i18n="packages.eyebrow">الأكثر طلباً</span>
-          <h2 class="section-title" id="packages-heading" data-i18n="packages.title">باقاتنا المميزة</h2>
+          <h2 class="section-title" id="packages-heading" data-i18n="packages.title">أفضل البكجات السياحية إلى بالي وإندونيسيا</h2>
           <p class="section-subtitle" data-i18n="packages.subtitle">اختر من أفضل باقاتنا السياحية إلى إندونيسيا</p>
         </header>
 
@@ -425,8 +433,8 @@
       <div class="container">
         <header class="section-header reveal">
           <span class="section-eyebrow" data-i18n="destinations.eyebrow">وجهاتنا</span>
-          <h2 class="section-title" id="dest-heading" data-i18n="destinations.title">وجهاتنا في إندونيسيا</h2>
-          <p class="section-subtitle" data-i18n="destinations.subtitle">استكشف أجمل المناطق السياحية معنا</p>
+          <h2 class="section-title" id="dest-heading" data-i18n="destinations.title">أفضل الوجهات السياحية في إندونيسيا</h2>
+          <p class="section-subtitle" data-i18n="destinations.subtitle">بالي وجاكرتا ولومبوك وبونشاك وباندونج وجزر جيلي — اختر وجهتك</p>
         </header>
 
         <!-- JS renders destination cards here -->
@@ -453,7 +461,7 @@
       <div class="container">
         <header class="section-header reveal">
           <span class="section-eyebrow" data-i18n="testimonials.eyebrow">آراء العملاء</span>
-          <h2 class="section-title" id="testi-heading" data-i18n="testimonials.title">ماذا يقول عملاؤنا؟</h2>
+          <h2 class="section-title" id="testi-heading" data-i18n="testimonials.title">آراء عملائنا السعوديين</h2>
           <p class="section-subtitle" data-i18n="testimonials.subtitle">تجارب حقيقية من مسافرين سعوديين</p>
         </header>
 
@@ -653,6 +661,9 @@
           <li><a href="وجهات-السياحة-اندونيسيا" class="footer__link" data-i18n="nav.destinations">الوجهات</a></li>
           <li><a href="بكجات-سياحية-اندونيسيا" class="footer__link" data-i18n="nav.packages">الباقات</a></li>
           <li><a href="من-نحن" class="footer__link" data-i18n="nav.about">عن لوكس باث</a></li>
+          <li><a href="بكج-شهر-عسل-بالي" class="footer__link">بكج شهر عسل بالي</a></li>
+          <li><a href="بكج-عائلي-اندونيسيا" class="footer__link">بكج عائلي إندونيسيا</a></li>
+          <li><a href="السياحة-في-بالي" class="footer__link">دليل السياحة في بالي</a></li>
           <li><a href="تواصل" class="footer__link" data-i18n="nav.contact">تواصل معنا</a></li>
         </ul>
       </nav>

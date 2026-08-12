@@ -1,9 +1,14 @@
 User-agent: *
 Allow: /
 
-# Admin pages — noindex already set in HTML, also disallow crawling here
-Disallow: /dashboard.html
-Disallow: /login.html
+# Admin pages carry <meta name="robots" content="noindex, nofollow"> in the
+# HTML. They are deliberately NOT disallowed here: blocking them would stop
+# Google from ever reading that noindex, which is what actually keeps them
+# out of the index.
+#
+# Query-string variants (?dest=, ?q=) are intentionally left crawlable too —
+# each one serves a self-referencing canonical pointing at the clean URL,
+# which consolidates them properly. Blocking them would hide that canonical.
+# ?slug= URLs are the package detail pages and must stay crawlable.
 
-# Sitemap
 Sitemap: https://luxpathtravel.com/sitemap.xml

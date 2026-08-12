@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    LUXPATH TRAVEL — PACKAGE DETAIL PAGE
    Self-contained: includes own Config, I18n, WA, Navbar
    ============================================================
@@ -412,24 +412,27 @@ const Meta = {
 
     const heroImg = imgUrl(pkg.hero_image_url);
     const canonicalBase = 'https://luxpathtravel.com';
-    const canonicalAr   = `${canonicalBase}/package/${pkg.slug_en}`;
-    const canonicalEn   = `${canonicalBase}/en/package/${pkg.slug_en}`;
+    // Canonical must point at a URL that actually resolves. The package
+    // detail page is served at /بكج-سياحي-اندونيسيا (extensionless) and
+    // selects the package from the ?slug= query param — so that is the
+    // one and only canonical form.
+    const canonicalUrl = `${canonicalBase}/بكج-سياحي-اندونيسيا?slug=${pkg.slug_en}`;
 
-    setLink('canonical', lang === 'ar' ? canonicalAr : canonicalEn);
-    setLinkHreflang('ar', canonicalAr);
-    setLinkHreflang('en', canonicalEn);
+    setLink('canonical', canonicalUrl);
+    setLinkHreflang('ar', canonicalUrl);
+    setLinkHreflang('x-default', canonicalUrl);
 
     // Open Graph
     setOG('og:title',       fullTitle);
     setOG('og:description', desc || '');
     setOG('og:image',       heroImg);
-    setOG('og:url',         lang === 'ar' ? canonicalAr : canonicalEn);
+    setOG('og:url',         canonicalUrl);
 
     // Schema
-    this.setSchema(pkg, heroImg, destName, canonicalAr, canonicalEn);
+    this.setSchema(pkg, heroImg, destName, canonicalUrl);
   },
 
-  setSchema(pkg, heroImg, destName, canonicalAr, canonicalEn) {
+  setSchema(pkg, heroImg, destName, canonicalUrl) {
     const images = (pkg.package_images || [])
       .sort((a, b) => a.display_order - b.display_order)
       .map(i => imgUrl(i.image_url));
@@ -441,7 +444,7 @@ const Meta = {
         'name': pkg.title_en,
         'description': pkg.short_description_en || '',
         'image': images.length ? images : [heroImg],
-        'url': canonicalEn,
+        'url': canonicalUrl,
         'inLanguage': ['ar', 'en'],
         'provider': { '@type': 'TravelAgency', '@id': 'https://luxpathtravel.com/#organization', 'name': 'Luxpath Travel' },
         'touristType': pkg.category,
@@ -460,8 +463,8 @@ const Meta = {
         '@type': 'BreadcrumbList',
         'itemListElement': [
           { '@type': 'ListItem', 'position': 1, 'name': 'Luxpath Travel', 'item': 'https://luxpathtravel.com/' },
-          { '@type': 'ListItem', 'position': 2, 'name': 'Packages', 'item': 'https://luxpathtravel.com/بكجات-سياحية-اندونيسيا.html' },
-          { '@type': 'ListItem', 'position': 3, 'name': pkg.title_en },
+          { '@type': 'ListItem', 'position': 2, 'name': 'Packages', 'item': 'https://luxpathtravel.com/بكجات-سياحية-اندونيسيا' },
+          { '@type': 'ListItem', 'position': 3, 'name': pkg.title_en, 'item': canonicalUrl },
         ],
       },
     ];
@@ -1111,7 +1114,7 @@ const RelatedPackages = {
       const days     = pkg.duration_days   ?? 1;
       const price    = fmtPrice(pkg.price_value);
       const currency = I18n.t(`currency.${pkg.currency ?? 'SAR'}`);
-      const href     = `بكج-سياحي-اندونيسيا.html?slug=${pkg.slug_en}`;
+      const href     = `بكج-سياحي-اندونيسيا?slug=${pkg.slug_en}`;
       const imgSrc   = imgUrl(pkg.hero_image_url);
 
       return `

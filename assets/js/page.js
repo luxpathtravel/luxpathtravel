@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    LUXPATH TRAVEL — SHARED STATIC PAGE MODULE
    Used by: من-نحن · تواصل · الخصوصية
    Self-contained · No Supabase needed · Bilingual AR/EN
@@ -44,8 +44,8 @@ const T = {
 
     /* About */
     'about.eyebrow':        'قصتنا',
-    'about.title':          'لوكس باث — رحلتك تبدأ هنا',
-    'about.subtitle':       'من المملكة العربية السعودية إلى جنة إندونيسيا',
+    'about.title':          'لوكس باث للسياحة — وكالة رحلات إندونيسيا للسعوديين',
+    'about.subtitle':       'نصمم بكجات بالي وإندونيسيا للعرسان والعائلات من الرياض وجدة منذ أكثر من 4 سنوات',
     'about.story.h':        'من نحن؟',
     'about.story.p1':       'لوكس باث للسياحة وكالة متخصصة في تصميم رحلات فاخرة إلى إندونيسيا. نؤمن بأن السفر تجربة لا مجرد وجهة، لذلك نصمم كل رحلة بعناية لتلائم رغبات عميلنا وتتجاوز توقعاته.',
     'about.story.p2':       'نحن لا ننافس على السعر — ننافس على الجودة. شركاؤنا في إندونيسيا من أرقى الفنادق والمنتجعات، ومرشدونا السياحيون من أفضل المتحدثين بالعربية في بالي وجاكرتا وباندونغ ولومبوك.',
@@ -64,8 +64,8 @@ const T = {
 
     /* Contact */
     'contact.eyebrow':      'تواصل معنا',
-    'contact.title':        'نحن هنا لمساعدتك',
-    'contact.subtitle':     'لا تتردد في التواصل معنا عبر أي وسيلة تناسبك',
+    'contact.title':        'تواصل معنا لحجز بكجك السياحي إلى إندونيسيا',
+    'contact.subtitle':     'نرد خلال دقائق على واتساب — استشارة مجانية وعرض سعر مخصص لرحلتك',
     'contact.wa.label':     'واتساب',
     'contact.wa.value':     '+62 811-1182-6527',
     'contact.wa.note':      'متاح 24/7 — أسرع طريقة للتواصل',
@@ -109,8 +109,8 @@ const T = {
 
     /* About */
     'about.eyebrow':        'Our Story',
-    'about.title':          'Luxpath — Where Your Journey Begins',
-    'about.subtitle':       'From Saudi Arabia to the paradise of Indonesia',
+    'about.title':          'About Luxpath — Indonesia Travel Agency for Gulf Travellers',
+    'about.subtitle':       'Designing Bali and Indonesia trips for honeymooners and families for over 4 years',
     'about.story.h':        'Who We Are',
     'about.story.p1':       'Luxpath Travel is a Saudi agency specialising in luxury travel to Indonesia. We believe travel is an experience, not just a destination — so we design each trip carefully to match our clients\' wishes and exceed their expectations.',
     'about.story.p2':       'We don\'t compete on price — we compete on quality. Our partners in Indonesia are among the finest hotels and resorts, and our guides are among the best Arabic-speaking professionals in Bali, Jakarta, Bandung, and Lombok.',
@@ -129,8 +129,8 @@ const T = {
 
     /* Contact */
     'contact.eyebrow':      'Get in Touch',
-    'contact.title':        'We\'re Here to Help',
-    'contact.subtitle':     'Reach us through any channel that works for you',
+    'contact.title':        'Contact Us to Book Your Indonesia Trip',
+    'contact.subtitle':     'We reply within minutes on WhatsApp — free consultation and a custom quote',
     'contact.wa.label':     'WhatsApp',
     'contact.wa.value':     '+62 811-1182-6527',
     'contact.wa.note':      'Available 24/7 — fastest way to reach us',
@@ -288,7 +288,36 @@ const FloatingWA = {
 };
 
 /* ============================================================
-   8. APP
+   8. FAQ ACCORDION
+   Mirrors the FAQ module in app.js so the landing pages served by
+   page.js (بكج-شهر-عسل-بالي, بكج-عائلي-اندونيسيا, السياحة-في-بالي)
+   get working accordions. No-ops on pages without .faq-question.
+   ============================================================ */
+const FAQ = {
+  init() {
+    document.querySelectorAll('.faq-question').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const item = btn.closest('.faq-item');
+        const isOpen = item.classList.contains('is-open');
+
+        // Close all
+        document.querySelectorAll('.faq-item.is-open').forEach(i => {
+          i.classList.remove('is-open');
+          i.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+        });
+
+        // Open clicked (if it was closed)
+        if (!isOpen) {
+          item.classList.add('is-open');
+          btn.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+  },
+};
+
+/* ============================================================
+   9. APP
    ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
   I18n.init();
@@ -296,4 +325,5 @@ document.addEventListener('DOMContentLoaded', () => {
   ScrollReveal.init();
   WA.updateAll();
   FloatingWA.init();
+  FAQ.init();
 });

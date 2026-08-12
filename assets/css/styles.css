@@ -3238,12 +3238,14 @@ a.contact-card__value:hover {
 }
 
 /* Privacy page */
-.privacy-content {
+.privacy-content,
+.article-content {
   max-width: 72ch;
   margin-inline: auto;
 }
 
-.privacy-content h2 {
+.privacy-content h2,
+.article-content h2 {
   font-size: var(--text-xl);
   font-weight: 700;
   color: var(--color-navy);
@@ -3253,27 +3255,45 @@ a.contact-card__value:hover {
   border-bottom: 2px solid var(--color-gold-pale);
 }
 
-.privacy-content h2:first-child {
+.privacy-content h2:first-child,
+.article-content h2:first-child {
   margin-top: 0;
 }
 
 .privacy-content p,
-.privacy-content li {
+.privacy-content li,
+.article-content p,
+.article-content li {
   font-size: var(--text-base);
   color: var(--color-text-muted);
   line-height: 1.85;
   margin-bottom: var(--sp-3);
 }
 
-.privacy-content ul {
+.privacy-content ul,
+.article-content ul {
   list-style: disc;
   padding-inline-start: var(--sp-6);
   margin-bottom: var(--sp-4);
 }
 
-.privacy-content a {
+.privacy-content a,
+.article-content a {
   color: var(--color-gold);
   text-decoration: underline;
+}
+
+.article-content h3 {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-navy);
+  margin-top: var(--sp-6);
+  margin-bottom: var(--sp-2);
+}
+
+.article-content strong {
+  color: var(--color-navy);
+  font-weight: 700;
 }
 
 .privacy-updated {

@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    LUXPATH TRAVEL — MAIN APPLICATION
    Modular vanilla JS · Supabase backend · Bilingual AR/EN
    ============================================================
@@ -78,8 +78,8 @@ const T = {
 
     // Hero
     'hero.badge': 'وجهة أكثر من 643+ عائلة وعرسان سعوديين',
-    'hero.title': 'اكتشف سحر إندونيسيا',
-    'hero.subtitle': 'رحلات فاخرة مصممة لك من المملكة العربية السعودية',
+    'hero.title': 'بكجات سياحية إلى بالي وإندونيسيا',
+    'hero.subtitle': 'رحلات فاخرة للعرسان والعائلات من الرياض وجدة وجميع مدن المملكة — شهر عسل، بكجات عائلية، وبرامج مصممة لك',
     'hero.cta.whatsapp': 'احجز عبر واتساب الآن',
     'hero.cta.packages': 'تصفح باقاتنا',
 
@@ -91,7 +91,7 @@ const T = {
 
     // Packages
     'packages.eyebrow': 'الأكثر طلباً',
-    'packages.title': 'باقاتنا المميزة',
+    'packages.title': 'أفضل البكجات السياحية إلى بالي وإندونيسيا',
     'packages.subtitle': 'اختر من أفضل باقاتنا السياحية إلى إندونيسيا',
     'packages.viewAll': 'عرض جميع الباقات',
     'packages.bookNow': 'احجز الآن',
@@ -132,8 +132,8 @@ const T = {
 
     // Destinations
     'destinations.eyebrow': 'وجهاتنا',
-    'destinations.title': 'وجهاتنا في إندونيسيا',
-    'destinations.subtitle': 'استكشف أجمل المناطق السياحية معنا',
+    'destinations.title': 'أفضل الوجهات السياحية في إندونيسيا',
+    'destinations.subtitle': 'بالي وجاكرتا ولومبوك وبونشاك وباندونج وجزر جيلي — اختر وجهتك',
     'destinations.explore': 'اكتشف',
     'dest.bali': 'بالي',
     'dest.jakarta': 'جاكرتا',
@@ -142,7 +142,7 @@ const T = {
 
     // Testimonials
     'testimonials.eyebrow': 'آراء العملاء',
-    'testimonials.title': 'ماذا يقول عملاؤنا؟',
+    'testimonials.title': 'آراء عملائنا السعوديين',
     'testimonials.subtitle': 'تجارب حقيقية من مسافرين سعوديين',
     'testimonials.empty': 'سيتم إضافة تجارب عملائنا قريباً.',
     'testimonials.loadMore': 'عرض المزيد',
@@ -201,8 +201,8 @@ const T = {
     'nav.contact': 'Contact',
     'nav.whatsapp': 'WhatsApp',
     'hero.badge': 'Trusted by 643+ Saudi families & couples',
-    'hero.title': 'Discover the Magic of Indonesia',
-    'hero.subtitle': 'Luxury travel packages crafted for Saudi travelers',
+    'hero.title': 'Bali & Indonesia Tour Packages',
+    'hero.subtitle': 'Luxury honeymoon and family trips to Bali, Jakarta and Lombok — Arabic-speaking guides, all-inclusive pricing',
     'hero.cta.whatsapp': 'Book Now via WhatsApp',
     'hero.cta.packages': 'Browse Our Packages',
     'stats.trips': 'Successful Trips',
@@ -210,7 +210,7 @@ const T = {
     'stats.destinations': 'Destinations',
     'stats.years': 'Years Experience',
     'packages.eyebrow': 'Most Popular',
-    'packages.title': 'Featured Packages',
+    'packages.title': 'Best Bali & Indonesia Tour Packages',
     'packages.subtitle': 'Explore our most popular Indonesia travel packages',
     'packages.viewAll': 'View All Packages',
     'packages.bookNow': 'Book Now',
@@ -241,15 +241,15 @@ const T = {
     'why.4.title': 'Arabic-Speaking Guides',
     'why.4.body': 'All our guides in Indonesia speak fluent Arabic. Your trip, in your language',
     'destinations.eyebrow': 'Our Destinations',
-    'destinations.title': 'Our Indonesia Destinations',
-    'destinations.subtitle': 'Explore the most beautiful regions with us',
+    'destinations.title': 'Best Places to Visit in Indonesia',
+    'destinations.subtitle': 'Bali, Jakarta, Lombok, Puncak, Bandung and the Gili Islands — pick your destination',
     'destinations.explore': 'Explore',
     'dest.bali': 'Bali',
     'dest.jakarta': 'Jakarta',
     'dest.bandung': 'Bandung',
     'dest.lombok': 'Lombok',
     'testimonials.eyebrow': 'Client Reviews',
-    'testimonials.title': 'What Our Clients Say',
+    'testimonials.title': 'Reviews From Our Saudi Travellers',
     'testimonials.subtitle': 'Real experiences from Saudi travelers',
     'testimonials.empty': 'Client testimonials coming soon.',
     'testimonials.loadMore': 'Load More',
@@ -874,7 +874,7 @@ const Packages = {
       ? `${Config.STORAGE_URL}${pkg.hero_image_url}`
       : Config.PLACEHOLDER_IMG;
     const slugKey = lang === 'ar' ? pkg.slug_ar : pkg.slug_en;
-    const detailUrl = `بكج-سياحي-اندونيسيا.html?slug=${pkg.slug_en}`;
+    const detailUrl = `بكج-سياحي-اندونيسيا?slug=${pkg.slug_en}`;
 
     const origHTML = priceInfo.originalValue
       ? `<span class="pkg-card__price-original">${priceInfo.originalValue}</span>`
@@ -1536,10 +1536,12 @@ const Destinations = {
     const imgSrc = d.images?.[0] ?? Config.PLACEHOLDER_IMG;
     const exploreLabel = lang === 'ar' ? 'اكتشف' : 'Explore';
 
+    // Rendered as a real <a> so crawlers have a followable link into the
+    // filtered packages view. The click handler still opens the in-page
+    // panel, so behaviour for users is unchanged.
     return `
-      <button type="button" class="dest-card reveal" role="listitem"
-              aria-label="${name}" data-dest="${d.slug}"
-              style="cursor:pointer;background:none;border:none;padding:0;text-align:inherit;width:100%">
+      <a href="بكجات-سياحية-اندونيسيا?dest=${d.slug}" class="dest-card reveal" role="listitem"
+         aria-label="${name}" data-dest="${d.slug}">
         <img
           class="dest-card__image"
           data-src="${imgSrc}"
@@ -1560,12 +1562,17 @@ const Destinations = {
             </svg>
           </span>
         </div>
-      </button>`;
+      </a>`;
   },
 
   bindCards(grid) {
-    grid.querySelectorAll('.dest-card[data-dest]').forEach(btn => {
-      btn.addEventListener('click', () => DestPanel.open(btn.dataset.dest));
+    grid.querySelectorAll('.dest-card[data-dest]').forEach(card => {
+      card.addEventListener('click', e => {
+        // Let ctrl/cmd/middle-click open the real URL in a new tab.
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+        e.preventDefault();
+        DestPanel.open(card.dataset.dest);
+      });
     });
   },
 };

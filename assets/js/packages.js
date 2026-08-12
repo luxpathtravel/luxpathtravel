@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    LUXPATH TRAVEL — PACKAGES LISTING PAGE
    All packages · Category & destination filters · Search
    ============================================================ */
@@ -57,8 +57,8 @@ const T = {
 
     /* Page-specific */
     'pkgs.eyebrow':     'اكتشف وجهتك',
-    'pkgs.title':       'جميع الباقات السياحية',
-    'pkgs.subtitle':    'تصفح باقاتنا وابحث عن رحلتك المثالية إلى إندونيسيا',
+    'pkgs.title':       'بكجات سياحية إلى إندونيسيا وبالي',
+    'pkgs.subtitle':    'بكجات شهر عسل، عائلية وفاخرة بأسعار شاملة من الرياض وجدة — اختر باقتك واحجز عبر واتساب',
     'pkgs.breadcrumb':  'الباقات',
     'pkgs.filter.all':  'الكل',
     'pkgs.filter.cat':  'الفئة:',
@@ -101,8 +101,8 @@ const T = {
 
     /* Page-specific */
     'pkgs.eyebrow':     'Explore & Discover',
-    'pkgs.title':       'All Travel Packages',
-    'pkgs.subtitle':    'Browse our packages and find your perfect Indonesia trip',
+    'pkgs.title':       'Indonesia & Bali Tour Packages',
+    'pkgs.subtitle':    'Honeymoon, family and luxury packages with all-inclusive pricing — browse and book on WhatsApp',
     'pkgs.breadcrumb':  'Packages',
     'pkgs.filter.all':  'All',
     'pkgs.filter.cat':  'Category:',
@@ -399,10 +399,40 @@ const PackageList = {
   init(packages) {
     this.grid  = document.getElementById('pkgGrid');
     this.count = document.getElementById('pkgCount');
+    this._applyUrlFilters();
     this._renderSkeletons();
     this._bindFilters(packages);
     this._bindSearch(packages);
     this._render(packages);
+  },
+
+  // Destination cards across the site link here as ?dest=<slug>. Honour that
+  // param so the link lands on a genuinely filtered view rather than the
+  // unfiltered list. The page's canonical stays the clean URL, so these
+  // variants are consolidated by Google rather than indexed separately.
+  _applyUrlFilters() {
+    const params = new URLSearchParams(window.location.search);
+    const dest = params.get('dest');
+    const cat  = params.get('cat');
+    const q    = params.get('q');
+    if (dest) this.activeDest = dest;
+    if (cat)  this.activeCat  = cat;
+    if (q)    this.searchQ    = q.toLowerCase();
+
+    if (q) {
+      const input = document.getElementById('pkgSearch');
+      if (input) input.value = q;
+    }
+
+    // Sync the pill UI so the filtered state is visible, not just applied.
+    // Dest pills are built before PackageList.init(), so they exist here.
+    const syncPills = (attr, value) => {
+      document.querySelectorAll(`.filter-pill[data-${attr}]`).forEach(b => {
+        b.classList.toggle('is-active', b.dataset[attr] === value);
+      });
+    };
+    if (dest) syncPills('dest', dest);
+    if (cat)  syncPills('cat', cat);
   },
 
   _renderSkeletons() {
@@ -493,13 +523,13 @@ const PackageList = {
 
     return `
       <article class="pkg-card reveal" data-pkg-id="${pkg.id}">
-        <a href="بكج-سياحي-اندونيسيا.html?slug=${pkg.slug_en}" class="pkg-card__img" aria-label="${title}">
+        <a href="بكج-سياحي-اندونيسيا?slug=${pkg.slug_en}" class="pkg-card__img" aria-label="${title}">
           <img data-src="${imgSrc}" src="${Config.PLACEHOLDER_IMG}" alt="${title} — ${destName}" width="400" height="300" loading="lazy">
           <div class="pkg-card__badge"><span class="badge badge--${cat}">${I18n.t('category.' + cat)}</span>${discountBadge}</div>
         </a>
         <div class="pkg-card__body">
           <p class="pkg-card__destination">${destName}</p>
-          <h3 class="pkg-card__title"><a href="بكج-سياحي-اندونيسيا.html?slug=${pkg.slug_en}">${title}</a></h3>
+          <h3 class="pkg-card__title"><a href="بكج-سياحي-اندونيسيا?slug=${pkg.slug_en}">${title}</a></h3>
           <p class="pkg-card__duration">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             ${nights} ${I18n.t('packages.nights')} / ${days} ${I18n.t('packages.days')}
